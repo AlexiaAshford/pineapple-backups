@@ -3,11 +3,11 @@ package src
 import (
 	"fmt"
 	cfg "sf/config"
-	"sf/src/sfacg"
+	"sf/src/boluobao"
 )
 
 func AccountDetailed() string {
-	response := sfacg.Get_account_detailed_by_api()
+	response := boluobao.Get_account_detailed_by_api()
 	if response.Status.HTTPCode == 200 {
 		return fmt.Sprintf("AccountName:%v", response.Data.NickName)
 	} else {
@@ -18,7 +18,7 @@ func AccountDetailed() string {
 }
 
 func LoginAccount(username string, password string) {
-	CookieArray, status := sfacg.Post_login_by_account(username, password)
+	CookieArray, status := boluobao.Post_login_by_account(username, password)
 	if status.Status.HTTPCode == 200 {
 		cfg.Load()
 		CookieMap := make(map[string]string)

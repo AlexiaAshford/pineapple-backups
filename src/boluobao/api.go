@@ -1,11 +1,11 @@
-package sfacg
+package boluobao
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	req "sf/src/sfacg/request"
-	structs2 "sf/src/structs"
+	req "sf/src/boluobao/request"
+	structs2 "sf/src/sfacg_structs"
 )
 
 func Get_book_detailed_by_id(bookId string) structs2.BookInfo {

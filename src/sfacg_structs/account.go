@@ -1,4 +1,4 @@
-package structs
+package sfacg_structs
 
 type Account struct {
 	Status struct {

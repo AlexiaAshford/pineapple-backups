@@ -1,4 +1,4 @@
-package structs
+package sfacg_structs
 
 type Catalogue struct {
 	Status Status `json:"status"`

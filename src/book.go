@@ -2,7 +2,7 @@ package src
 
 import (
 	cfg "sf/config"
-	"sf/src/sfacg"
+	"sf/src/boluobao"
 	"strconv"
 )
 
@@ -18,7 +18,7 @@ type Books struct {
 }
 
 func GetBookDetailed(bookId string) Books {
-	response := sfacg.Get_book_detailed_by_id(bookId)
+	response := boluobao.Get_book_detailed_by_id(bookId)
 	if response.Status.HTTPCode != 200 || response.Data.NovelName == "" {
 		panic(bookId + "is not a valid book number！")
 	} else {

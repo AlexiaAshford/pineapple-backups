@@ -1,4 +1,4 @@
-package structs
+package sfacg_structs
 
 type BookInfo struct {
 	Status struct {
