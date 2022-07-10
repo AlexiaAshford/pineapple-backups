@@ -52,18 +52,22 @@ func GetCatalogue(BookData Books) {
 	TestInfo.SaveContent()
 	fmt.Println("NovelName:", BookData.NovelName, "download complete!")
 }
+func TestMassage(ContentStruct ContentJson) {
+	if ContentStruct.Status.HTTPCode != 200 {
+		if ContentStruct.Status.Msg == "接口校验失败,请尽快把APP升级到最新版哦~" {
+			fmt.Println(ContentStruct.Status.Msg)
+			os.Exit(0)
+		} else {
+			fmt.Println(ContentStruct.Status.Msg)
+		}
+	}
+}
 
 func GetContent(ChapterLength int, VolumeID, cid string, TestInfo *TestChapterConfig) {
 	response := request.Get(fmt.Sprintf("Chaps/%v?expand=content&autoOrder=true", cid))
 	if err := json.Unmarshal(response, &ContentStruct); err == nil {
-		if ContentStruct.Status.HTTPCode != 200 {
-			if ContentStruct.Status.Msg == "接口校验失败,请尽快把APP升级到最新版哦~" {
-				fmt.Println(ContentStruct.Status.Msg)
-				os.Exit(0)
-			} else {
-				fmt.Println(ContentStruct.Status.Msg)
-			}
-		}
+		TestMassage(ContentStruct)
+
 	}
 	contentList := ""
 	for _, line := range strings.Split(ContentStruct.Data.Expand.Content, "\n") {

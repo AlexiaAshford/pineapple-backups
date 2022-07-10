@@ -59,6 +59,8 @@ func (is *TestChapterConfig) SaveContent() {
 		if err := ioutil.WriteFile("./config/"+is.BookName+".json", save, 0777); err != nil {
 			fmt.Println(err)
 		}
+	} else {
+		fmt.Println("SaveContent", ok)
 	}
 
 }
