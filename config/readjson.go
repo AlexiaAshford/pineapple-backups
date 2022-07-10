@@ -22,13 +22,10 @@ type MyJsonPro struct {
 	Cookie        map[string]string
 }
 
-var (
-	Var       = MyJsonPro{}
-	ConfigDir = "config.json"
-)
+var Var = MyJsonPro{}
 
 func NewMyJsonPro() {
-	if !CheckFileExist(ConfigDir) {
+	if !CheckFileExist("config.json") {
 		Var.SaveFile = "save"
 		Var.ConfigFile = "config"
 		Var.DeviceToken = uuid.New().String()
@@ -54,7 +51,7 @@ var FileLock = &sync.Mutex{}
 func Load() {
 	FileLock.Lock()
 	defer FileLock.Unlock()
-	if data, err := ioutil.ReadFile(ConfigDir); err == nil {
+	if data, err := ioutil.ReadFile("config.json"); err == nil {
 		if ok := json.Unmarshal(data, &Var); ok != nil {
 			println("Load:", ok)
 		}
@@ -65,7 +62,7 @@ func Load() {
 
 func SaveJson() {
 	if save, ok := json.MarshalIndent(Var, "", "    "); ok == nil {
-		if err := ioutil.WriteFile(ConfigDir, save, 0777); err != nil {
+		if err := ioutil.WriteFile("config.json", save, 0777); err != nil {
 			println("SaveJson:", err)
 		}
 	} else {

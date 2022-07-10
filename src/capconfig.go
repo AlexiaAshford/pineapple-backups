@@ -1,4 +1,4 @@
-package sfacg
+package src
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"path"
 	"sf/config"
-	"sf/structs"
+	"sf/src/structs"
 	"strconv"
 )
 

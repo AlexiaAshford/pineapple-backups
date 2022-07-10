@@ -1,13 +1,13 @@
-package sfacg
+package src
 
 import (
 	"fmt"
 	cfg "sf/config"
-	"sf/src"
+	"sf/src/sfacg"
 )
 
 func AccountDetailed() string {
-	response := src.Get_account_detailed_by_api()
+	response := sfacg.Get_account_detailed_by_api()
 	if response.Status.HTTPCode == 200 {
 		return fmt.Sprintf("AccountName:%v", response.Data.NickName)
 	} else {
@@ -18,7 +18,7 @@ func AccountDetailed() string {
 }
 
 func LoginAccount(username string, password string) {
-	CookieArray, status := src.Post_login_by_account(username, password)
+	CookieArray, status := sfacg.Post_login_by_account(username, password)
 	if status.Status.HTTPCode == 200 {
 		cfg.Load()
 		CookieMap := make(map[string]string)
