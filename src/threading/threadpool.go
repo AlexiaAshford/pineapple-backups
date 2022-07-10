@@ -1,4 +1,4 @@
-package thread
+package threading
 
 import (
 	"sync"

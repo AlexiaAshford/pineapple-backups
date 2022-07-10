@@ -6,17 +6,52 @@ import (
 	"os"
 	"sf/config"
 	"sf/src/sfacg"
+	"sf/src/threading"
+	"strconv"
 )
 
-func downloadBook(bookId string) {
-	BookData := sfacg.GetBookDetailed(bookId)
-	fmt.Printf("开始下载:%s\n", BookData.NovelName)
-	if err := ioutil.WriteFile(fmt.Sprintf("save/%v.txt", BookData.NovelName),
-		[]byte(BookData.NovelName), 0777); err != nil {
-		fmt.Printf("Error: %v\n", err)
+func downloadBook(input any) {
+	var (
+		bookId   string
+		bookList []string
+	)
+	switch input.(type) {
+	case string:
+		bookId = input.(string)
+	case int:
+		bookId = strconv.Itoa(input.(int))
+	case []string:
+		bookList = input.([]string)
 	}
-	config.NewFile(fmt.Sprintf("cache/%v.json", BookData.NovelName))
-	sfacg.GetCatalogue(BookData)
+	if bookId != "" && bookList == nil {
+		BookData := sfacg.GetBookDetailed(bookId)
+		fmt.Printf("开始下载:%s\n", BookData.NovelName)
+		if err := ioutil.WriteFile(fmt.Sprintf("save/%v.txt", BookData.NovelName),
+			[]byte(BookData.NovelName), 0777); err != nil {
+			fmt.Printf("Error: %v\n", err)
+		}
+		config.NewFile(fmt.Sprintf("cache/%v.json", BookData.NovelName))
+		sfacg.GetCatalogue(BookData)
+	} else if bookList != nil && len(bookList) > 0 {
+
+		ThreadLocks := threading.NewGoLimit(5)
+		for _, bookId = range bookList {
+			ThreadLocks.Add()
+			go func(bookId string, t *threading.GoLimit) {
+				defer ThreadLocks.Done()
+				BookData := sfacg.GetBookDetailed(bookId)
+				fmt.Printf("开始下载:%s\n", BookData.NovelName)
+				if err := ioutil.WriteFile(fmt.Sprintf("save/%v.txt", BookData.NovelName),
+					[]byte(BookData.NovelName), 0777); err != nil {
+					fmt.Printf("Error: %v\n", err)
+				}
+				config.NewFile(fmt.Sprintf("cache/%v.json", BookData.NovelName))
+				sfacg.GetCatalogue(BookData)
+			}(bookId, ThreadLocks)
+		}
+		ThreadLocks.WaitZero()
+	}
+
 }
 
 func main() {
