@@ -4,29 +4,29 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"sf/setting"
-	"sf/src"
+	"sf/config"
+	"sf/src/sfacg"
 )
 
 func downloadBook(bookId string) {
-	BookData := src.GetBookDetailed(bookId)
+	BookData := sfacg.GetBookDetailed(bookId)
 	fmt.Printf("开始下载:%s\n", BookData.NovelName)
 	if err := ioutil.WriteFile(fmt.Sprintf("save/%v.txt", BookData.NovelName),
 		[]byte(BookData.NovelName), 0777); err != nil {
 		fmt.Printf("Error: %v\n", err)
 	}
-	setting.NewFile(fmt.Sprintf("config/%v.json", BookData.NovelName))
-	src.GetCatalogue(BookData)
+	config.NewFile(fmt.Sprintf("cache/%v.json", BookData.NovelName))
+	sfacg.GetCatalogue(BookData)
 }
 
 func main() {
-	setting.NewMyJsonPro()
+	config.NewMyJsonPro()
 	if len(os.Args) >= 2 {
 		inputs := os.Args[1:]
 		switch {
 		case inputs[0] == "l", inputs[0] == "login":
 			if len(inputs) >= 3 {
-				src.LoginAccount(inputs[1], inputs[2])
+				sfacg.LoginAccount(inputs[1], inputs[2])
 			} else {
 				fmt.Println("parameters are not enough")
 			}

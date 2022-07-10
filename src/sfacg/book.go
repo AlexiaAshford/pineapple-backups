@@ -1,9 +1,10 @@
-package src
+package sfacg
 
 import (
 	"encoding/json"
 	"fmt"
-	cfg "sf/setting"
+	cfg "sf/config"
+	"sf/src/request"
 	"strconv"
 )
 
@@ -20,7 +21,7 @@ type Books struct {
 
 func GetBookDetailed(bookId string) Books {
 	var BookData BookInformation
-	if err := json.Unmarshal(Get(fmt.Sprintf("novels/%v?expand=", bookId)), &BookData); err != nil {
+	if err := json.Unmarshal(request.Get(fmt.Sprintf("novels/%v?expand=", bookId)), &BookData); err != nil {
 		panic(err)
 	}
 	if BookData.Status.HTTPCode != 200 || BookData.Data.NovelName == "" {

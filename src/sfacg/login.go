@@ -1,14 +1,15 @@
-package src
+package sfacg
 
 import (
 	"encoding/json"
 	"fmt"
-	cfg "sf/setting"
+	cfg "sf/config"
+	"sf/src/request"
 )
 
 func AccountDetailed() string {
 	var AccountInfor UserStruct
-	if err := json.Unmarshal(Get("user"), &AccountInfor); err == nil {
+	if err := json.Unmarshal(request.Get("user"), &AccountInfor); err == nil {
 		if AccountInfor.Status.HTTPCode == 200 {
 			return fmt.Sprintf("AccountName:%v", AccountInfor.Data.NickName)
 		} else {
@@ -21,7 +22,7 @@ func AccountDetailed() string {
 
 func LoginAccount(username string, password string) {
 	var status LoginStatus
-	result, CookieArray := POST("sessions",
+	result, CookieArray := request.POST("sessions",
 		fmt.Sprintf(`{"username":"%s", "password": "%s"}`, username, password),
 	)
 	if err := json.Unmarshal(result, &status); err != nil {

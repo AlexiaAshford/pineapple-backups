@@ -1,11 +1,11 @@
-package src
+package sfacg
 
 import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"path"
-	"sf/setting"
+	"sf/config"
 	"strconv"
 )
 
@@ -47,7 +47,7 @@ func (is *TestChapterConfig) merge(VolumeList []VolumeList) {
 			for _, info := range is.ChapterInfo {
 				if info.ID == strconv.Itoa(Chapter.ChapID) {
 					content := "\n\n\n" + info.Title + "\n" + info.Content
-					setting.Writes(path.Join("save", is.BookName+".txt"), content)
+					config.Writes(path.Join("save", is.BookName+".txt"), content)
 				}
 			}
 		}
