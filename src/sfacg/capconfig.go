@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"path"
 	"sf/config"
+	"sf/structs"
 	"strconv"
 )
 
@@ -40,7 +41,7 @@ func (is *TestChapterConfig) In(ChapID string) bool {
 	}
 	return false
 }
-func (is *TestChapterConfig) merge(VolumeList []VolumeList) {
+func (is *TestChapterConfig) merge(VolumeList []structs.VolumeList) {
 	for _, data := range VolumeList {
 		fmt.Println(data.Title, "merge complete")
 		for _, Chapter := range data.ChapterList {

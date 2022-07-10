@@ -5,37 +5,6 @@ import (
 	"time"
 )
 
-type ContentJson struct {
-	Status struct {
-		HTTPCode  int         `json:"httpCode"`
-		ErrorCode int         `json:"errorCode"`
-		MsgType   int         `json:"msgType"`
-		Msg       interface{} `json:"msg"`
-	} `json:"status"`
-	Data struct {
-		ChapID     int    `json:"chapId"`
-		NovelID    int    `json:"novelId"`
-		VolumeID   int    `json:"volumeId"`
-		CharCount  int    `json:"charCount"`
-		RowNum     int    `json:"rowNum"`
-		ChapOrder  int    `json:"chapOrder"`
-		Title      string `json:"title"`
-		AddTime    string `json:"addTime"`
-		UpdateTime string `json:"updateTime"`
-		Sno        int    `json:"sno"`
-		IsVip      bool   `json:"isVip"`
-		Expand     struct {
-			NeedFireMoney       int         `json:"needFireMoney"`
-			OriginNeedFireMoney int         `json:"originNeedFireMoney"`
-			Content             string      `json:"content"`
-			Tsukkomi            interface{} `json:"tsukkomi"`
-			ChatLines           interface{} `json:"chatLines"`
-		} `json:"expand"`
-		Ntitle      string `json:"ntitle"`
-		IsRubbish   bool   `json:"isRubbish"`
-		AuditStatus int    `json:"auditStatus"`
-	} `json:"data"`
-}
 type UserStruct struct {
 	Status struct {
 		HTTPCode  int    `json:"httpCode"`
@@ -55,16 +24,6 @@ type UserStruct struct {
 		PhoneNum     string `json:"phoneNum"`
 		RegisterDate string `json:"registerDate"`
 	} `json:"data"`
-}
-
-type LoginStatus struct {
-	Status struct {
-		HTTPCode  int         `json:"httpCode"`
-		ErrorCode int         `json:"errorCode"`
-		MsgType   int         `json:"msgType"`
-		Msg       interface{} `json:"msg"`
-	} `json:"status"`
-	Data interface{} `json:"data"`
 }
 
 type FavsJson struct {
@@ -153,74 +112,6 @@ type SearchJson struct {
 		} `json:"novels"`
 		Comics []interface{} `json:"comics"`
 		Albums []interface{} `json:"albums"`
-	} `json:"data"`
-}
-type CatalogueJson struct {
-	Status Status `json:"status"`
-	Data   Data   `json:"data"`
-}
-type Status struct {
-	HTTPCode  int         `json:"httpCode"`
-	ErrorCode int         `json:"errorCode"`
-	MsgType   int         `json:"msgType"`
-	Msg       interface{} `json:"msg"`
-}
-type ChapterList struct {
-	ChapID              int         `json:"chapId"`
-	NovelID             int         `json:"novelId"`
-	VolumeID            int         `json:"volumeId"`
-	NeedFireMoney       int         `json:"needFireMoney"`
-	OriginNeedFireMoney int         `json:"originNeedFireMoney"`
-	CharCount           int         `json:"charCount"`
-	RowNum              int         `json:"rowNum"`
-	ChapOrder           int         `json:"chapOrder"`
-	Title               string      `json:"title"`
-	Content             interface{} `json:"content"`
-	Sno                 float64     `json:"sno"`
-	IsVip               bool        `json:"isVip"`
-	AddTime             string      `json:"AddTime"`
-	UpdateTime          interface{} `json:"updateTime"`
-	CanUnlockWithAd     bool        `json:"canUnlockWithAd"`
-	Ntitle              string      `json:"ntitle"`
-	IsRubbish           bool        `json:"isRubbish"`
-	AuditStatus         int         `json:"auditStatus"`
-}
-type VolumeList struct {
-	VolumeID    int           `json:"volumeId"`
-	Title       string        `json:"title"`
-	Sno         float64       `json:"sno"`
-	ChapterList []ChapterList `json:"chapterList"`
-}
-type Data struct {
-	NovelID        int          `json:"novelId"`
-	LastUpdateTime string       `json:"lastUpdateTime"`
-	VolumeList     []VolumeList `json:"volumeList"`
-}
-
-type BookInformation struct {
-	Status struct {
-		HTTPCode  int         `json:"httpCode"`
-		ErrorCode int         `json:"errorCode"`
-		MsgType   int         `json:"msgType"`
-		Msg       interface{} `json:"msg"`
-	} `json:"status"`
-	Data struct {
-		AuthorID       int     `json:"authorId"`
-		LastUpdateTime string  `json:"lastUpdateTime"`
-		MarkCount      int     `json:"markCount"`
-		NovelCover     string  `json:"novelCover"`
-		BgBanner       string  `json:"bgBanner"`
-		NovelID        int     `json:"novelId"`
-		NovelName      string  `json:"novelName"`
-		Point          float64 `json:"point"`
-		IsFinish       bool    `json:"isFinish"`
-		AuthorName     string  `json:"authorName"`
-		CharCount      int     `json:"charCount"`
-		ViewTimes      int     `json:"viewTimes"`
-		TypeID         int     `json:"typeId"`
-		AllowDown      bool    `json:"allowDown"`
-		SignStatus     string  `json:"signStatus"`
-		CategoryID     int     `json:"categoryId"`
 	} `json:"data"`
 }
 

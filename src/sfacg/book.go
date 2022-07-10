@@ -1,10 +1,8 @@
 package sfacg
 
 import (
-	"encoding/json"
-	"fmt"
 	cfg "sf/config"
-	"sf/src/request"
+	"sf/src"
 	"strconv"
 )
 
@@ -20,21 +18,19 @@ type Books struct {
 }
 
 func GetBookDetailed(bookId string) Books {
-	var BookData BookInformation
-	if err := json.Unmarshal(request.Get(fmt.Sprintf("novels/%v?expand=", bookId)), &BookData); err != nil {
-		panic(err)
-	}
-	if BookData.Status.HTTPCode != 200 || BookData.Data.NovelName == "" {
+	response := src.Get_book_detailed_by_id(bookId)
+	if response.Status.HTTPCode != 200 || response.Data.NovelName == "" {
 		panic(bookId + "is not a valid book number！")
-	}
-	return Books{
-		NovelName:  cfg.RegexpName(BookData.Data.NovelName),
-		NovelID:    strconv.Itoa(BookData.Data.NovelID),
-		IsFinish:   BookData.Data.IsFinish,
-		MarkCount:  BookData.Data.MarkCount,
-		NovelCover: BookData.Data.NovelCover,
-		AuthorName: BookData.Data.AuthorName,
-		CharCount:  BookData.Data.CharCount,
-		SignStatus: BookData.Data.SignStatus,
+	} else {
+		return Books{
+			NovelName:  cfg.RegexpName(response.Data.NovelName),
+			NovelID:    strconv.Itoa(response.Data.NovelID),
+			IsFinish:   response.Data.IsFinish,
+			MarkCount:  response.Data.MarkCount,
+			NovelCover: response.Data.NovelCover,
+			AuthorName: response.Data.AuthorName,
+			CharCount:  response.Data.CharCount,
+			SignStatus: response.Data.SignStatus,
+		}
 	}
 }

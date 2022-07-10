@@ -1,33 +1,24 @@
 package sfacg
 
 import (
-	"encoding/json"
 	"fmt"
 	cfg "sf/config"
-	"sf/src/request"
+	"sf/src"
 )
 
 func AccountDetailed() string {
-	var AccountInfor UserStruct
-	if err := json.Unmarshal(request.Get("user"), &AccountInfor); err == nil {
-		if AccountInfor.Status.HTTPCode == 200 {
-			return fmt.Sprintf("AccountName:%v", AccountInfor.Data.NickName)
-		} else {
-			fmt.Println(AccountInfor.Status.Msg)
-			return AccountInfor.Status.Msg
-		}
+	response := src.Get_account_detailed_by_api()
+	if response.Status.HTTPCode == 200 {
+		return fmt.Sprintf("AccountName:%v", response.Data.NickName)
+	} else {
+		fmt.Println(response.Status.Msg)
+		return response.Status.Msg
 	}
-	return "AccountDetailed error"
+
 }
 
 func LoginAccount(username string, password string) {
-	var status LoginStatus
-	result, CookieArray := request.POST("sessions",
-		fmt.Sprintf(`{"username":"%s", "password": "%s"}`, username, password),
-	)
-	if err := json.Unmarshal(result, &status); err != nil {
-		panic(err)
-	}
+	CookieArray, status := src.Post_login_by_account(username, password)
 	if status.Status.HTTPCode == 200 {
 		cfg.Load()
 		CookieMap := make(map[string]string)
