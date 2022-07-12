@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"os"
 	"sf/src"
-	"sf/src/boluobao"
 	"sf/src/config"
 	"sf/src/threading"
 	"strconv"
@@ -55,7 +54,6 @@ func downloadBook(input any) {
 
 func main() {
 	config.NewMyJsonPro()
-	boluobao.Get_search_detailed_by_keyword("转生就超神")
 	if len(os.Args) >= 2 {
 		inputs := os.Args[1:]
 		switch {
