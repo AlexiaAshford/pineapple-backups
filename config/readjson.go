@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 	"io/ioutil"
 	"os"
@@ -19,7 +20,7 @@ type MyJsonPro struct {
 	UserAgent     string
 	CatToken      string
 	Account       string
-	Cookie        map[string]string
+	Cookie        string
 }
 
 var Var = MyJsonPro{}
@@ -27,10 +28,8 @@ var Var = MyJsonPro{}
 func NewMyJsonPro() {
 	if !CheckFileExist("config.json") {
 		Var.SaveFile = "save"
-		Var.ConfigFile = "config"
+		Var.ConfigFile = "cache"
 		Var.DeviceToken = uuid.New().String()
-		Var.Authorization = "Basic YXBpdXNlcjozcyMxLXl0NmUqQWN2QHFlcg=="
-		Var.UserAgent = "boluobao/4.8.66(iOS;15.4.1)/appStore/" + Var.DeviceToken
 		SaveJson()
 	}
 	Load()
@@ -53,19 +52,19 @@ func Load() {
 	defer FileLock.Unlock()
 	if data, err := ioutil.ReadFile("config.json"); err == nil {
 		if ok := json.Unmarshal(data, &Var); ok != nil {
-			println("Load:", ok)
+			fmt.Println("Load:", ok)
 		}
 	} else {
-		println("Load:", err)
+		fmt.Println("Load:", err)
 	}
 }
 
 func SaveJson() {
 	if save, ok := json.MarshalIndent(Var, "", "    "); ok == nil {
 		if err := ioutil.WriteFile("config.json", save, 0777); err != nil {
-			println("SaveJson:", err)
+			fmt.Println("SaveJson:", err)
 		}
 	} else {
-		println("SaveJson:", ok)
+		fmt.Println("SaveJson:", ok)
 	}
 }
