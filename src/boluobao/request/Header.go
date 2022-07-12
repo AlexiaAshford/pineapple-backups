@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"sf/config"
+	"sf/src/config"
 )
 
 var client = &http.Client{}

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"sf/config"
 	"sf/src"
+	"sf/src/config"
 	"sf/src/threading"
 	"strconv"
 )
