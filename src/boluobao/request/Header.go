@@ -25,7 +25,6 @@ func SetHeaders(req *http.Request) {
 		Header["Authorization"] = config.Var.Authorization
 		Header["account-go"] = config.Var.UserName + "&" + config.Var.Password
 	}
-	fmt.Println(Header)
 	for k, v := range Header {
 		req.Header.Set(k, v)
 	}
