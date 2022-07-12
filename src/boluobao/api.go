@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	req "sf/src/boluobao/request"
 	structs2 "sf/src/sfacg_structs"
 )
@@ -48,6 +49,19 @@ func Get_content_detailed_by_cid(cid string) structs2.Content {
 		fmt.Println("Error:", err)
 		return structs2.Content{}
 	}
+}
+
+func Get_search_detailed_by_keyword(keyword string) structs2.Search {
+	var SearchData structs2.Search
+	keywordParams := url.QueryEscape(keyword) + "&size=20&page=0&expand="
+	response := req.Get(fmt.Sprintf("search/novels/result?q=%v", keywordParams))
+	if err := json.Unmarshal(response, &SearchData); err == nil {
+		return SearchData // return result of search
+	} else {
+		fmt.Println("Error:", err)
+		return structs2.Search{} // return empty struct if error
+	}
+
 }
 
 func Post_login_by_account(username, password string) ([]*http.Cookie, structs2.Login) {

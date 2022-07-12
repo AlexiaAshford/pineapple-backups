@@ -40,3 +40,26 @@ func GetBookDetailed(bookId string) Books {
 		}
 	}
 }
+
+func GetSearchDetailed(keyword string) []Books {
+	var searchList []Books
+	response := boluobao.Get_search_detailed_by_keyword(keyword)
+	if response.Status.HTTPCode != 200 || len(response.Data.Novels) == 0 {
+		panic(keyword + "is not a valid book number！")
+	}
+	fmt.Println("search result length:", len(response.Data.Novels))
+	for index, bookInfo := range response.Data.Novels {
+		fmt.Println("Index:", index, "\t\t\tBookName:", bookInfo.NovelName)
+		searchList = append(searchList, Books{
+			NovelName:  cfg.RegexpName(bookInfo.NovelName),
+			NovelID:    strconv.Itoa(bookInfo.NovelID),
+			IsFinish:   bookInfo.IsFinish,
+			MarkCount:  bookInfo.MarkCount,
+			NovelCover: bookInfo.NovelCover,
+			AuthorName: bookInfo.AuthorName,
+			CharCount:  bookInfo.CharCount,
+			SignStatus: bookInfo.SignStatus,
+		})
+	}
+	return searchList
+}

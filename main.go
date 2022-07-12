@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"sf/src"
+	"sf/src/boluobao"
 	"sf/src/config"
 	"sf/src/threading"
 	"strconv"
@@ -54,6 +55,7 @@ func downloadBook(input any) {
 
 func main() {
 	config.NewMyJsonPro()
+	boluobao.Get_search_detailed_by_keyword("转生就超神")
 	if len(os.Args) >= 2 {
 		inputs := os.Args[1:]
 		switch {
@@ -61,13 +63,29 @@ func main() {
 			if len(inputs) >= 3 {
 				src.LoginAccount(inputs[1], inputs[2])
 			} else {
-				fmt.Println("parameters are not enough")
+				fmt.Println("parameters are not enough, please input username and password")
+			}
+		case inputs[0] == "s", inputs[0] == "search":
+			if len(inputs) >= 2 {
+				result := src.GetSearchDetailed(inputs[1])
+				var input int
+				fmt.Printf("please input the index of the book you want to download:")
+				if _, err := fmt.Scanln(&input); err == nil {
+					if input < len(result) {
+						downloadBook(result[input].NovelID)
+					} else {
+						fmt.Println("index out of range, please input again")
+					}
+				}
+
+			} else {
+				fmt.Println("parameters are not enough, please input keyword")
 			}
 		case inputs[0] == "d", inputs[0] == "download":
 			if len(inputs) >= 2 {
 				downloadBook(inputs[1])
 			} else {
-				fmt.Println("parameters are not enough")
+				fmt.Println("parameters are not enough, please input book id")
 			}
 		}
 	} else {
