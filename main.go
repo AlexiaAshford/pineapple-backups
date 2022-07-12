@@ -30,7 +30,6 @@ func downloadBook(input any) {
 			[]byte(BookData.NovelName), 0777); err != nil {
 			fmt.Printf("Error: %v\n", err)
 		}
-		config.NewFile(fmt.Sprintf("cache/%v.json", BookData.NovelName))
 		src.GetCatalogue(BookData)
 	} else if bookList != nil && len(bookList) > 0 {
 
@@ -45,7 +44,6 @@ func downloadBook(input any) {
 					[]byte(BookData.NovelName), 0777); err != nil {
 					fmt.Printf("Error: %v\n", err)
 				}
-				config.NewFile(fmt.Sprintf("cache/%v.json", BookData.NovelName))
 				src.GetCatalogue(BookData)
 			}(bookId, ThreadLocks)
 		}
