@@ -9,10 +9,10 @@ import (
 
 var client = &http.Client{}
 
-func SetHeaders(req *http.Request) {
+func SetHeaders(req *http.Request, TestCookie bool) {
 	config.Load()
 	Header := make(map[string]string)
-	if config.Var.Cookie == "" {
+	if config.Var.Cookie == "" && TestCookie {
 		fmt.Println("Cookie is empty, please login first!")
 		os.Exit(1)
 	} else {

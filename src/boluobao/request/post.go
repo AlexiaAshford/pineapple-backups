@@ -12,7 +12,7 @@ func POST(url, dataJson string) ([]byte, []*http.Cookie) {
 	if request, err := http.NewRequest("POST", api, bytes.NewBuffer([]byte(dataJson))); err != nil {
 		fmt.Println("NewRequest post error:", err)
 	} else {
-		SetHeaders(request)
+		SetHeaders(request, false)
 		if response, ok := client.Do(request); ok == nil {
 			if body, bodyError := ioutil.ReadAll(response.Body); bodyError == nil {
 				return body, response.Cookies()
