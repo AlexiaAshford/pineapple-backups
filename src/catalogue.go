@@ -28,9 +28,8 @@ func GetCatalogue(BookData Books) {
 				orderList = append(orderList, strconv.Itoa(Chapter.ChapID))
 				continue
 			}
-			if !TestInit(BookData.NovelName).In(ChapId) {
-				GetContent(len(data.ChapterList), BookData.NovelName, ChapId)
-			}
+			GetContent(len(data.ChapterList), BookData.NovelName, ChapId)
+
 		}
 	}
 
