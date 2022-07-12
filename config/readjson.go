@@ -3,7 +3,6 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"io/ioutil"
 	"os"
 	"sync"
@@ -29,7 +28,6 @@ func NewMyJsonPro() {
 	if !CheckFileExist("config.json") {
 		Var.SaveFile = "save"
 		Var.ConfigFile = "cache"
-		Var.DeviceToken = uuid.New().String()
 		SaveJson()
 	}
 	Load()
