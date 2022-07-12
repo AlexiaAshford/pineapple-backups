@@ -59,13 +59,13 @@ func main() {
 	if len(os.Args) >= 2 {
 		inputs := os.Args[1:]
 		switch {
-		case inputs[0] == "l", inputs[0] == "login":
+		case inputs[0] == "login":
 			if len(inputs) >= 3 {
 				src.LoginAccount(inputs[1], inputs[2])
 			} else {
 				fmt.Println("parameters are not enough, please input username and password")
 			}
-		case inputs[0] == "s", inputs[0] == "search":
+		case inputs[0] == "search":
 			if len(inputs) >= 2 {
 				result := src.GetSearchDetailed(inputs[1])
 				var input int
@@ -81,7 +81,7 @@ func main() {
 			} else {
 				fmt.Println("parameters are not enough, please input keyword")
 			}
-		case inputs[0] == "d", inputs[0] == "download":
+		case inputs[0] == "download":
 			if len(inputs) >= 2 {
 				downloadBook(inputs[1])
 			} else {
