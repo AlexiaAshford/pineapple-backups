@@ -4,10 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"path"
-	"sf/config"
-	"sf/src/sfacg_structs"
-	"strconv"
 )
 
 type ChapterJson struct {
@@ -40,28 +36,4 @@ func (is *TestChapterConfig) In(ChapID string) bool {
 		}
 	}
 	return false
-}
-func (is *TestChapterConfig) merge(VolumeList []sfacg_structs.VolumeList) {
-	for _, data := range VolumeList {
-		fmt.Println(data.Title, "merge complete")
-		for _, Chapter := range data.ChapterList {
-			for _, info := range is.ChapterInfo {
-				if info.ID == strconv.Itoa(Chapter.ChapID) {
-					content := "\n\n\n" + info.Title + "\n" + info.Content
-					config.Writes(path.Join("save", is.BookName+".txt"), content)
-				}
-			}
-		}
-	}
-}
-
-func (is *TestChapterConfig) SaveContent() {
-	if save, ok := json.MarshalIndent(is.ChapterInfo, "", "    "); ok == nil {
-		if err := ioutil.WriteFile("./config/"+is.BookName+".json", save, 0777); err != nil {
-			fmt.Println(err)
-		}
-	} else {
-		fmt.Println("SaveContent", ok)
-	}
-
 }
