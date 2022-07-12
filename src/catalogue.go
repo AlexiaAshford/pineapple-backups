@@ -23,19 +23,18 @@ func GetCatalogue(BookData Books) {
 	for _, data := range response.Data.VolumeList {
 		fmt.Println("start download volume: ", data.Title)
 		for _, Chapter := range data.ChapterList {
-			ChapId := strconv.Itoa(Chapter.ChapID)
 			if Chapter.OriginNeedFireMoney > 0 {
 				orderList = append(orderList, strconv.Itoa(Chapter.ChapID))
 				continue
+			} else {
+				GetContent(len(data.ChapterList), BookData.NovelName, strconv.Itoa(Chapter.ChapID))
 			}
-			GetContent(len(data.ChapterList), BookData.NovelName, ChapId)
 
 		}
 	}
 	if len(orderList) != 0 {
-		fmt.Println(len(orderList), "is no need to download")
+		fmt.Println(len(orderList), "is no need to download fire money")
 	}
-
 	fmt.Println("NovelName:", BookData.NovelName, "download complete!")
 }
 
