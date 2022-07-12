@@ -1,6 +1,7 @@
 package src
 
 import (
+	"fmt"
 	"sf/src/boluobao"
 	cfg "sf/src/config"
 	"strconv"
@@ -22,6 +23,11 @@ func GetBookDetailed(bookId string) Books {
 	if response.Status.HTTPCode != 200 || response.Data.NovelName == "" {
 		panic(bookId + "is not a valid book number！")
 	} else {
+		fmt.Println("BookName:", response.Data.NovelName)
+		fmt.Println("BookID:", response.Data.NovelID)
+		fmt.Println("AuthorName:", response.Data.AuthorName)
+		fmt.Println("CharCount:", response.Data.CharCount)
+		fmt.Println("MarkCount:", response.Data.MarkCount)
 		return Books{
 			NovelName:  cfg.RegexpName(response.Data.NovelName),
 			NovelID:    strconv.Itoa(response.Data.NovelID),
