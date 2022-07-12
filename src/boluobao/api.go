@@ -52,12 +52,12 @@ func Get_content_detailed_by_cid(cid string) structs2.Content {
 
 func Post_login_by_account(username, password string) ([]*http.Cookie, structs2.Login) {
 	var LoginData structs2.Login
-	result, CookieArray := req.POST("sessions",
+	result, Cookie := req.POST("sessions",
 		fmt.Sprintf(`{"username":"%s", "password": "%s"}`, username, password),
 	)
 	if err := json.Unmarshal(result, &LoginData); err != nil {
 		panic(err)
 	} else {
-		return CookieArray, LoginData
+		return Cookie, LoginData
 	}
 }
