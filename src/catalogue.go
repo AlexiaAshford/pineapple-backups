@@ -32,7 +32,6 @@ func GetCatalogue(BookData Books) {
 
 		}
 	}
-
 	if len(orderList) != 0 {
 		fmt.Println(len(orderList), "is no need to download")
 	}
@@ -49,19 +48,21 @@ func GetContent(ChapterLength int, NovelName, cid string) {
 		} else {
 			fmt.Println(response.Status.Msg)
 		}
-	}
-	f, err := os.OpenFile(config.Var.SaveFile+"/"+NovelName+".txt", os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer func(f *os.File) {
-		err = f.Close()
-		if err != nil {
+	} else {
+		if f, err := os.OpenFile(config.Var.SaveFile+"/"+NovelName+".txt",
+			os.O_WRONLY|os.O_APPEND, 0666); err == nil {
+			defer func(f *os.File) {
+				err = f.Close()
+				if err != nil {
+					fmt.Println(err)
+				}
+			}(f)
+			if _, ok := f.WriteString("\n\n\n" + response.Data.Title + response.Data.Expand.Content); ok != nil {
+				fmt.Println(ok)
+			}
+		} else {
 			fmt.Println(err)
 		}
-	}(f)
-	if _, ok := f.WriteString(response.Data.Title + response.Data.Expand.Content); ok != nil {
-		fmt.Println(ok)
 	}
 	fmt.Printf(
 		"download Volume No:%d: %s : %d/%d  %v\r",
