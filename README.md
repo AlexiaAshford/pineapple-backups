@@ -7,7 +7,7 @@
 - #### `search <keyword>` search books by keyword 
 
 - #### Example
-  - ``` download 100003327 ```
+  - ``` download https://m.sfacg.com/b/556321/ ```
   - ``` login account password ```
   - ``` search keyword ```
 
