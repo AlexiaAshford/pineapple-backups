@@ -66,12 +66,16 @@ func init() {
 	config.NewMyJsonPro()
 	if len(os.Args) <= 1 {
 		fmt.Println("please input parameters, like: sf login username password")
+		fmt.Println("or: sf search keyword")
+		fmt.Println("or: sf download bookid")
+		fmt.Println("or: sf url url")
+
 		os.Exit(1)
 	} else {
 		fmt.Println("sf start to work, please wait...")
 	}
-
 }
+
 func main() {
 	inputs := os.Args[1:]
 	switch {
