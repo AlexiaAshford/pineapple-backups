@@ -1,4 +1,4 @@
-# **sfacg-backups**
+# **pineapple novel-backups**
 
 ## usage
 
