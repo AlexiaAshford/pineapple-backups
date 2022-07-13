@@ -67,6 +67,8 @@ func init() {
 	if len(os.Args) <= 1 {
 		fmt.Println("please input parameters, like: sf login username password")
 		os.Exit(1)
+	} else {
+		fmt.Println("sf start to work, please wait...")
 	}
 
 }
