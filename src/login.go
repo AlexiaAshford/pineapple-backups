@@ -7,7 +7,7 @@ import (
 )
 
 func AccountDetailed() string {
-	response := boluobao.Get_account_detailed_by_api()
+	response := boluobao.GetAccountDetailedByApi()
 	if response.Status.HTTPCode == 200 {
 		return fmt.Sprintf("AccountName:%v", response.Data.NickName)
 	} else {
@@ -18,7 +18,7 @@ func AccountDetailed() string {
 }
 
 func LoginAccount(username string, password string) {
-	CookieArray, status := boluobao.Post_login_by_account(username, password)
+	CookieArray, status := boluobao.PostLoginByAccount(username, password)
 	if status.Status.HTTPCode == 200 {
 		cfg.Var.Cookie = ""
 		for _, cookie := range CookieArray {

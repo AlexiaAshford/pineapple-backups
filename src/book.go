@@ -19,7 +19,7 @@ type Books struct {
 }
 
 func GetBookDetailed(bookId string) Books {
-	response := boluobao.Get_book_detailed_by_id(bookId)
+	response := boluobao.GetBookDetailedById(bookId)
 	if response.Status.HTTPCode != 200 || response.Data.NovelName == "" {
 		panic(bookId + "is not a valid book number！")
 	} else {
@@ -43,7 +43,7 @@ func GetBookDetailed(bookId string) Books {
 
 func GetSearchDetailed(keyword string) []Books {
 	var searchList []Books
-	response := boluobao.Get_search_detailed_by_keyword(keyword)
+	response := boluobao.GetSearchDetailedByKeyword(keyword)
 	if response.Status.HTTPCode != 200 || len(response.Data.Novels) == 0 {
 		panic(keyword + "is not a valid book number！")
 	}
