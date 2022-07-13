@@ -3,11 +3,13 @@
 ## usage
 
 - #### `login <account> <password>` login your account and save cookies 
-- #### `download <bid> | <url>` download book text and images
+- #### `download <bid>` input the book id and download the book
+- #### `url <url>` input url and download book text
 - #### `search <keyword>` search books by keyword 
 
 - #### Example
   - ``` download bookid ```
+  - ``` url bookid ```
   - ``` login account password ```
   - ``` search keyword ```
 

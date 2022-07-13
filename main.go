@@ -4,11 +4,21 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"sf/src"
 	"sf/src/config"
 	"sf/src/threading"
 	"strconv"
 )
+
+func getBookID(url string) string {
+	bookID := regexp.MustCompile(`(\d+)`).FindStringSubmatch(url)
+	if len(bookID) > 1 {
+		return bookID[1]
+	} else {
+		return ""
+	}
+}
 
 func downloadBook(input any) {
 	var (
@@ -88,6 +98,17 @@ func main() {
 	case inputs[0] == "download":
 		if len(inputs) >= 2 {
 			downloadBook(inputs[1])
+		} else {
+			fmt.Println("parameters are not enough, please input book id")
+		}
+	case inputs[0] == "url":
+		if len(inputs) >= 2 {
+			BookID := getBookID(inputs[1])
+			if BookID != "" {
+				downloadBook(BookID)
+			} else {
+				fmt.Println("parameters are not enough, please input url")
+			}
 		} else {
 			fmt.Println("parameters are not enough, please input book id")
 		}
