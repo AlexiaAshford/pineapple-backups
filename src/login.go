@@ -17,11 +17,11 @@ func AccountDetailed() string {
 }
 
 func LoginAccount(username string, password string) {
-	CookieArray, status := boluobao.PostLoginByAccount(username, password)
-	if status.Status.HTTPCode == 200 {
+	LoginData := boluobao.PostLoginByAccount(username, password)
+	if LoginData.Status.HTTPCode == 200 {
 		cfg.Load()
 		cfg.Var.Cookie = ""
-		for _, cookie := range CookieArray {
+		for _, cookie := range LoginData.Cookie {
 			cfg.Var.Cookie += cookie.Name + "=" + cookie.Value + ";"
 		}
 		cfg.Var.UserName, cfg.Var.Password = username, password
@@ -30,9 +30,9 @@ func LoginAccount(username string, password string) {
 			fmt.Println("Login failed, login again")
 			LoginAccount(username, password)
 		} else {
-			fmt.Println(AccountDetailed(), "\tLogin successful!")
+			fmt.Println("Login successful!\t", AccountDetailed())
 		}
 	} else {
-		fmt.Println("Login failed:", status.Status.Msg)
+		fmt.Println("Login failed:", LoginData.Status.Msg)
 	}
 }

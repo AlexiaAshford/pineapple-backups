@@ -25,6 +25,8 @@ func GetCatalogue(BookData Books) {
 		for _, Chapter := range data.ChapterList {
 			if Chapter.OriginNeedFireMoney == 0 {
 				GetContent(len(data.ChapterList), BookData, strconv.Itoa(Chapter.ChapID))
+			} else {
+				fmt.Println("this chapter is VIP and need fire money, skip it")
 			}
 		}
 	}

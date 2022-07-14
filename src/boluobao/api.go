@@ -3,7 +3,6 @@ package boluobao
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
 	req "sf/src/boluobao/request"
 	structs2 "sf/src/sfacg_structs"
@@ -64,13 +63,15 @@ func GetSearchDetailedByKeyword(keyword string) structs2.Search {
 
 }
 
-func PostLoginByAccount(username, password string) ([]*http.Cookie, structs2.Login) {
+func PostLoginByAccount(username, password string) structs2.Login {
 	var LoginData structs2.Login
 	result, Cookie := req.POST("sessions",
 		fmt.Sprintf(`{"username":"%s", "password": "%s"}`, username, password),
 	)
 	if err := json.Unmarshal(result, &LoginData); err != nil {
 		fmt.Println(err)
+		return structs2.Login{}
 	}
-	return Cookie, LoginData
+	LoginData.Cookie = Cookie
+	return LoginData
 }

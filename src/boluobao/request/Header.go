@@ -21,9 +21,9 @@ func SetHeaders(req *http.Request, TestCookie bool) {
 	Header["sf-minip-info"] = "minip_novel/1.0.70(android;11)/wxmp"
 	Header["Content-Type"] = "application/json"
 	if config.Var.UserName != "" || config.Var.Password != "" {
-		Header["test-go"] = "cookie:" + config.Var.Cookie
-		Header["Authorization"] = config.Var.Authorization
-		Header["account-go"] = config.Var.UserName + "&" + config.Var.Password
+		Header["test-sfacg"] = "cookie:" + config.Var.Cookie
+		Header["Authorization"] = config.Var.Authorization + config.Var.UserName + "&" + config.Var.Password
+		Header["account-sfacg"] = config.Var.UserName + "&" + config.Var.Password
 	}
 	for k, v := range Header {
 		req.Header.Set(k, v)
