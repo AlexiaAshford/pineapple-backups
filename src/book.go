@@ -53,16 +53,18 @@ func GetSearchDetailed(keyword string) []Books {
 	fmt.Println("search result length:", len(response.Data.Novels))
 	for index, bookInfo := range response.Data.Novels {
 		fmt.Println("Index:", index, "\t\t\tBookName:", bookInfo.NovelName)
-		searchList = append(searchList, Books{
-			NovelName:  cfg.RegexpName(bookInfo.NovelName),
-			NovelID:    strconv.Itoa(bookInfo.NovelID),
-			IsFinish:   bookInfo.IsFinish,
-			MarkCount:  bookInfo.MarkCount,
-			NovelCover: bookInfo.NovelCover,
-			AuthorName: bookInfo.AuthorName,
-			CharCount:  bookInfo.CharCount,
-			SignStatus: bookInfo.SignStatus,
-		})
+		searchList = append(
+			searchList, Books{
+				NovelName:  cfg.RegexpName(bookInfo.NovelName),
+				NovelID:    strconv.Itoa(bookInfo.NovelID),
+				IsFinish:   bookInfo.IsFinish,
+				MarkCount:  bookInfo.MarkCount,
+				NovelCover: bookInfo.NovelCover,
+				AuthorName: bookInfo.AuthorName,
+				CharCount:  bookInfo.CharCount,
+				SignStatus: bookInfo.SignStatus,
+			},
+		)
 	}
 	return searchList
 }
