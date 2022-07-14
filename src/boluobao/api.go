@@ -10,7 +10,7 @@ import (
 
 func GetBookDetailedById(bookId string) structs2.BookInfo {
 	var BookData structs2.BookInfo
-	response := req.Get(fmt.Sprintf("novels/%v?expand=", bookId))
+	response := req.Get(fmt.Sprintf(BookDetailedById, bookId))
 	if err := json.Unmarshal(response, &BookData); err == nil {
 		return BookData
 	} else {
@@ -20,7 +20,7 @@ func GetBookDetailedById(bookId string) structs2.BookInfo {
 }
 func GetAccountDetailedByApi() structs2.Account {
 	var AccountData structs2.Account
-	if err := json.Unmarshal(req.Get("user"), &AccountData); err == nil {
+	if err := json.Unmarshal(req.Get(AccountDetailedByApi), &AccountData); err == nil {
 		return AccountData
 	} else {
 		fmt.Println("Error:", err)
@@ -30,7 +30,7 @@ func GetAccountDetailedByApi() structs2.Account {
 
 func GetCatalogueDetailedById(NovelID string) structs2.Catalogue {
 	var CatalogueData structs2.Catalogue
-	response := req.Get("novels/" + NovelID + "/dirs?expand=originNeedFireMoney")
+	response := req.Get(fmt.Sprintf(CatalogueDetailedById, NovelID))
 	if err := json.Unmarshal(response, &CatalogueData); err == nil {
 		return CatalogueData
 	} else {
@@ -41,7 +41,7 @@ func GetCatalogueDetailedById(NovelID string) structs2.Catalogue {
 
 func GetContentDetailedByCid(cid string) structs2.Content {
 	var ContentData structs2.Content
-	response := req.Get(fmt.Sprintf("Chaps/%v?expand=content&autoOrder=true", cid))
+	response := req.Get(fmt.Sprintf(ContentDetailedByCid, cid))
 	if err := json.Unmarshal(response, &ContentData); err == nil {
 		return ContentData
 	} else {
@@ -52,8 +52,7 @@ func GetContentDetailedByCid(cid string) structs2.Content {
 
 func GetSearchDetailedByKeyword(keyword string) structs2.Search {
 	var SearchData structs2.Search
-	keywordParams := url.QueryEscape(keyword) + "&size=20&page=0&expand="
-	response := req.Get(fmt.Sprintf("search/novels/result?q=%v", keywordParams))
+	response := req.Get(fmt.Sprintf(SearchDetailedByKeyword, url.QueryEscape(keyword)))
 	if err := json.Unmarshal(response, &SearchData); err == nil {
 		return SearchData // return result of search
 	} else {
@@ -65,7 +64,7 @@ func GetSearchDetailedByKeyword(keyword string) structs2.Search {
 
 func PostLoginByAccount(username, password string) structs2.Login {
 	var LoginData structs2.Login
-	result, Cookie := req.POST("sessions",
+	result, Cookie := req.POST(LoginByAccount,
 		fmt.Sprintf(`{"username":"%s", "password": "%s"}`, username, password),
 	)
 	if err := json.Unmarshal(result, &LoginData); err != nil {
