@@ -69,10 +69,17 @@ func init() {
 		fmt.Println("or: sf search keyword")
 		fmt.Println("or: sf download bookid")
 		fmt.Println("or: sf url url")
-
 		os.Exit(1)
 	} else {
-		fmt.Println("sf start to work, please wait...")
+		if config.Var.Sfacg.Cookie != "" {
+			if src.AccountDetailed() != "需要登录才能访问该资源" {
+				fmt.Println("account is Valid，start to sf start to work, please wait...")
+			} else {
+				fmt.Println("account is Invalid，please login first")
+			}
+		} else {
+			fmt.Println("account is Invalid，please login first")
+		}
 	}
 }
 

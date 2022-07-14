@@ -9,17 +9,20 @@ import (
 )
 
 type MyJsonPro struct {
-	ConfigFile    string
-	SaveFile      string
-	UserName      string
-	Password      string
-	authKey       string
-	Authorization string
-	DeviceToken   string
-	UserAgent     string
-	CatToken      string
-	Account       string
-	Cookie        string
+	ConfigFile string `json:"ConfigFile"`
+	SaveFile   string `json:"SaveFile"`
+	Sfacg      struct {
+		UserName string `json:"UserName"`
+		Password string `json:"Password"`
+		Cookie   string `json:"Cookie"`
+	} `json:"sfacg"`
+	Cat struct {
+		UserName  string `json:"UserName"`
+		Password  string `json:"Password"`
+		Token     string `json:"Token"`
+		Account   string `json:"Account"`
+		UserAgent string `json:"UserAgent"`
+	} `json:"cat"`
 }
 
 var Var = MyJsonPro{}

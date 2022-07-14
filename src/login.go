@@ -2,6 +2,7 @@ package src
 
 import (
 	"fmt"
+	"os"
 	"sf/src/boluobao"
 	cfg "sf/src/config"
 )
@@ -18,13 +19,14 @@ func AccountDetailed() string {
 
 func LoginAccount(username string, password string) {
 	LoginData := boluobao.PostLoginByAccount(username, password)
+	cfg.Var.Sfacg.Cookie = ""
 	if LoginData.Status.HTTPCode == 200 {
 		cfg.Load()
-		cfg.Var.Cookie = ""
+		cfg.Var.Sfacg.Cookie = ""
 		for _, cookie := range LoginData.Cookie {
-			cfg.Var.Cookie += cookie.Name + "=" + cookie.Value + ";"
+			cfg.Var.Sfacg.Cookie += cookie.Name + "=" + cookie.Value + ";"
 		}
-		cfg.Var.UserName, cfg.Var.Password = username, password
+		cfg.Var.Sfacg.UserName, cfg.Var.Sfacg.Password = username, password
 		cfg.SaveJson()
 		if AccountDetailed() == "需要登录才能访问该资源" {
 			fmt.Println("Login failed, login again")
@@ -34,5 +36,6 @@ func LoginAccount(username string, password string) {
 		}
 	} else {
 		fmt.Println("Login failed:", LoginData.Status.Msg)
+		os.Exit(1)
 	}
 }
