@@ -23,7 +23,7 @@ type Books struct {
 func GetBookDetailed(bookId string) (Books, error) {
 	response := boluobao.GetBookDetailedById(bookId)
 	if response.Status.HTTPCode != 200 || response.Data.NovelName == "" {
-		return Books{}, errors.New(bookId + "is not a valid book number！")
+		return Books{}, errors.New(bookId + " is not a valid book number！")
 	} else {
 		fmt.Println("BookName:", response.Data.NovelName)
 		fmt.Println("BookID:", response.Data.NovelID)

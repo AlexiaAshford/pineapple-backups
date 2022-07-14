@@ -2,6 +2,8 @@ package src
 
 import (
 	"fmt"
+	"github.com/schollz/progressbar"
+	"math/rand"
 	"os"
 	"sf/src/boluobao"
 	"sf/src/config"
@@ -22,9 +24,10 @@ func GetCatalogue(BookData Books) bool {
 	response := boluobao.GetCatalogueDetailedById(BookData.NovelID)
 	for _, data := range response.Data.VolumeList {
 		fmt.Println("start download volume: ", data.Title)
+		bar := progressbar.New(len(data.ChapterList))
 		for _, Chapter := range data.ChapterList {
 			if Chapter.OriginNeedFireMoney == 0 {
-				GetContent(len(data.ChapterList), BookData, strconv.Itoa(Chapter.ChapID))
+				GetContent(len(data.ChapterList), BookData, strconv.Itoa(Chapter.ChapID), bar)
 			} else {
 				fmt.Println("this chapter is VIP and need fire money, skip it")
 			}
@@ -33,16 +36,20 @@ func GetCatalogue(BookData Books) bool {
 	return true
 }
 
-func GetContent(ChapterLength int, BookData Books, cid string) {
-	const Second time.Duration = 3
-	time.Sleep(time.Second * Second)
-	response := boluobao.GetContentDetailedByCid(cid)
+func GetContent(ChapLength int, BookData Books, ChapterId string, bar *progressbar.ProgressBar) {
+	if err := bar.Add(1); err != nil {
+		fmt.Println(err)
+	} else {
+		time.Sleep(time.Second * time.Duration(rand.Intn(5)))
+	}
+	response := boluobao.GetContentDetailedByCid(ChapterId)
 	if response.Status.HTTPCode != 200 {
 		if response.Status.Msg == "接口校验失败,请尽快把APP升级到最新版哦~" {
 			fmt.Println(response.Status.Msg)
 			os.Exit(0)
 		} else {
 			fmt.Println(response.Status.Msg)
+			GetContent(ChapLength, BookData, ChapterId, bar)
 		}
 	} else {
 		if f, err := os.OpenFile(config.Var.SaveFile+"/"+BookData.NovelName+".txt",
@@ -63,5 +70,5 @@ func GetContent(ChapterLength int, BookData Books, cid string) {
 			fmt.Println(err)
 		}
 	}
-	fmt.Printf(" %d/%d \r", response.Data.ChapOrder, ChapterLength)
+	//fmt.Printf(" %d/%d \r", response.Data.ChapOrder, ChapLength)
 }
