@@ -17,8 +17,6 @@ type MyJsonPro struct {
 		Cookie   string `json:"Cookie"`
 	} `json:"sfacg"`
 	Cat struct {
-		UserName  string `json:"UserName"`
-		Password  string `json:"Password"`
 		Token     string `json:"Token"`
 		Account   string `json:"Account"`
 		UserAgent string `json:"UserAgent"`
