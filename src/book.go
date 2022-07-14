@@ -2,6 +2,7 @@ package src
 
 import (
 	"fmt"
+	"os"
 	"sf/src/boluobao"
 	cfg "sf/src/config"
 	"strconv"
@@ -21,31 +22,33 @@ type Books struct {
 func GetBookDetailed(bookId string) Books {
 	response := boluobao.GetBookDetailedById(bookId)
 	if response.Status.HTTPCode != 200 || response.Data.NovelName == "" {
-		panic(bookId + "is not a valid book number！")
-	} else {
-		fmt.Println("BookName:", response.Data.NovelName)
-		fmt.Println("BookID:", response.Data.NovelID)
-		fmt.Println("AuthorName:", response.Data.AuthorName)
-		fmt.Println("CharCount:", response.Data.CharCount)
-		fmt.Println("MarkCount:", response.Data.MarkCount)
-		return Books{
-			NovelName:  cfg.RegexpName(response.Data.NovelName),
-			NovelID:    strconv.Itoa(response.Data.NovelID),
-			IsFinish:   response.Data.IsFinish,
-			MarkCount:  response.Data.MarkCount,
-			NovelCover: response.Data.NovelCover,
-			AuthorName: response.Data.AuthorName,
-			CharCount:  response.Data.CharCount,
-			SignStatus: response.Data.SignStatus,
-		}
+		fmt.Println(bookId + "is not a valid book number！")
+		os.Exit(0)
 	}
+	fmt.Println("BookName:", response.Data.NovelName)
+	fmt.Println("BookID:", response.Data.NovelID)
+	fmt.Println("AuthorName:", response.Data.AuthorName)
+	fmt.Println("CharCount:", response.Data.CharCount)
+	fmt.Println("MarkCount:", response.Data.MarkCount)
+	return Books{
+		NovelName:  cfg.RegexpName(response.Data.NovelName),
+		NovelID:    strconv.Itoa(response.Data.NovelID),
+		IsFinish:   response.Data.IsFinish,
+		MarkCount:  response.Data.MarkCount,
+		NovelCover: response.Data.NovelCover,
+		AuthorName: response.Data.AuthorName,
+		CharCount:  response.Data.CharCount,
+		SignStatus: response.Data.SignStatus,
+	}
+
 }
 
 func GetSearchDetailed(keyword string) []Books {
 	var searchList []Books
 	response := boluobao.GetSearchDetailedByKeyword(keyword)
 	if response.Status.HTTPCode != 200 || len(response.Data.Novels) == 0 {
-		panic(keyword + "is not a valid book number！")
+		fmt.Println(keyword + "is not a valid book number！")
+		os.Exit(0)
 	}
 	fmt.Println("search result length:", len(response.Data.Novels))
 	for index, bookInfo := range response.Data.Novels {

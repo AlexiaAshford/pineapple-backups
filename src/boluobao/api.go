@@ -70,8 +70,7 @@ func PostLoginByAccount(username, password string) ([]*http.Cookie, structs2.Log
 		fmt.Sprintf(`{"username":"%s", "password": "%s"}`, username, password),
 	)
 	if err := json.Unmarshal(result, &LoginData); err != nil {
-		panic(err)
-	} else {
-		return Cookie, LoginData
+		fmt.Println(err)
 	}
+	return Cookie, LoginData
 }

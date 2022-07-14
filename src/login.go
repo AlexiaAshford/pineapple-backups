@@ -11,7 +11,6 @@ func AccountDetailed() string {
 	if response.Status.HTTPCode == 200 {
 		return fmt.Sprintf("AccountName:%v", response.Data.NickName)
 	} else {
-		fmt.Println(response.Status.Msg)
 		return response.Status.Msg
 	}
 
@@ -20,13 +19,19 @@ func AccountDetailed() string {
 func LoginAccount(username string, password string) {
 	CookieArray, status := boluobao.PostLoginByAccount(username, password)
 	if status.Status.HTTPCode == 200 {
+		cfg.Load()
 		cfg.Var.Cookie = ""
 		for _, cookie := range CookieArray {
 			cfg.Var.Cookie += cookie.Name + "=" + cookie.Value + ";"
 		}
 		cfg.Var.UserName, cfg.Var.Password = username, password
 		cfg.SaveJson()
-		fmt.Println(AccountDetailed(), "\tLogin successful!")
+		if AccountDetailed() == "需要登录才能访问该资源" {
+			fmt.Println("Login failed, login again")
+			LoginAccount(username, password)
+		} else {
+			fmt.Println(AccountDetailed(), "\tLogin successful!")
+		}
 	} else {
 		fmt.Println("Login failed:", status.Status.Msg)
 	}
