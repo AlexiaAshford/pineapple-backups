@@ -38,7 +38,7 @@ func GetCatalogue(BookData Books) bool {
 
 func GetContent(ChapLength int, BookData Books, ChapterId string, bar *progressbar.ProgressBar) {
 	if err := bar.Add(1); err != nil {
-		fmt.Println(err)
+		fmt.Println("bar error:", err)
 	} else {
 		time.Sleep(time.Second * time.Duration(rand.Intn(5)))
 	}
@@ -70,5 +70,4 @@ func GetContent(ChapLength int, BookData Books, ChapterId string, bar *progressb
 			fmt.Println(err)
 		}
 	}
-	//fmt.Printf(" %d/%d \r", response.Data.ChapOrder, ChapLength)
 }
