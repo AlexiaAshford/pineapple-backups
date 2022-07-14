@@ -1,6 +1,7 @@
 package src
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"sf/src/boluobao"
@@ -19,17 +20,17 @@ type Books struct {
 	SignStatus string
 }
 
-func GetBookDetailed(bookId string) Books {
+func GetBookDetailed(bookId string) (Books, error) {
 	response := boluobao.GetBookDetailedById(bookId)
 	if response.Status.HTTPCode != 200 || response.Data.NovelName == "" {
-		fmt.Println(bookId + "is not a valid book number！")
-		os.Exit(0)
+		return Books{}, errors.New(bookId + "is not a valid book number！")
+	} else {
+		fmt.Println("BookName:", response.Data.NovelName)
+		fmt.Println("BookID:", response.Data.NovelID)
+		fmt.Println("AuthorName:", response.Data.AuthorName)
+		fmt.Println("CharCount:", response.Data.CharCount)
+		fmt.Println("MarkCount:", response.Data.MarkCount)
 	}
-	fmt.Println("BookName:", response.Data.NovelName)
-	fmt.Println("BookID:", response.Data.NovelID)
-	fmt.Println("AuthorName:", response.Data.AuthorName)
-	fmt.Println("CharCount:", response.Data.CharCount)
-	fmt.Println("MarkCount:", response.Data.MarkCount)
 	return Books{
 		NovelName:  cfg.RegexpName(response.Data.NovelName),
 		NovelID:    strconv.Itoa(response.Data.NovelID),
@@ -39,7 +40,7 @@ func GetBookDetailed(bookId string) Books {
 		AuthorName: response.Data.AuthorName,
 		CharCount:  response.Data.CharCount,
 		SignStatus: response.Data.SignStatus,
-	}
+	}, nil
 
 }
 
