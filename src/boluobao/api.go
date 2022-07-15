@@ -5,71 +5,71 @@ import (
 	"fmt"
 	"net/url"
 	req "sf/src/boluobao/request"
-	structs2 "sf/src/sfacg_structs"
+	"sf/structural/sfacg_structs"
 )
 
-func GetBookDetailedById(bookId string) structs2.BookInfo {
-	var BookData structs2.BookInfo
+func GetBookDetailedById(bookId string) sfacg_structs.BookInfo {
+	var BookData sfacg_structs.BookInfo
 	response := req.Get(fmt.Sprintf(BookDetailedById, bookId))
 	if err := json.Unmarshal(response, &BookData); err == nil {
 		return BookData
 	} else {
 		fmt.Println("Error:", err)
-		return structs2.BookInfo{}
+		return sfacg_structs.BookInfo{}
 	}
 }
-func GetAccountDetailedByApi() structs2.Account {
-	var AccountData structs2.Account
+func GetAccountDetailedByApi() sfacg_structs.Account {
+	var AccountData sfacg_structs.Account
 	if err := json.Unmarshal(req.Get(AccountDetailedByApi), &AccountData); err == nil {
 		return AccountData
 	} else {
 		fmt.Println("Error:", err)
-		return structs2.Account{}
+		return sfacg_structs.Account{}
 	}
 }
 
-func GetCatalogueDetailedById(NovelID string) structs2.Catalogue {
-	var CatalogueData structs2.Catalogue
+func GetCatalogueDetailedById(NovelID string) sfacg_structs.Catalogue {
+	var CatalogueData sfacg_structs.Catalogue
 	response := req.Get(fmt.Sprintf(CatalogueDetailedById, NovelID))
 	if err := json.Unmarshal(response, &CatalogueData); err == nil {
 		return CatalogueData
 	} else {
 		fmt.Println("Error:", err)
-		return structs2.Catalogue{}
+		return sfacg_structs.Catalogue{}
 	}
 }
 
-func GetContentDetailedByCid(cid string) structs2.Content {
-	var ContentData structs2.Content
+func GetContentDetailedByCid(cid string) sfacg_structs.Content {
+	var ContentData sfacg_structs.Content
 	response := req.Get(fmt.Sprintf(ContentDetailedByCid, cid))
 	if err := json.Unmarshal(response, &ContentData); err == nil {
 		return ContentData
 	} else {
 		fmt.Println("Error:", err)
-		return structs2.Content{}
+		return sfacg_structs.Content{}
 	}
 }
 
-func GetSearchDetailedByKeyword(keyword string) structs2.Search {
-	var SearchData structs2.Search
+func GetSearchDetailedByKeyword(keyword string) sfacg_structs.Search {
+	var SearchData sfacg_structs.Search
 	response := req.Get(fmt.Sprintf(SearchDetailedByKeyword, url.QueryEscape(keyword)))
 	if err := json.Unmarshal(response, &SearchData); err == nil {
 		return SearchData // return result of search
 	} else {
 		fmt.Println("Error:", err)
-		return structs2.Search{} // return empty struct if error
+		return sfacg_structs.Search{} // return empty struct if error
 	}
 
 }
 
-func PostLoginByAccount(username, password string) structs2.Login {
-	var LoginData structs2.Login
+func PostLoginByAccount(username, password string) sfacg_structs.Login {
+	var LoginData sfacg_structs.Login
 	result, Cookie := req.POST(LoginByAccount,
 		fmt.Sprintf(`{"username":"%s", "password": "%s"}`, username, password),
 	)
 	if err := json.Unmarshal(result, &LoginData); err != nil {
 		fmt.Println(err)
-		return structs2.Login{}
+		return sfacg_structs.Login{}
 	}
 	LoginData.Cookie = Cookie
 	return LoginData
