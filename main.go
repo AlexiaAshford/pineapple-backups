@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"regexp"
 	"sf/src"
@@ -20,45 +19,54 @@ func getBookID(url string) string {
 	}
 }
 
-func DownloadBookInit(inputs any) {
-	switch inputs.(type) {
-	case string:
-		if BookData, err := src.GetBookDetailed(inputs.(string)); err == nil {
-			fmt.Printf("开始下载:%s\n", BookData.NovelName)
-			if err = ioutil.WriteFile(fmt.Sprintf("save/%v.txt", BookData.NovelName),
-				[]byte(BookData.NovelName), 0777); err != nil {
-				fmt.Printf("Error: %v\n", err)
-			}
-			if src.GetCatalogue(BookData) {
-				fmt.Printf("NovelName:%vdownload complete!", BookData.NovelName)
+func BookInit(bookID string, Index int, Locks *threading.GoLimit) {
+	if Locks != nil {
+		defer Locks.Done() // finish this goroutine when this function return
+	}
+	if BookData, err := src.GetBookDetailed(bookID); err == nil { // get book data by book id
+		fmt.Printf("开始下载:%s\n", BookData.NovelName)
+		cachepath := fmt.Sprintf("save/%v.txt", BookData.NovelName)
+		if f, ok := os.OpenFile(cachepath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644); ok == nil {
+			if err != nil {
+				fmt.Println("file create failed. err: " + err.Error())
+			} else {
+				n, _ := f.Seek(0, 2)
+				if _, err = f.WriteAt([]byte(BookData.NovelName), n); err != nil {
+					defer func(f *os.File) {
+						if err = f.Close(); err != nil {
+							fmt.Println("file close failed. err: " + err.Error())
+						}
+					}(f)
+				}
 			}
 		} else {
-			fmt.Println("Error:", err)
+			fmt.Println("file create failed. err: " + ok.Error())
 		}
+		if src.GetCatalogue(BookData) {
+			if Index > 0 {
+				fmt.Printf("\nIndex:%v\t\tNovelName:%vdownload complete!", Index, BookData.NovelName)
+			} else {
+
+				fmt.Printf("\nNovelName:%vdownload complete!", BookData.NovelName)
+			}
+		}
+	} else {
+		fmt.Println("Error:", err)
+	}
+}
+
+func Books(inputs any) {
+	switch inputs.(type) {
+	case string:
+		BookInit(inputs.(string), 0, nil)
 	case []string:
 		Locks := threading.NewGoLimit(7)
 		for BookIndex, BookId := range inputs.([]string) {
 			Locks.Add()
-			go func(bookId string, t *threading.GoLimit, BookIndex int) {
-				fmt.Println(BookIndex)
-				defer Locks.Done() // finish this goroutine when this function return
-				if BookData, err := src.GetBookDetailed(bookId); err == nil {
-					fmt.Printf("开始下载:%s\n", BookData.NovelName)
-					if err = ioutil.WriteFile(fmt.Sprintf("save/%v.txt", BookData.NovelName),
-						[]byte(BookData.NovelName), 0777); err != nil {
-						fmt.Printf("Error: %v\n", err)
-					}
-					if src.GetCatalogue(BookData) {
-						fmt.Printf("Index:%v\t\tNovelName:%vdownload complete!", BookIndex, BookData.NovelName)
-					}
-				} else {
-					fmt.Println("Error:", err)
-				}
-			}(BookId, Locks, BookIndex)
+			BookInit(BookId, BookIndex, Locks)
 		}
 		Locks.WaitZero() // wait for all goroutines to finish
 	}
-
 }
 
 func init() {
@@ -110,7 +118,7 @@ func main() {
 		fmt.Printf("please input the index of the book you want to download:")
 		if _, err := fmt.Scanln(&input); err == nil {
 			if input < len(result) {
-				DownloadBookInit(result[input].NovelID)
+				Books(result[input].NovelID)
 			} else {
 				fmt.Println("index out of range, please input again")
 			}
@@ -129,7 +137,7 @@ func main() {
 		} else {
 			downloadId = bookId
 		}
-		DownloadBookInit(downloadId)
+		Books(downloadId)
 		os.Exit(0)
 	}
 }
