@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"os"
 	"sf/src/boluobao"
-	"sf/src/config"
+	"sf/src/configuration"
 	"strconv"
 	"time"
 )
@@ -51,7 +51,7 @@ func GetContent(ChapLength int, BookData Books, ChapterId string, bar *ProgressB
 			GetContent(ChapLength, BookData, ChapterId, bar)
 		}
 	} else {
-		if f, err := os.OpenFile(config.Var.SaveFile+"/"+BookData.NovelName+".txt",
+		if f, err := os.OpenFile(configuration.Var.SaveFile+"/"+BookData.NovelName+".txt",
 			os.O_WRONLY|os.O_APPEND, 0666); err == nil {
 			defer func(f *os.File) {
 				err = f.Close()

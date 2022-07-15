@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 	"sf/src/boluobao"
-	cfg "sf/src/config"
+	cfg "sf/src/configuration"
 	"strconv"
 )
 

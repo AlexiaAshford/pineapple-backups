@@ -6,25 +6,25 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"sf/src/config"
+	"sf/src/configuration"
 )
 
 var client = &http.Client{}
 
 func SetHeaders(req *http.Request, TestCookie bool) {
-	config.Load()
+	configuration.Load()
 	var encoded bytes.Buffer
 	HeaderCollection := make(map[string]string)
-	if config.Var.Sfacg.Cookie == "" && TestCookie == true {
+	if configuration.Var.Sfacg.Cookie == "" && TestCookie == true {
 		fmt.Println("Cookie is empty, please login first!")
 		os.Exit(1)
 	}
-	HeaderCollection["Cookie"] = config.Var.Sfacg.Cookie
+	HeaderCollection["Cookie"] = configuration.Var.Sfacg.Cookie
 	HeaderCollection["sf-minip-info"] = "minip_novel/1.0.70(android;11)/wxmp"
 	HeaderCollection["Content-Type"] = "application/json"
-	HeaderCollection["test-sfacg-cookie"] = "cookie:" + config.Var.Sfacg.Cookie
+	HeaderCollection["test-sfacg-cookie"] = "cookie:" + configuration.Var.Sfacg.Cookie
 	encoder := base64.NewEncoder(base64.StdEncoding, &encoded)
-	authentication := []byte(config.Var.Sfacg.UserName + "&" + config.Var.Sfacg.Password)
+	authentication := []byte(configuration.Var.Sfacg.UserName + "&" + configuration.Var.Sfacg.Password)
 	if _, err := encoder.Write(authentication); err == nil {
 		if err = encoder.Close(); err == nil {
 			HeaderCollection["Authorization"] = string(encoded.Bytes())
