@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"sf/configuration"
 	"sf/src"
-	"sf/src/configuration"
 	"sf/src/threading"
 )
 

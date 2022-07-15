@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"sf/configuration"
 	"sf/src/boluobao"
-	"sf/src/configuration"
 	"strconv"
 	"time"
 )
