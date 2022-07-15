@@ -2,7 +2,6 @@ package src
 
 import (
 	"fmt"
-	"github.com/schollz/progressbar"
 	"math/rand"
 	"os"
 	"sf/src/boluobao"
@@ -24,7 +23,7 @@ func GetCatalogue(BookData Books) bool {
 	response := boluobao.GetCatalogueDetailedById(BookData.NovelID)
 	for _, data := range response.Data.VolumeList {
 		fmt.Println("start download volume: ", data.Title)
-		bar := progressbar.New(len(data.ChapterList))
+		bar := New(len(data.ChapterList))
 		for _, Chapter := range data.ChapterList {
 			if Chapter.OriginNeedFireMoney == 0 {
 				GetContent(len(data.ChapterList), BookData, strconv.Itoa(Chapter.ChapID), bar)
@@ -36,7 +35,7 @@ func GetCatalogue(BookData Books) bool {
 	return true
 }
 
-func GetContent(ChapLength int, BookData Books, ChapterId string, bar *progressbar.ProgressBar) {
+func GetContent(ChapLength int, BookData Books, ChapterId string, bar *ProgressBar) {
 	if err := bar.Add(1); err != nil {
 		fmt.Println("bar error:", err)
 	} else {
