@@ -10,7 +10,7 @@ import (
 
 func GetBookDetailedById(bookId string) sfacg_structs.BookInfo {
 	var BookData sfacg_structs.BookInfo
-	response := req.Get(fmt.Sprintf(BookDetailedById, bookId))
+	response := req.Get(fmt.Sprintf(BookDetailedById, bookId), 0)
 	if err := json.Unmarshal(response, &BookData); err == nil {
 		return BookData
 	} else {
@@ -20,7 +20,7 @@ func GetBookDetailedById(bookId string) sfacg_structs.BookInfo {
 }
 func GetAccountDetailedByApi() sfacg_structs.Account {
 	var AccountData sfacg_structs.Account
-	if err := json.Unmarshal(req.Get(AccountDetailedByApi), &AccountData); err == nil {
+	if err := json.Unmarshal(req.Get(AccountDetailedByApi, 0), &AccountData); err == nil {
 		return AccountData
 	} else {
 		fmt.Println("Error:", err)
@@ -30,7 +30,7 @@ func GetAccountDetailedByApi() sfacg_structs.Account {
 
 func GetCatalogueDetailedById(NovelID string) sfacg_structs.Catalogue {
 	var CatalogueData sfacg_structs.Catalogue
-	response := req.Get(fmt.Sprintf(CatalogueDetailedById, NovelID))
+	response := req.Get(fmt.Sprintf(CatalogueDetailedById, NovelID), 0)
 	if err := json.Unmarshal(response, &CatalogueData); err == nil {
 		return CatalogueData
 	} else {
@@ -41,7 +41,7 @@ func GetCatalogueDetailedById(NovelID string) sfacg_structs.Catalogue {
 
 func GetContentDetailedByCid(cid string) sfacg_structs.Content {
 	var ContentData sfacg_structs.Content
-	response := req.Get(fmt.Sprintf(ContentDetailedByCid, cid))
+	response := req.Get(fmt.Sprintf(ContentDetailedByCid, cid), 0)
 	if err := json.Unmarshal(response, &ContentData); err == nil {
 		return ContentData
 	} else {
@@ -52,7 +52,7 @@ func GetContentDetailedByCid(cid string) sfacg_structs.Content {
 
 func GetSearchDetailedByKeyword(keyword string) sfacg_structs.Search {
 	var SearchData sfacg_structs.Search
-	response := req.Get(fmt.Sprintf(SearchDetailedByKeyword, url.QueryEscape(keyword)))
+	response := req.Get(fmt.Sprintf(SearchDetailedByKeyword, url.QueryEscape(keyword)), 0)
 	if err := json.Unmarshal(response, &SearchData); err == nil {
 		return SearchData // return result of search
 	} else {

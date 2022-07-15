@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 )
 
-func Get(url string) []byte {
+func Get(url string, Retry int) []byte {
 	api := fmt.Sprintf("https://minipapi.sfacg.com/pas/mpapi/%v", url)
 	if req, err := http.NewRequest("GET", api, nil); err == nil {
 		SetHeaders(req, true)
@@ -17,7 +18,12 @@ func Get(url string) []byte {
 				fmt.Println("Read Body Error:", ReadBody)
 			}
 		} else {
-			fmt.Println("Get error:", err)
+			if Retry >= 5 {
+				fmt.Println("Get error:", err)
+				os.Exit(1)
+			} else {
+				return Get(url, Retry+1)
+			}
 		}
 	}
 	return nil
