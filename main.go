@@ -25,7 +25,7 @@ func BookInit(bookID string, Index int, Locks *threading.GoLimit) {
 	}
 	if BookData, err := src.GetBookDetailed(bookID); err == nil { // get book data by book id
 		fmt.Printf("开始下载:%s\n", BookData.NovelName)
-		cachepath := fmt.Sprintf("save/%v.txt", BookData.NovelName)
+		cachepath := fmt.Sprintf("%v/%v.txt", config.Var.SaveFile, BookData.NovelName)
 		if f, ok := os.OpenFile(cachepath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644); ok == nil {
 			if err != nil {
 				fmt.Println("file create failed. err: " + err.Error())
