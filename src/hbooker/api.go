@@ -15,21 +15,6 @@ func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
 		return nil
 	}
 	return result.Data.DivisionList
-	//var chapterList []structs.ChapterList
-	//for index, division := range result.Data.DivisionList {
-	//	fmt.Println("index:", index, "\t\tdivision:", division.DivisionName)
-	//	catalogueInfo := GetCatalogueByDivisionId(division.DivisionID)
-	//	if catalogueInfo == nil {
-	//		for _, chapter := range catalogueInfo {
-	//			if chapter.IsValid == "1" {
-	//				chapterList = append(chapterList, chapter)
-	//			}
-	//		}
-	//	} else {
-	//		return nil
-	//	}
-	//}
-	//return chapterList
 }
 
 func GetCatalogueByDivisionId(DivisionId string) []structs.ChapterList {
@@ -52,8 +37,17 @@ func Login(account, password string) {
 		fmt.Println("Login failed!")
 	}
 }
-func maininit() {
+func maininit() []structs.ChapterList {
 	Login("", "")
-	GetCatalogueByDivisionId("")
-	GetDivisionIdByBookId("")
+	var chapterList []structs.ChapterList
+	for index, division := range GetDivisionIdByBookId("") {
+		fmt.Println("index:", index, "\t\tdivision:", division.DivisionName)
+		for _, chapter := range GetCatalogueByDivisionId(division.DivisionID) {
+			if chapter.IsValid == "1" {
+				chapterList = append(chapterList, chapter)
+			}
+		}
+	}
+	return chapterList
+
 }
