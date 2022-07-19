@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sf/cfg"
 	req "sf/src/hbooker/request"
+	"sf/src/hbooker/util"
 	structs "sf/structural/hbooker_structs"
 )
 
@@ -56,9 +57,30 @@ func Search(bookName string, page int) []structs.BookList {
 	return result.Data.BookList
 }
 
+func GetKeyByCid(chapterId string) string {
+	var result structs.KeyStruct
+	response := req.Get(ChapterKeyByCid+chapterId, 0)
+	if err := json.Unmarshal(response, &result); err != nil {
+		fmt.Println("json unmarshal error:", err)
+	}
+	return result.Data.Command
+}
+
+func GetContent(key, chapterId string) structs.ChapterInfo {
+	var result structs.ContentStruct
+	response := req.Get(fmt.Sprintf(ContentDetailedByCid, chapterId, GetKeyByCid(chapterId)), 0)
+	if err := json.Unmarshal(response, &result); err != nil {
+		fmt.Println("json unmarshal error:", err)
+	}
+	bytes := util.Decode(result.Data.ChapterInfo.TxtContent, key)
+	result.Data.ChapterInfo.TxtContent = bytes
+	return result.Data.ChapterInfo
+}
+
 func main() []structs.ChapterList {
 	Login("", "")
 	GetBookDetailById("")
+	GetKeyByCid("")
 	Search("", 0)
 	var chapterList []structs.ChapterList
 	for index, division := range GetDivisionIdByBookId("") {
