@@ -11,18 +11,18 @@ import (
 
 func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
 	var result structs.DivisionStruct
-	if err := json.Unmarshal(req.Get(DivisionIdByBookId+BookId, 0), &result); err != nil {
+	response := req.Get(DivisionIdByBookId+BookId, 0)
+	if err := json.Unmarshal(response, &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
-		return nil
 	}
 	return result.Data.DivisionList
 }
 
 func GetCatalogueByDivisionId(DivisionId string) []structs.ChapterList {
 	var result structs.ChapterStruct
-	if err := json.Unmarshal(req.Get(CatalogueDetailedByDivisionId+DivisionId, 0), &result); err != nil {
+	response := req.Get(CatalogueDetailedByDivisionId+DivisionId, 0)
+	if err := json.Unmarshal(response, &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
-		return nil
 	}
 	return result.Data.ChapterList
 }
@@ -40,8 +40,8 @@ func Login(account, password string) {
 }
 func GetBookDetailById(bid string) structs.BookInfo {
 	var result structs.DetailStruct
-	res := req.Get(fmt.Sprintf(BookDetailedById, bid), 0)
-	if err := json.Unmarshal(res, &result); err != nil {
+	response := req.Get(fmt.Sprintf(BookDetailedById, bid), 0)
+	if err := json.Unmarshal(response, &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 		return structs.BookInfo{}
 	}
@@ -49,9 +49,9 @@ func GetBookDetailById(bid string) structs.BookInfo {
 }
 
 func Search(bookName string, page int) []structs.BookList {
-	res := req.Get(fmt.Sprintf(SearchDetailedByKeyword, page, bookName), 0)
 	var result structs.SearchStruct
-	if err := json.Unmarshal(res, &result); err != nil {
+	response := req.Get(fmt.Sprintf(SearchDetailedByKeyword, page, bookName), 0)
+	if err := json.Unmarshal(response, &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
 	return result.Data.BookList
