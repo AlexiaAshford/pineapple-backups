@@ -7,8 +7,9 @@ import (
 	"net/http"
 )
 
-func POST(url, dataJson string) ([]byte, []*http.Cookie) {
-	if request, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(dataJson))); err != nil {
+func POST(URL string, dataJson string) ([]byte, []*http.Cookie) {
+	params := bytes.NewBuffer([]byte(dataJson))
+	if request, err := http.NewRequest("POST", URL, params); err != nil {
 		fmt.Println("NewRequest post error:", err)
 	} else {
 		SetHeaders(request, false)
@@ -18,7 +19,6 @@ func POST(url, dataJson string) ([]byte, []*http.Cookie) {
 			}
 		} else {
 			fmt.Println(err)
-
 		}
 	}
 	return nil, nil

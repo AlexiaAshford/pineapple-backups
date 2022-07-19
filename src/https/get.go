@@ -7,8 +7,8 @@ import (
 	"os"
 )
 
-func Get(url string, Retry int) []byte {
-	if req, err := http.NewRequest("GET", url, nil); err == nil {
+func Get(Url string, Retry int) []byte {
+	if req, err := http.NewRequest("GET", Url, nil); err == nil {
 		SetHeaders(req, true)
 		if resp, ok := client.Do(req); ok == nil {
 			if bodyText, ReadBody := ioutil.ReadAll(resp.Body); ReadBody == nil {
@@ -21,7 +21,7 @@ func Get(url string, Retry int) []byte {
 				fmt.Println("Get error:", err)
 				os.Exit(1)
 			} else {
-				return Get(url, Retry+1)
+				return Get(Url, Retry+1)
 			}
 		}
 	}

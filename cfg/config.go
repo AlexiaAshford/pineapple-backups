@@ -15,6 +15,7 @@ func ConfigInit() {
 	if !CheckFileExist("./config.json") {
 		Vars.SaveFile = "save"
 		Vars.ConfigFile = "cache"
+		Vars.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
 		SaveJson()
 	}
 	Load()
@@ -25,6 +26,10 @@ func ConfigInit() {
 	if Vars.SaveFile == "" {
 		Vars.SaveFile = "save"
 		fmt.Println("SaveFile is empty, use default save")
+	}
+	if Vars.Cat.UserAgent == "" {
+		Vars.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
+		fmt.Println("UserAgent is empty, use default Android com.kuangxiangciweimao.novel 2.9.290")
 	}
 	//if !CheckFileExist(Vars.ConfigFile) {
 	//	fmt.Println("ConfigFile not exist, create it now ...")
