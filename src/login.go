@@ -17,7 +17,7 @@ func AccountDetailed() string {
 
 }
 
-func LoginAccount(username string, password string) {
+func LoginAccount(username string, password string, retry int) {
 	LoginData := boluobao.PostLoginByAccount(username, password)
 	cfg.Vars.Sfacg.Cookie = ""
 	if LoginData.Status.HTTPCode == 200 {
@@ -29,10 +29,14 @@ func LoginAccount(username string, password string) {
 		cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password = username, password
 		cfg.SaveJson()
 		if AccountDetailed() == "需要登录才能访问该资源" {
-			fmt.Println("Login failed, login again")
-			LoginAccount(username, password)
+			fmt.Println("Your login attempt was not successful, try again retry:", retry+1)
+			LoginAccount(username, password, retry+1)
 		} else {
-			fmt.Println("Login successful!\t", AccountDetailed())
+			if retry == 0 {
+				fmt.Println("Login successful!\naccount name:", AccountDetailed())
+			} else {
+				fmt.Println("Login again successful!\naccount name:", AccountDetailed())
+			}
 		}
 	} else {
 		fmt.Println("Login failed:", LoginData.Status.Msg)

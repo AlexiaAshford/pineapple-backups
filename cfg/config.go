@@ -11,8 +11,8 @@ import (
 
 var Vars = structural.MyJsonPro{}
 
-func NewMyJsonPro() {
-	if !CheckFileExist("config.json") {
+func ConfigInit() {
+	if !CheckFileExist("./config.json") {
 		Vars.SaveFile = "save"
 		Vars.ConfigFile = "cache"
 		SaveJson()
@@ -26,12 +26,11 @@ func NewMyJsonPro() {
 		Vars.SaveFile = "save"
 		fmt.Println("SaveFile is empty, use default save")
 	}
-	if !CheckFileExist(Vars.ConfigFile) {
-		fmt.Println("ConfigFile not exist, create it now ...")
-		Mkdir(Vars.ConfigFile)
-	}
+	//if !CheckFileExist(Vars.ConfigFile) {
+	//	fmt.Println("ConfigFile not exist, create it now ...")
+	//	Mkdir(Vars.ConfigFile)
+	//}
 	if !CheckFileExist(Vars.SaveFile) {
-		fmt.Println("SaveFile not exist, create it now ...")
 		Mkdir(Vars.SaveFile)
 	}
 }

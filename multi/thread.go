@@ -57,7 +57,6 @@ func (g *GoLimit) Done() {
 // SetMax 更新最大并发计数为, 若是调大, 可以使原阻塞的Add()快速解除阻塞
 func (g *GoLimit) SetMax(n uint) {
 	g.dataLock.Lock()
-
 	g.max = n
 
 	//解锁

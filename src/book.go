@@ -4,7 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	cfg "sf/cfg"
+	"sf/cfg"
+	"sf/multi"
 	"sf/src/boluobao"
 	"strconv"
 )
@@ -20,6 +21,41 @@ type Books struct {
 	SignStatus string
 }
 
+func BookInit(bookID string, Index int, Locks *multi.GoLimit) {
+	if Locks != nil {
+		defer Locks.Done() // finish this goroutine when this function return
+	}
+	if BookData, err := GetBookDetailed(bookID); err == nil { // get book data by book id
+		fmt.Printf("开始下载:%s\n", BookData.NovelName)
+		cachepath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, BookData.NovelName)
+		if f, ok := os.OpenFile(cachepath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644); ok == nil {
+			if err != nil {
+				fmt.Println("file create failed. err: " + err.Error())
+			} else {
+				n, _ := f.Seek(0, 2)
+				if _, err = f.WriteAt([]byte(BookData.NovelName), n); err != nil {
+					defer func(f *os.File) {
+						if err = f.Close(); err != nil {
+							fmt.Println("file close failed. err: " + err.Error())
+						}
+					}(f)
+				}
+			}
+		} else {
+			fmt.Println("file create failed. err: " + ok.Error())
+		}
+		if GetCatalogue(BookData) {
+			if Index > 0 {
+				fmt.Printf("\nIndex:%v\t\tNovelName:%vdownload complete!", Index, BookData.NovelName)
+			} else {
+
+				fmt.Printf("\nNovelName:%vdownload complete!", BookData.NovelName)
+			}
+		}
+	} else {
+		fmt.Println("Error:", err)
+	}
+}
 func GetBookDetailed(bookId string) (Books, error) {
 	response := boluobao.GetBookDetailedById(bookId)
 	if response.Status.HTTPCode != 200 || response.Data.NovelName == "" {
