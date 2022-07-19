@@ -91,19 +91,9 @@ func init() {
 		}
 	}
 }
-func commandLine() (string, string, string, string, string) {
-	bookId := flag.String("id", "", "input book id, like: sf download bookid")
-	url := flag.String("url", "", "input book id, like: sf bookid")
-	account := flag.String("account", "", "input account, like: sf username")
-	password := flag.String("password", "", "input password, like: sf password")
-	search := flag.String("search", "", "input search keyword, like: sf search keyword")
-	flag.Parse()                                       // parse the flags from command line
-	return *bookId, *url, *account, *password, *search // return command line parameters to main
-}
+func ShellLoginAccount(account, password string) {
 
-func main() {
-	bookId, url, account, password, search := commandLine() // get command line parameters
-	if account != "" || password != "" {                    // if account and password are not empty, login
+	if account != "" || password != "" { // if account and password are not empty, login
 		if account == "" {
 			fmt.Println("you must input account, like: sf username")
 		} else if password == "" {
@@ -111,7 +101,11 @@ func main() {
 		} else {
 			src.LoginAccount(account, password)
 		}
+	} else {
+		src.LoginAccount(cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password)
 	}
+}
+func ShellSearchBook(search string) {
 	if search != "" { // if search keyword is not empty, search book and download
 		result := src.GetSearchDetailed(search)
 		var input int
@@ -125,7 +119,9 @@ func main() {
 		}
 		os.Exit(0)
 	}
-	// if url or bookid is not empty, download book by url or bookid
+}
+
+func ShellBookByBookid(url, bookId string) {
 	if url != "" || bookId != "" {
 		var downloadId string
 		if url != "" {
@@ -140,4 +136,17 @@ func main() {
 		Books(downloadId)
 		os.Exit(0)
 	}
+}
+func main() {
+	//bookId, url, account, password, search := commandLine() // get command line parameters
+	bookId := flag.String("id", "", "input book id, like: sf download bookid")
+	url := flag.String("url", "", "input book id, like: sf bookid")
+	account := flag.String("account", "", "input account, like: sf username")
+	password := flag.String("password", "", "input password, like: sf password")
+	search := flag.String("search", "", "input search keyword, like: sf search keyword")
+	flag.Parse() // parse the flags from command line
+
+	ShellLoginAccount(*account, *password)
+	ShellSearchBook(*search)
+	ShellBookByBookid(*url, *bookId)
 }

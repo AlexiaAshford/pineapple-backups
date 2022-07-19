@@ -3,7 +3,7 @@ package src
 import (
 	"fmt"
 	"os"
-	cfg "sf/cfg"
+	"sf/cfg"
 	"sf/src/boluobao"
 )
 
