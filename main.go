@@ -11,28 +11,14 @@ import (
 )
 
 func getBookID(url string) string {
-	bookID := regexp.MustCompile(`(\d+)`).FindStringSubmatch(url)
-	if len(bookID) > 1 {
-		return bookID[1]
-	} else {
-		return ""
-	}
-}
-
-func Books(inputs any) {
-	switch inputs.(type) {
-	case string:
-		src.BookInit(inputs.(string), 0, nil)
-	case []string:
-		Locks := multi.NewGoLimit(7)
-		for BookIndex, BookId := range inputs.([]string) {
-			Locks.Add()
-			src.BookInit(BookId, BookIndex, Locks)
+	if url != "" {
+		bookID := regexp.MustCompile(`(\d+)`).FindStringSubmatch(url)
+		if len(bookID) > 1 {
+			return bookID[1]
 		}
-		Locks.WaitZero() // wait for all goroutines to finish
 	}
+	return ""
 }
-
 func ShellLoginAccount(account, password string) {
 	if account != "" || password != "" { // if account and password are not empty, login
 		if account == "" {
@@ -52,13 +38,13 @@ func ShellLoginAccount(account, password string) {
 	}
 }
 func ShellSearchBook(search string) {
+	var input int
 	if search != "" { // if search keyword is not empty, search book and download
 		result := src.GetSearchDetailed(search)
-		var input int
 		fmt.Printf("please input the index of the book you want to download:")
 		if _, err := fmt.Scanln(&input); err == nil {
 			if input < len(result) {
-				Books(result[input].NovelID)
+				ShellBookByBookid("", result[input].NovelID, "")
 			} else {
 				fmt.Println("index out of range, please input again")
 			}
@@ -67,21 +53,27 @@ func ShellSearchBook(search string) {
 	}
 }
 
-func ShellBookByBookid(url, bookId string) {
-	if url != "" || bookId != "" {
-		var downloadId string
-		if url != "" {
-			if getBookID(url) != "" {
-				downloadId = getBookID(url)
-			} else {
-				fmt.Println("you input url is not a book url")
+func ShellBookByBookid(sfacgUrl, bookId string, downloadId any) {
+	if getBookID(sfacgUrl) != "" {
+		downloadId = getBookID(sfacgUrl)
+	} else if bookId != "" {
+		downloadId = bookId
+	}
+	if downloadId != "" {
+		switch downloadId.(type) {
+		case string:
+			src.BookInit(downloadId.(string), 0, nil)
+		case []string:
+			Locks := multi.NewGoLimit(7)
+			for BookIndex, BookId := range downloadId.([]string) {
+				Locks.Add()
+				src.BookInit(BookId, BookIndex, Locks)
 			}
-		} else {
-			downloadId = bookId
+			Locks.WaitZero() // wait for all goroutines to finish
 		}
-		Books(downloadId)
 		os.Exit(0)
 	}
+
 }
 
 func init() {
@@ -96,13 +88,11 @@ func init() {
 		os.Exit(1)
 	} else {
 		if cfg.Vars.Sfacg.Cookie != "" {
-			if src.AccountDetailed() != "需要登录才能访问该资源" {
-				fmt.Println("account is Valid，start to sf start to work, please wait...")
-			} else {
-				fmt.Println("account is Invalid，please login first, like: sf login username password")
+			if src.AccountDetailed() == "需要登录才能访问该资源" {
+				fmt.Println("cookie is Invalid，please login first")
 			}
 		} else {
-			fmt.Println("account is Invalid，please login first")
+			fmt.Println("cookie is empty, please login first!")
 		}
 	}
 }
@@ -116,6 +106,6 @@ func main() {
 	flag.Parse() // parse the flags from command line
 
 	ShellLoginAccount(*account, *password)
-	ShellBookByBookid(*sfacgUrl, *bookId)
 	ShellSearchBook(*search)
+	ShellBookByBookid(*sfacgUrl, *bookId, "")
 }

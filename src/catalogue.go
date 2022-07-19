@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"path"
 	"sf/cfg"
 	"sf/src/boluobao"
 	"strconv"
@@ -51,22 +52,19 @@ func GetContent(ChapLength int, BookData Books, ChapterId string, bar *ProgressB
 			GetContent(ChapLength, BookData, ChapterId, bar)
 		}
 	} else {
-		if f, err := os.OpenFile(cfg.Vars.SaveFile+"/"+BookData.NovelName+".txt",
-			os.O_WRONLY|os.O_APPEND, 0666); err == nil {
-			defer func(f *os.File) {
-				err = f.Close()
-				if err != nil {
-					fmt.Println(err)
-				}
-			}(f)
-			if _, ok := f.WriteString("\n\n\n" +
-				response.Data.Title + ":" + response.Data.AddTime + "\n" +
-				response.Data.Expand.Content + "\n" + BookData.AuthorName,
-			); ok != nil {
-				fmt.Println(ok)
+		writeContent, SavePath := fmt.Sprintf("%v:%v\n%v\n%v\n\n\n",
+			response.Data.Title,
+			response.Data.AddTime,
+			response.Data.Expand.Content,
+			BookData.AuthorName,
+		), path.Join(cfg.Vars.SaveFile, BookData.NovelName+".txt")
+
+		for i := 0; i < 5; i++ {
+			if cfg.WriteFile(SavePath, writeContent, 0666) == nil {
+				break
+			} else {
+				fmt.Println("write file error, try again", i)
 			}
-		} else {
-			fmt.Println(err)
 		}
 	}
 }
