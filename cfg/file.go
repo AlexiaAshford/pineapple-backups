@@ -7,6 +7,11 @@ import (
 
 // WriteFile write content to file with file name
 func WriteFile(fileName string, content string, perm os.FileMode) error {
+	if perm == 0644 {
+		if _, err := os.Create(fileName); err != nil {
+			fmt.Println("Create file error:", err)
+		}
+	}
 	if f, err := os.OpenFile(fileName, os.O_WRONLY|os.O_APPEND, perm); err == nil {
 		defer func(f *os.File) {
 			err = f.Close()

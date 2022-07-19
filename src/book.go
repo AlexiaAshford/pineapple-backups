@@ -29,13 +29,13 @@ func BookInit(bookID string, Index int, Locks *multi.GoLimit) {
 		fmt.Printf("开始下载:%s\n", BookData.NovelName)
 		cachepath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, BookData.NovelName)
 		for i := 0; i < 5; i++ {
-			if cfg.WriteFile(cachepath, BookData.NovelName, 0644) == nil {
+			if cfg.WriteFile(cachepath, BookData.NovelName+"\n", 0644) == nil {
 				break
 			} else {
 				fmt.Println("write file error, try again...")
 			}
 		}
-		if GetCatalogue(BookData) {
+		if SfacgCatalogue(BookData) {
 			if Index > 0 {
 				fmt.Printf("\nIndex:%v\t\tNovelName:%vdownload complete!", Index, BookData.NovelName)
 			} else {
