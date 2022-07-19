@@ -37,8 +37,29 @@ func Login(account, password string) {
 		fmt.Println("Login failed!")
 	}
 }
-func maininit() []structs.ChapterList {
+func GetBookDetailById(bid string) structs.BookInfo {
+	var result structs.DetailStruct
+	res := req.Get(fmt.Sprintf(BookDetailedById, bid), 0)
+	if err := json.Unmarshal(res, &result); err != nil {
+		fmt.Println("json unmarshal error:", err)
+		return structs.BookInfo{}
+	}
+	return result.Data.BookInfo
+}
+
+func Search(bookName string, page int) []structs.BookList {
+	res := req.Get(fmt.Sprintf(SearchDetailedByKeyword, page, bookName), 0)
+	var result structs.SearchStruct
+	if err := json.Unmarshal(res, &result); err != nil {
+		fmt.Println("json unmarshal error:", err)
+	}
+	return result.Data.BookList
+}
+
+func main() []structs.ChapterList {
 	Login("", "")
+	GetBookDetailById("")
+	Search("", 0)
 	var chapterList []structs.ChapterList
 	for index, division := range GetDivisionIdByBookId("") {
 		fmt.Println("index:", index, "\t\tdivision:", division.DivisionName)
