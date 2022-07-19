@@ -701,9 +701,9 @@ func humanizeBytes(s float64) (string, string) {
 	if s < 10 {
 		return fmt.Sprintf("%2.0f", s), "B"
 	}
-	e := math.Floor(logn(float64(s), base))
+	e := math.Floor(logn(s, base))
 	suffix := sizes[int(e)]
-	val := math.Floor(float64(s)/math.Pow(base, e)*10+0.5) / 10
+	val := math.Floor(s/math.Pow(base, e)*10+0.5) / 10
 	f := "%.0f"
 	if val < 10 {
 		f = "%.1f"

@@ -19,14 +19,14 @@ func AccountDetailed() string {
 
 func LoginAccount(username string, password string) {
 	LoginData := boluobao.PostLoginByAccount(username, password)
-	cfg.Var.Sfacg.Cookie = ""
+	cfg.Vars.Sfacg.Cookie = ""
 	if LoginData.Status.HTTPCode == 200 {
 		cfg.Load()
-		cfg.Var.Sfacg.Cookie = ""
+		cfg.Vars.Sfacg.Cookie = ""
 		for _, cookie := range LoginData.Cookie {
-			cfg.Var.Sfacg.Cookie += cookie.Name + "=" + cookie.Value + ";"
+			cfg.Vars.Sfacg.Cookie += cookie.Name + "=" + cookie.Value + ";"
 		}
-		cfg.Var.Sfacg.UserName, cfg.Var.Sfacg.Password = username, password
+		cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password = username, password
 		cfg.SaveJson()
 		if AccountDetailed() == "需要登录才能访问该资源" {
 			fmt.Println("Login failed, login again")

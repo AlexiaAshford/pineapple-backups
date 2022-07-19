@@ -25,7 +25,7 @@ func BookInit(bookID string, Index int, Locks *threading.GoLimit) {
 	}
 	if BookData, err := src.GetBookDetailed(bookID); err == nil { // get book data by book id
 		fmt.Printf("开始下载:%s\n", BookData.NovelName)
-		cachepath := fmt.Sprintf("%v/%v.txt", configuration.Var.SaveFile, BookData.NovelName)
+		cachepath := fmt.Sprintf("%v/%v.txt", configuration.Vars.SaveFile, BookData.NovelName)
 		if f, ok := os.OpenFile(cachepath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644); ok == nil {
 			if err != nil {
 				fmt.Println("file create failed. err: " + err.Error())
@@ -80,7 +80,7 @@ func init() {
 		fmt.Println("or: sf password")
 		os.Exit(1)
 	} else {
-		if configuration.Var.Sfacg.Cookie != "" {
+		if configuration.Vars.Sfacg.Cookie != "" {
 			if src.AccountDetailed() != "需要登录才能访问该资源" {
 				fmt.Println("account is Valid，start to sf start to work, please wait...")
 			} else {
