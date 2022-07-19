@@ -1,4 +1,4 @@
-package configuration
+package cfg
 
 import (
 	"encoding/json"
@@ -17,6 +17,7 @@ func NewMyJsonPro() {
 		Vars.ConfigFile = "cache"
 		SaveJson()
 	}
+	Load()
 	if Vars.ConfigFile == "" {
 		Vars.ConfigFile = "cache"
 		fmt.Println("ConfigFile is empty, use default cache")
@@ -25,8 +26,6 @@ func NewMyJsonPro() {
 		Vars.SaveFile = "save"
 		fmt.Println("SaveFile is empty, use default save")
 	}
-
-	Load()
 	if !CheckFileExist(Vars.ConfigFile) {
 		fmt.Println("ConfigFile not exist, create it now ...")
 		Mkdir(Vars.ConfigFile)

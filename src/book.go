@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	cfg "sf/configuration"
+	cfg "sf/cfg"
 	"sf/src/boluobao"
 	"strconv"
 )
