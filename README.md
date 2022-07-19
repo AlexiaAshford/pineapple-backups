@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="./docs/81841388.png" alt="Noa Himesaka">
+  <img src="./docs/81841388.png" width="400" height='' alt="Noa Himesaka">
   <br>Noa Himesaka<br>  
 </h1>
 <h3 align="center">
