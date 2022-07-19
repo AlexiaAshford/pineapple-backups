@@ -66,13 +66,14 @@ func GetKeyByCid(chapterId string) string {
 	return result.Data.Command
 }
 
-func GetContent(key, chapterId string) structs.ChapterInfo {
+func GetContent(chapterId string) structs.ChapterInfo {
 	var result structs.ContentStruct
-	response := req.Get(fmt.Sprintf(ContentDetailedByCid, chapterId, GetKeyByCid(chapterId)), 0)
+	chapterKey := GetKeyByCid(chapterId)
+	response := req.Get(fmt.Sprintf(ContentDetailedByCid, chapterId, chapterKey), 0)
 	if err := json.Unmarshal(response, &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
-	bytes := util.Decode(result.Data.ChapterInfo.TxtContent, key)
+	bytes := util.Decode(result.Data.ChapterInfo.TxtContent, chapterKey)
 	result.Data.ChapterInfo.TxtContent = bytes
 	return result.Data.ChapterInfo
 }
@@ -80,7 +81,7 @@ func GetContent(key, chapterId string) structs.ChapterInfo {
 func main() []structs.ChapterList {
 	Login("", "")
 	GetBookDetailById("")
-	GetKeyByCid("")
+	GetContent("")
 	Search("", 0)
 	var chapterList []structs.ChapterList
 	for index, division := range GetDivisionIdByBookId("") {
