@@ -1,4 +1,4 @@
-package request
+package https
 
 import (
 	"fmt"
@@ -8,8 +8,7 @@ import (
 )
 
 func Get(url string, Retry int) []byte {
-	api := fmt.Sprintf("https://minipapi.sfacg.com/pas/mpapi/%v", url)
-	if req, err := http.NewRequest("GET", api, nil); err == nil {
+	if req, err := http.NewRequest("GET", url, nil); err == nil {
 		SetHeaders(req, true)
 		if resp, ok := client.Do(req); ok == nil {
 			if bodyText, ReadBody := ioutil.ReadAll(resp.Body); ReadBody == nil {
