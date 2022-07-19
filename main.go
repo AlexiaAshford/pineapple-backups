@@ -6,8 +6,8 @@ import (
 	"os"
 	"regexp"
 	"sf/cfg"
+	"sf/multi"
 	"sf/src"
-	"sf/src/threading"
 )
 
 func getBookID(url string) string {
@@ -19,7 +19,7 @@ func getBookID(url string) string {
 	}
 }
 
-func BookInit(bookID string, Index int, Locks *threading.GoLimit) {
+func BookInit(bookID string, Index int, Locks *multi.GoLimit) {
 	if Locks != nil {
 		defer Locks.Done() // finish this goroutine when this function return
 	}
@@ -60,7 +60,7 @@ func Books(inputs any) {
 	case string:
 		BookInit(inputs.(string), 0, nil)
 	case []string:
-		Locks := threading.NewGoLimit(7)
+		Locks := multi.NewGoLimit(7)
 		for BookIndex, BookId := range inputs.([]string) {
 			Locks.Add()
 			BookInit(BookId, BookIndex, Locks)

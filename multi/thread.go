@@ -1,4 +1,4 @@
-package threading
+package multi
 
 import (
 	"sync"
