@@ -60,28 +60,3 @@ func GetSfacgBookDetailed(bookId string) error {
 	}
 
 }
-
-func GetSearchDetailed(keyword string) error {
-	response := boluobao.GetSearchDetailedByKeyword(keyword)
-	if response.Status.HTTPCode == 200 && len(response.Data.Novels) > 0 {
-		fmt.Println("search result length:", len(response.Data.Novels))
-		for index, bookInfo := range response.Data.Novels {
-			fmt.Println("Index:", index, "\t\t\tBookName:", bookInfo.NovelName)
-			cfg.Vars.BookInfoList = append(
-				cfg.Vars.BookInfoList,
-				structural.Books{
-					NovelName:  cfg.RegexpName(bookInfo.NovelName),
-					NovelID:    strconv.Itoa(bookInfo.NovelID),
-					IsFinish:   bookInfo.IsFinish,
-					MarkCount:  bookInfo.MarkCount,
-					NovelCover: bookInfo.NovelCover,
-					AuthorName: bookInfo.AuthorName,
-					CharCount:  bookInfo.CharCount,
-					SignStatus: bookInfo.SignStatus,
-				},
-			)
-		}
-		return nil
-	}
-	return errors.New(keyword + "is not found in sfacg！")
-}

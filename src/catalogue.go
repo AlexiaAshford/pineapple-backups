@@ -84,5 +84,6 @@ func (is *catCatalogue) CatCatalogue() bool {
 }
 
 func (is *catCatalogue) SfacgContent(ChapterId string) {
+	fmt.Println(ChapterId)
 
 }
