@@ -7,6 +7,7 @@ import (
 	"sf/multi"
 	"sf/src/boluobao"
 	"sf/structural"
+	"sf/structural/hbooker_structs"
 	"sf/structural/sfacg_structs"
 	"strconv"
 )
@@ -36,29 +37,48 @@ func SfacgBookInit(bookID string, Index int, Locks *multi.GoLimit) {
 		fmt.Println("Error:", err)
 	}
 }
+func ShowDetailed() {
+	briefIntroduction := fmt.Sprintf(
+		"Name: %v\nBookID: %v\nAuthor: %v\nCount: %v\nMark: %v\n",
+		cfg.Vars.BookInfo.NovelName, cfg.Vars.BookInfo.NovelID,
+		cfg.Vars.BookInfo.AuthorName, cfg.Vars.BookInfo.CharCount,
+		cfg.Vars.BookInfo.MarkCount,
+	)
+	fmt.Println(briefIntroduction)
+}
 
-func BookInformation(book sfacg_structs.BookInfoData, ShowDetailed bool) structural.Books {
-	if ShowDetailed {
-		briefIntroduction := fmt.Sprintf(
-			"Name: %v\nBookID: %v\nAuthor: %v\nCount: %v\nMark: %v\n",
-			book.NovelName, book.NovelID, book.AuthorName, book.CharCount, book.MarkCount)
-		fmt.Println(briefIntroduction)
+func InitBookStruct(bookAny any) structural.Books {
+	switch bookAny.(type) {
+	case sfacg_structs.BookInfoData:
+		book := bookAny.(sfacg_structs.BookInfoData)
+		return structural.Books{
+			NovelName:  cfg.RegexpName(book.NovelName),
+			NovelID:    strconv.Itoa(book.NovelID),
+			IsFinish:   book.IsFinish,
+			MarkCount:  strconv.Itoa(book.MarkCount),
+			NovelCover: book.NovelCover,
+			AuthorName: book.AuthorName,
+			CharCount:  strconv.Itoa(book.CharCount),
+			SignStatus: book.SignStatus,
+		}
+	case hbooker_structs.BookInfo:
+		book := bookAny.(hbooker_structs.BookInfo)
+		return structural.Books{
+			NovelName:  cfg.RegexpName(book.BookName),
+			NovelID:    book.BookID,
+			NovelCover: book.Cover,
+			AuthorName: book.AuthorName,
+			CharCount:  book.TotalWordCount,
+			SignStatus: book.Discount,
+		}
 	}
-	return structural.Books{
-		NovelName:  cfg.RegexpName(book.NovelName),
-		NovelID:    strconv.Itoa(book.NovelID),
-		IsFinish:   book.IsFinish,
-		MarkCount:  book.MarkCount,
-		NovelCover: book.NovelCover,
-		AuthorName: book.AuthorName,
-		CharCount:  book.CharCount,
-		SignStatus: book.SignStatus,
-	}
+	return structural.Books{}
 }
 func GetSfacgBookDetailed(bookId string) error {
 	response := boluobao.GetBookDetailedById(bookId)
 	if response.Status.HTTPCode == 200 && response.Data.NovelName != "" {
-		cfg.Vars.BookInfo = BookInformation(response.Data, true)
+		cfg.Vars.BookInfo = InitBookStruct(response.Data)
+		ShowDetailed()
 		return nil
 	} else {
 		return errors.New(bookId + " is not a valid book number！")

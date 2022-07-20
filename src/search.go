@@ -5,12 +5,7 @@ import (
 	"fmt"
 	"sf/cfg"
 	"sf/src/boluobao"
-	"sf/structural/sfacg_structs"
 )
-
-func AddBookInformation(book sfacg_structs.BookInfoData) {
-	cfg.Vars.BookInfoList = append(cfg.Vars.BookInfoList, BookInformation(book, false))
-}
 
 func GetSearchDetailed(keyword string) error {
 	response := boluobao.GetSearchDetailedByKeyword(keyword)
@@ -21,7 +16,7 @@ func GetSearchDetailed(keyword string) error {
 	}
 	for index, book := range response.Data.Novels {
 		fmt.Println("Index:", index, "\t\t\tBookName:", book.NovelName)
-		AddBookInformation(book)
+		cfg.Vars.BookInfoList = append(cfg.Vars.BookInfoList, InitBookStruct(book))
 	}
 	return nil
 }

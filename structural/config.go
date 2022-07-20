@@ -4,10 +4,10 @@ type Books struct {
 	NovelName  string
 	NovelID    string
 	IsFinish   bool
-	MarkCount  int
+	MarkCount  string
 	NovelCover string
 	AuthorName string
-	CharCount  int
+	CharCount  string
 	SignStatus string
 }
 type MyJsonPro struct {
