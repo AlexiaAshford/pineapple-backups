@@ -11,14 +11,18 @@ import (
 	"time"
 )
 
-func SfacgCatalogue() bool {
+type catalogue struct {
+	ChapterBar *ProgressBar
+}
+
+func (is *catalogue) SfacgCatalogue() bool {
 	response := boluobao.GetCatalogueDetailedById(cfg.Vars.BookInfo.NovelID)
 	for _, data := range response.Data.VolumeList {
 		fmt.Println("\nstart download volume: ", data.Title)
-		bar := New(len(data.ChapterList))
+		is.ChapterBar = New(len(data.ChapterList))
 		for _, Chapter := range data.ChapterList {
 			if Chapter.OriginNeedFireMoney == 0 {
-				SfacgContent(len(data.ChapterList), strconv.Itoa(Chapter.ChapID), bar)
+				is.SfacgContent(strconv.Itoa(Chapter.ChapID))
 			} else {
 				fmt.Println("this chapter is VIP and need fire money, skip it")
 			}
@@ -27,8 +31,8 @@ func SfacgCatalogue() bool {
 	return true
 }
 
-func SfacgContent(ChapLength int, ChapterId string, bar *ProgressBar) {
-	if err := bar.Add(1); err != nil {
+func (is *catalogue) SfacgContent(ChapterId string) {
+	if err := is.ChapterBar.Add(1); err != nil {
 		fmt.Println("bar error:", err)
 	} else {
 		time.Sleep(time.Second * time.Duration(rand.Intn(5)))
@@ -40,10 +44,9 @@ func SfacgContent(ChapLength int, ChapterId string, bar *ProgressBar) {
 			os.Exit(0)
 		} else {
 			fmt.Println(response.Status.Msg)
-			SfacgContent(ChapLength, ChapterId, bar)
+			is.SfacgContent(ChapterId)
 		}
 	} else {
-
 		writeContent, SavePath := fmt.Sprintf("%v:%v\n%v\n%v\n\n\n",
 			response.Data.Title,
 			response.Data.AddTime,

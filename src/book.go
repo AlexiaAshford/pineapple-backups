@@ -29,7 +29,8 @@ func SfacgBookInit(bookID string, Index int, Locks *multi.GoLimit) {
 				fmt.Println("write file error, try again...")
 			}
 		}
-		if SfacgCatalogue() {
+		catalogues := catalogue{}
+		if catalogues.SfacgCatalogue() {
 			if Index > 0 {
 				fmt.Printf("\nIndex:%v\t\tNovelName:%vdownload complete!", Index, cfg.Vars.BookInfo.NovelName)
 			} else {
@@ -62,7 +63,7 @@ func GetSfacgBookDetailed(bookId string) error {
 
 func GetSearchDetailed(keyword string) error {
 	response := boluobao.GetSearchDetailedByKeyword(keyword)
-	if response.Status.HTTPCode == 200 || len(response.Data.Novels) > 0 {
+	if response.Status.HTTPCode == 200 && len(response.Data.Novels) > 0 {
 		fmt.Println("search result length:", len(response.Data.Novels))
 		for index, bookInfo := range response.Data.Novels {
 			fmt.Println("Index:", index, "\t\t\tBookName:", bookInfo.NovelName)
@@ -80,6 +81,7 @@ func GetSearchDetailed(keyword string) error {
 				},
 			)
 		}
+		return nil
 	}
 	return errors.New(keyword + "is not found in sfacg！")
 }

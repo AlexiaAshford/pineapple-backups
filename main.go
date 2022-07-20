@@ -38,10 +38,10 @@ func ShellLoginAccount(account, password string) {
 	}
 }
 func ShellSearchBook(search string) {
-	var input int
-	if search != "" { // if search is not empty, search
+	if search == "" { // if search is not empty, search
 		return
 	}
+	var input int
 	// if search keyword is not empty, search book and download
 	if err := src.GetSearchDetailed(search); err == nil {
 		fmt.Printf("please input the index of the book you want to download:")
