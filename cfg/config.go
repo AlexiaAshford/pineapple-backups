@@ -16,6 +16,8 @@ func ConfigInit() {
 		Vars.SaveFile = "save"
 		Vars.ConfigFile = "cache"
 		Vars.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
+		Vars.Cat.CommonParams.DeviceToken = "ciweimao_"
+		Vars.Cat.CommonParams.AppVersion = "2.9.290"
 		SaveJson()
 	}
 	Load()
