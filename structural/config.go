@@ -3,6 +3,7 @@ package structural
 type MyJsonPro struct {
 	ConfigFile string `json:"ConfigFile"`
 	SaveFile   string `json:"SaveFile"`
+	AppType    string `json:"AppType"`
 	Sfacg      struct {
 		UserName string `json:"UserName"`
 		Password string `json:"Password"`

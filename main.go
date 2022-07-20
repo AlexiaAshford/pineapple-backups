@@ -102,9 +102,13 @@ func main() {
 	sfacgUrl := flag.String("url", "", "input book id, like: sf url")
 	account := flag.String("account", "", "input account, like: sf username")
 	password := flag.String("password", "", "input password, like: sf password")
+	appType := flag.String("app", "", "input app type, like: app sfacg")
 	search := flag.String("search", "", "input search keyword, like: sf search keyword")
 	flag.Parse() // parse the flags from command line
-
+	if *appType == "" {
+		cfg.Vars.AppType = "sfacg"
+		cfg.SaveJson()
+	}
 	ShellLoginAccount(*account, *password)
 	ShellSearchBook(*search)
 	ShellBookByBookid(*sfacgUrl, *bookId, "")
