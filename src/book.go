@@ -3,7 +3,6 @@ package src
 import (
 	"errors"
 	"fmt"
-	"os"
 	"sf/cfg"
 	"sf/multi"
 	"sf/src/boluobao"
@@ -61,12 +60,9 @@ func GetSfacgBookDetailed(bookId string) error {
 
 }
 
-func GetSearchDetailed(keyword string) {
+func GetSearchDetailed(keyword string) error {
 	response := boluobao.GetSearchDetailedByKeyword(keyword)
-	if response.Status.HTTPCode != 200 || len(response.Data.Novels) == 0 {
-		fmt.Println(keyword + "is not a valid book number！")
-		os.Exit(0)
-	} else {
+	if response.Status.HTTPCode == 200 || len(response.Data.Novels) > 0 {
 		fmt.Println("search result length:", len(response.Data.Novels))
 		for index, bookInfo := range response.Data.Novels {
 			fmt.Println("Index:", index, "\t\t\tBookName:", bookInfo.NovelName)
@@ -85,4 +81,5 @@ func GetSearchDetailed(keyword string) {
 			)
 		}
 	}
+	return errors.New(keyword + "is not found in sfacg！")
 }

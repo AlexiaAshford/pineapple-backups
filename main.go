@@ -39,18 +39,24 @@ func ShellLoginAccount(account, password string) {
 }
 func ShellSearchBook(search string) {
 	var input int
-	if search != "" { // if search keyword is not empty, search book and download
-		src.GetSearchDetailed(search)
+	if search != "" { // if search is not empty, search
+		return
+	}
+	// if search keyword is not empty, search book and download
+	if err := src.GetSearchDetailed(search); err == nil {
 		fmt.Printf("please input the index of the book you want to download:")
-		if _, err := fmt.Scanln(&input); err == nil {
+		if _, err = fmt.Scanln(&input); err == nil {
 			if input < len(cfg.Vars.BookInfoList) {
 				ShellBookByBookid("", cfg.Vars.BookInfoList[input].NovelID, "")
 			} else {
 				fmt.Println("index out of range, please input again")
 			}
 		}
-		os.Exit(0)
+		os.Exit(0) // exit the program if no error
+	} else {
+		fmt.Println(err)
 	}
+
 }
 
 func ShellBookByBookid(sfacgUrl, bookId string, downloadId any) {
@@ -71,7 +77,7 @@ func ShellBookByBookid(sfacgUrl, bookId string, downloadId any) {
 			}
 			Locks.WaitZero() // wait for all goroutines to finish
 		}
-		os.Exit(0)
+		os.Exit(0) // exit the program if no error
 	}
 
 }
@@ -107,8 +113,10 @@ func main() {
 	flag.Parse() // parse the flags from command line
 	if *appType == "" {
 		cfg.Vars.AppType = "sfacg"
-		cfg.SaveJson()
+	} else {
+		cfg.Vars.AppType = *appType
 	}
+	cfg.SaveJson() // save the config file
 	ShellLoginAccount(*account, *password)
 	ShellSearchBook(*search)
 	ShellBookByBookid(*sfacgUrl, *bookId, "")
