@@ -7,7 +7,7 @@ import (
 	"sf/src/boluobao"
 )
 
-func GetSearchDetailed(keyword string) error {
+func SearchDetailed(keyword string) error {
 	response := boluobao.GetSearchDetailedByKeyword(keyword)
 	if response.Status.HTTPCode != 200 || len(response.Data.Novels) == 0 {
 		return errors.New(keyword + "is not found in sfacg！")
@@ -19,4 +19,19 @@ func GetSearchDetailed(keyword string) error {
 		cfg.Vars.BookInfoList = append(cfg.Vars.BookInfoList, InitBookStruct(book))
 	}
 	return nil
+}
+
+func SearchBook(search string) string {
+	// if search keyword is not empty, search book and download
+	if err := SearchDetailed(search); err == nil {
+		inputs := cfg.InputInt("please input the index of the book you want to download:")
+		if inputs < len(cfg.Vars.BookInfoList) {
+			return cfg.Vars.BookInfoList[inputs].NovelID
+		} else {
+			fmt.Println("index out of range, please input again")
+		}
+	} else {
+		fmt.Println(err)
+	}
+	return ""
 }
