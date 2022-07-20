@@ -7,15 +7,17 @@ import (
 	"path"
 	"sf/cfg"
 	"sf/src/boluobao"
+	"sf/src/hbooker"
+	structs "sf/structural/hbooker_structs"
 	"strconv"
 	"time"
 )
 
-type catalogue struct {
+type sfacgCatalogue struct {
 	ChapterBar *ProgressBar
 }
 
-func (is *catalogue) SfacgCatalogue() bool {
+func (is *sfacgCatalogue) SfacgCatalogue() bool {
 	response := boluobao.GetCatalogueDetailedById(cfg.Vars.BookInfo.NovelID)
 	for _, data := range response.Data.VolumeList {
 		fmt.Println("\nstart download volume: ", data.Title)
@@ -31,7 +33,7 @@ func (is *catalogue) SfacgCatalogue() bool {
 	return true
 }
 
-func (is *catalogue) SfacgContent(ChapterId string) {
+func (is *sfacgCatalogue) SfacgContent(ChapterId string) {
 	if err := is.ChapterBar.Add(1); err != nil {
 		fmt.Println("bar error:", err)
 	} else {
@@ -62,4 +64,25 @@ func (is *catalogue) SfacgContent(ChapterId string) {
 			}
 		}
 	}
+}
+
+type catCatalogue struct {
+	ChapterBar  *ProgressBar
+	ChapterList []structs.ChapterList
+}
+
+func (is *catCatalogue) CatCatalogue() bool {
+	for index, division := range HbookerAPI.GetDivisionIdByBookId("") {
+		fmt.Println("index:", index, "\t\tdivision:", division.DivisionName)
+		for _, chapter := range HbookerAPI.GetCatalogueByDivisionId(division.DivisionID) {
+			if chapter.IsValid == "1" {
+				is.ChapterList = append(is.ChapterList, chapter)
+			}
+		}
+	}
+	return true
+}
+
+func (is *catCatalogue) SfacgContent(ChapterId string) {
+
 }

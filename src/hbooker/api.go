@@ -11,7 +11,7 @@ import (
 func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
 	var result structs.DivisionStruct
 	response := req.Get(DivisionIdByBookId+BookId, 0)
-	if err := json.Unmarshal(response, &result); err != nil {
+	if err := json.Unmarshal([]byte(Decode(string(response), "")), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
 	return result.Data.DivisionList
@@ -20,7 +20,7 @@ func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
 func GetCatalogueByDivisionId(DivisionId string) []structs.ChapterList {
 	var result structs.ChapterStruct
 	response := req.Get(CatalogueDetailedByDivisionId+DivisionId, 0)
-	if err := json.Unmarshal(response, &result); err != nil {
+	if err := json.Unmarshal([]byte(Decode(string(response), "")), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
 	return result.Data.ChapterList
@@ -29,7 +29,7 @@ func GetCatalogueByDivisionId(DivisionId string) []structs.ChapterList {
 func Login(account, password string) {
 	var result structs.LoginStruct
 	response := req.Get(fmt.Sprintf(LoginByAccount, account, password), 0)
-	if json.Unmarshal(response, &result) == nil {
+	if json.Unmarshal([]byte(Decode(string(response), "")), &result) == nil {
 		cfg.Vars.Cat.CommonParams.LoginToken = result.Data.LoginToken
 		cfg.Vars.Cat.CommonParams.Account = result.Data.ReaderInfo.Account
 		cfg.SaveJson()
@@ -40,7 +40,7 @@ func Login(account, password string) {
 func GetBookDetailById(bid string) structs.BookInfo {
 	var result structs.DetailStruct
 	response := req.Get(fmt.Sprintf(BookDetailedById, bid), 0)
-	if err := json.Unmarshal(response, &result); err != nil {
+	if err := json.Unmarshal([]byte(Decode(string(response), "")), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 		return structs.BookInfo{}
 	}
@@ -50,7 +50,7 @@ func GetBookDetailById(bid string) structs.BookInfo {
 func Search(bookName string, page int) []structs.BookList {
 	var result structs.SearchStruct
 	response := req.Get(fmt.Sprintf(SearchDetailedByKeyword, page, bookName), 0)
-	if err := json.Unmarshal(response, &result); err != nil {
+	if err := json.Unmarshal([]byte(Decode(string(response), "")), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
 	return result.Data.BookList
@@ -59,7 +59,7 @@ func Search(bookName string, page int) []structs.BookList {
 func GetKeyByCid(chapterId string) string {
 	var result structs.KeyStruct
 	response := req.Get(ChapterKeyByCid+chapterId, 0)
-	if err := json.Unmarshal(response, &result); err != nil {
+	if err := json.Unmarshal([]byte(Decode(string(response), "")), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
 	return result.Data.Command
@@ -69,7 +69,7 @@ func GetContent(chapterId string) structs.ChapterInfo {
 	var result structs.ContentStruct
 	chapterKey := GetKeyByCid(chapterId)
 	response := req.Get(fmt.Sprintf(ContentDetailedByCid, chapterId, chapterKey), 0)
-	if err := json.Unmarshal(response, &result); err != nil {
+	if err := json.Unmarshal([]byte(Decode(string(response), "")), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
 	bytes := Decode(result.Data.ChapterInfo.TxtContent, chapterKey)
@@ -77,20 +77,10 @@ func GetContent(chapterId string) structs.ChapterInfo {
 	return result.Data.ChapterInfo
 }
 
-func main() []structs.ChapterList {
+func main() {
 	Login("", "")
 	GetBookDetailById("")
 	GetContent("")
 	Search("", 0)
-	var chapterList []structs.ChapterList
-	for index, division := range GetDivisionIdByBookId("") {
-		fmt.Println("index:", index, "\t\tdivision:", division.DivisionName)
-		for _, chapter := range GetCatalogueByDivisionId(division.DivisionID) {
-			if chapter.IsValid == "1" {
-				chapterList = append(chapterList, chapter)
-			}
-		}
-	}
-	return chapterList
 
 }

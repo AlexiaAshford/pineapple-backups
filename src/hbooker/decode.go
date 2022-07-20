@@ -5,6 +5,7 @@ import (
 	"crypto/cipher"
 	"crypto/sha256"
 	"encoding/base64"
+	"fmt"
 )
 
 var (
@@ -20,11 +21,11 @@ func SHA256(data []byte) []byte {
 
 //Base64Decode Base64 解码
 func Base64Decode(encoded string) ([]byte, error) {
-	decoded, err := base64.StdEncoding.DecodeString(encoded)
-	if err != nil {
+	if decoded, err := base64.StdEncoding.DecodeString(encoded); err == nil {
+		return decoded, nil
+	} else {
 		return nil, err
 	}
-	return decoded, nil
 }
 
 //LoadKey 读取解密密钥
@@ -35,26 +36,28 @@ func LoadKey(EncryptKey string) []byte {
 
 //AESDecrypt AES 解密
 func AESDecrypt(EncryptKey string, ciphertext []byte) ([]byte, error) {
-	block, err := aes.NewCipher(LoadKey(EncryptKey))
-	if err != nil {
+	if EncryptKey == "" {
+		EncryptKey = "zG2nSeEfSHfvTCHy5LCcqtBbQehKNLXn"
+	}
+	if block, err := aes.NewCipher(LoadKey(EncryptKey)); err == nil {
+		blockModel, plainText := cipher.NewCBCDecrypter(block, IV), make([]byte, len(ciphertext))
+		blockModel.CryptBlocks(plainText, ciphertext)
+		return plainText[:(len(plainText) - int(plainText[len(plainText)-1]))], nil
+	} else {
 		return nil, err
 	}
-	blockModel, plainText := cipher.NewCBCDecrypter(block, IV), make([]byte, len(ciphertext))
-	blockModel.CryptBlocks(plainText, ciphertext)
-	return plainText[:(len(plainText) - int(plainText[len(plainText)-1]))], nil
 }
 
 //Decode 入口函数
-func Decode(str string, EncryptKey string) string {
-	var err error
-	var decoded, raw []byte
-	decoded, err = Base64Decode(str)
-	if err != nil {
-		panic(err)
+func Decode(content string, EncryptKey string) string {
+	if decoded, err := Base64Decode(content); err == nil {
+		if raw, ok := AESDecrypt(EncryptKey, decoded); ok == nil {
+			return string(raw)
+		} else {
+			fmt.Println("AESDecrypt Error:", ok)
+		}
+	} else {
+		fmt.Println("Base64Decode Error:", err)
 	}
-	raw, err = AESDecrypt(EncryptKey, decoded)
-	if err != nil {
-		panic(err)
-	}
-	return string(raw)
+	panic("Decrypt Error, Please Check Your Key!")
 }

@@ -29,7 +29,7 @@ func SfacgBookInit(bookID string, Index int, Locks *multi.GoLimit) {
 				fmt.Println("write file error, try again...")
 			}
 		}
-		catalogues := catalogue{}
+		catalogues := sfacgCatalogue{}
 		if catalogues.SfacgCatalogue() {
 			if Index > 0 {
 				fmt.Printf("\nIndex:%v\t\tNovelName:%vdownload complete!", Index, cfg.Vars.BookInfo.NovelName)
