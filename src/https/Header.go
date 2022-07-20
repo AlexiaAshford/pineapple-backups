@@ -53,7 +53,6 @@ func SfWeChatHeaders(TestCookie bool) map[string]string {
 }
 
 func SetHeaders(req *http.Request, TestCookie bool) {
-	cfg.Load()
 	var HeaderCollection map[string]string
 	if cfg.Vars.AppType == "sfacg" {
 		HeaderCollection = SfWeChatHeaders(TestCookie)

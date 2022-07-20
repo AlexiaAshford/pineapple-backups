@@ -40,11 +40,11 @@ func ShellLoginAccount(account, password string) {
 func ShellSearchBook(search string) {
 	var input int
 	if search != "" { // if search keyword is not empty, search book and download
-		result := src.GetSearchDetailed(search)
+		src.GetSearchDetailed(search)
 		fmt.Printf("please input the index of the book you want to download:")
 		if _, err := fmt.Scanln(&input); err == nil {
-			if input < len(result) {
-				ShellBookByBookid("", result[input].NovelID, "")
+			if input < len(cfg.Vars.BookInfoList) {
+				ShellBookByBookid("", cfg.Vars.BookInfoList[input].NovelID, "")
 			} else {
 				fmt.Println("index out of range, please input again")
 			}

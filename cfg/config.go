@@ -12,6 +12,7 @@ import (
 var Vars = structural.MyJsonPro{}
 
 func ConfigInit() {
+
 	if !CheckFileExist("./config.json") {
 		Vars.SaveFile = "save"
 		Vars.ConfigFile = "cache"
@@ -69,6 +70,7 @@ func SaveJson() {
 		if err := ioutil.WriteFile("config.json", save, 0777); err != nil {
 			fmt.Println("SaveJson:", err)
 		}
+		Load()
 	} else {
 		fmt.Println("SaveJson:", ok)
 	}

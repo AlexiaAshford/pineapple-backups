@@ -1,5 +1,15 @@
 package structural
 
+type Books struct {
+	NovelName  string
+	NovelID    string
+	IsFinish   bool
+	MarkCount  int
+	NovelCover string
+	AuthorName string
+	CharCount  int
+	SignStatus string
+}
 type MyJsonPro struct {
 	ConfigFile string `json:"ConfigFile"`
 	SaveFile   string `json:"SaveFile"`
@@ -18,4 +28,6 @@ type MyJsonPro struct {
 		} `json:"common_params"`
 		UserAgent string `json:"UserAgent"`
 	} `json:"cat"`
+	BookInfo     Books
+	BookInfoList []Books
 }

@@ -11,14 +11,14 @@ import (
 	"time"
 )
 
-func SfacgCatalogue(BookData Books) bool {
-	response := boluobao.GetCatalogueDetailedById(BookData.NovelID)
+func SfacgCatalogue() bool {
+	response := boluobao.GetCatalogueDetailedById(cfg.Vars.BookInfo.NovelID)
 	for _, data := range response.Data.VolumeList {
 		fmt.Println("\nstart download volume: ", data.Title)
 		bar := New(len(data.ChapterList))
 		for _, Chapter := range data.ChapterList {
 			if Chapter.OriginNeedFireMoney == 0 {
-				SfacgContent(len(data.ChapterList), BookData, strconv.Itoa(Chapter.ChapID), bar)
+				SfacgContent(len(data.ChapterList), strconv.Itoa(Chapter.ChapID), bar)
 			} else {
 				fmt.Println("this chapter is VIP and need fire money, skip it")
 			}
@@ -27,7 +27,7 @@ func SfacgCatalogue(BookData Books) bool {
 	return true
 }
 
-func SfacgContent(ChapLength int, BookData Books, ChapterId string, bar *ProgressBar) {
+func SfacgContent(ChapLength int, ChapterId string, bar *ProgressBar) {
 	if err := bar.Add(1); err != nil {
 		fmt.Println("bar error:", err)
 	} else {
@@ -40,15 +40,16 @@ func SfacgContent(ChapLength int, BookData Books, ChapterId string, bar *Progres
 			os.Exit(0)
 		} else {
 			fmt.Println(response.Status.Msg)
-			SfacgContent(ChapLength, BookData, ChapterId, bar)
+			SfacgContent(ChapLength, ChapterId, bar)
 		}
 	} else {
+
 		writeContent, SavePath := fmt.Sprintf("%v:%v\n%v\n%v\n\n\n",
 			response.Data.Title,
 			response.Data.AddTime,
 			response.Data.Expand.Content,
-			BookData.AuthorName,
-		), path.Join(cfg.Vars.SaveFile, BookData.NovelName+".txt")
+			cfg.Vars.BookInfo.AuthorName,
+		), path.Join(cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName+".txt")
 
 		for i := 0; i < 5; i++ {
 			if cfg.WriteFile(SavePath, writeContent, 0666) == nil {
