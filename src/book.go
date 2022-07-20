@@ -21,11 +21,16 @@ type Books struct {
 	SignStatus string
 }
 
-func BookInit(bookID string, Index int, Locks *multi.GoLimit) {
+func SfacgBookInit(bookID string, Index int, Locks *multi.GoLimit) {
 	if Locks != nil {
 		defer Locks.Done() // finish this goroutine when this function return
 	}
-	if BookData, err := GetBookDetailed(bookID); err == nil { // get book data by book id
+	if BookData, err := GetSfacgBookDetailed(bookID); err == nil { // get book data by book id
+		fmt.Println("BookName:", BookData.NovelName)
+		fmt.Println("BookID:", BookData.NovelID)
+		fmt.Println("AuthorName:", BookData.AuthorName)
+		fmt.Println("CharCount:", BookData.CharCount)
+		fmt.Println("MarkCount:", BookData.MarkCount)
 		fmt.Printf("开始下载:%s\n", BookData.NovelName)
 		cachepath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, BookData.NovelName)
 		for i := 0; i < 5; i++ {
@@ -46,16 +51,10 @@ func BookInit(bookID string, Index int, Locks *multi.GoLimit) {
 		fmt.Println("Error:", err)
 	}
 }
-func GetBookDetailed(bookId string) (Books, error) {
+func GetSfacgBookDetailed(bookId string) (Books, error) {
 	response := boluobao.GetBookDetailedById(bookId)
 	if response.Status.HTTPCode != 200 || response.Data.NovelName == "" {
 		return Books{}, errors.New(bookId + " is not a valid book number！")
-	} else {
-		fmt.Println("BookName:", response.Data.NovelName)
-		fmt.Println("BookID:", response.Data.NovelID)
-		fmt.Println("AuthorName:", response.Data.AuthorName)
-		fmt.Println("CharCount:", response.Data.CharCount)
-		fmt.Println("MarkCount:", response.Data.MarkCount)
 	}
 	return Books{
 		NovelName:  cfg.RegexpName(response.Data.NovelName),
@@ -81,7 +80,8 @@ func GetSearchDetailed(keyword string) []Books {
 		for index, bookInfo := range response.Data.Novels {
 			fmt.Println("Index:", index, "\t\t\tBookName:", bookInfo.NovelName)
 			searchList = append(
-				searchList, Books{
+				searchList,
+				Books{
 					NovelName:  cfg.RegexpName(bookInfo.NovelName),
 					NovelID:    strconv.Itoa(bookInfo.NovelID),
 					IsFinish:   bookInfo.IsFinish,

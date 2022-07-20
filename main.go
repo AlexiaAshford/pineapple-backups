@@ -62,12 +62,12 @@ func ShellBookByBookid(sfacgUrl, bookId string, downloadId any) {
 	if downloadId != "" {
 		switch downloadId.(type) {
 		case string:
-			src.BookInit(downloadId.(string), 0, nil)
+			src.SfacgBookInit(downloadId.(string), 0, nil)
 		case []string:
 			Locks := multi.NewGoLimit(7)
 			for BookIndex, BookId := range downloadId.([]string) {
 				Locks.Add()
-				src.BookInit(BookId, BookIndex, Locks)
+				src.SfacgBookInit(BookId, BookIndex, Locks)
 			}
 			Locks.WaitZero() // wait for all goroutines to finish
 		}
