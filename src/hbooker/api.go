@@ -4,8 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sf/cfg"
-	req "sf/src/hbooker/request"
-	"sf/src/hbooker/util"
+	req "sf/src/https"
 	structs "sf/structural/hbooker_structs"
 )
 
@@ -73,7 +72,7 @@ func GetContent(chapterId string) structs.ChapterInfo {
 	if err := json.Unmarshal(response, &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
-	bytes := util.Decode(result.Data.ChapterInfo.TxtContent, chapterKey)
+	bytes := Decode(result.Data.ChapterInfo.TxtContent, chapterKey)
 	result.Data.ChapterInfo.TxtContent = bytes
 	return result.Data.ChapterInfo
 }
