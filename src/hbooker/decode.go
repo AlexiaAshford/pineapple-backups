@@ -49,10 +49,10 @@ func AESDecrypt(EncryptKey string, ciphertext []byte) ([]byte, error) {
 }
 
 //Decode 入口函数
-func Decode(content string, EncryptKey string) string {
+func Decode(content string, EncryptKey string) []byte {
 	if decoded, err := Base64Decode(content); err == nil {
 		if raw, ok := AESDecrypt(EncryptKey, decoded); ok == nil {
-			return string(raw)
+			return raw
 		} else {
 			fmt.Println("AESDecrypt Error:", ok)
 		}

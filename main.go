@@ -89,16 +89,11 @@ func main() {
 	appType := flag.String("app", "sfacg", "input app type, like: app sfacg")
 	search := flag.String("search", "", "input search keyword, like: sf search keyword")
 	flag.Parse()
-	if *appType != "sfacg" {
-		cfg.Vars.AppType = *appType
-	} else {
-		cfg.Vars.AppType = "sfacg"
-	}
+	cfg.Vars.AppType = *appType
 	if *account != "" || *password != "" {
-		// if account and password are not empty, login
 		ShellLoginAccount(*account, *password)
 		ExitProgram = true
-	} else {
+	} else if cfg.Vars.AppType == "sfacg" {
 		if cfg.Vars.Sfacg.UserName == "" || cfg.Vars.Sfacg.Password == "" {
 			fmt.Println("you must input account and password, like: sf username password")
 			ExitProgram = true

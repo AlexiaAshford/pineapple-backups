@@ -26,7 +26,15 @@ func (books *BookInits) CatBookInit() {
 		defer books.Locks.Done() // finish this goroutine when this function return
 	}
 	response := HbookerAPI.GetBookDetailById(books.BookID)
-	fmt.Println(response)
+	if response.Code == "100000" {
+		books.CatBookData = response.Data.BookInfo
+		cfg.Vars.BookInfo = books.InitBookStruct()
+		if books.ShowBook {
+			books.ShowBookDetailed()
+		}
+	} else {
+		fmt.Println("request was failed!")
+	}
 }
 func (books *BookInits) SfacgBookInit() {
 	if books.Locks != nil {
@@ -69,13 +77,14 @@ func (books *BookInits) InitBookStruct() structural.Books {
 			SignStatus: books.SfacgBookData.SignStatus,
 		}
 	}
-	if cfg.Vars.AppType == "sfacg" {
+	if cfg.Vars.AppType == "cat" {
 		return structural.Books{
 			NovelName:  cfg.RegexpName(books.CatBookData.BookName),
 			NovelID:    books.CatBookData.BookID,
 			NovelCover: books.CatBookData.Cover,
 			AuthorName: books.CatBookData.AuthorName,
 			CharCount:  books.CatBookData.TotalWordCount,
+			MarkCount:  books.CatBookData.UpdateStatus,
 			//SignStatus: books.CatBookData.SignStatus,
 		}
 	}

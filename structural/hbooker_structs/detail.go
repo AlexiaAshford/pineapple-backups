@@ -1,7 +1,7 @@
 package hbooker_structs
 
 type DetailStruct struct {
-	Code         int           `json:"code"`
+	Code         string        `json:"code"`
 	Data         DetailData    `json:"data"`
 	ScrollChests []ScrollChest `json:"scroll_chests"`
 }
@@ -29,9 +29,6 @@ type BookInfo struct {
 	ReviewAmount    string          `json:"review_amount"`
 	RewardAmount    string          `json:"reward_amount"`
 	ChapterAmount   string          `json:"chapter_amount"`
-	IsOriginal      int             `json:"is_original"`
-	TotalClick      int             `json:"total_click"`
-	MonthClick      int             `json:"month_click"`
 	LastChapterInfo LastChapterInfo `json:"last_chapter_info"`
 	TagList         []TagList       `json:"tag_list"`
 	BookType        string          `json:"book_type"`
