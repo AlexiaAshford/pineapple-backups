@@ -22,9 +22,6 @@ type BookInits struct {
 }
 
 func (books *BookInits) CatBookInit() {
-	if books.Locks != nil {
-		defer books.Locks.Done() // finish this goroutine when this function return
-	}
 	response := HbookerAPI.GetBookDetailById(books.BookID)
 	if response.Code == "100000" {
 		books.CatBookData = response.Data.BookInfo
@@ -32,14 +29,13 @@ func (books *BookInits) CatBookInit() {
 		if books.ShowBook {
 			books.ShowBookDetailed()
 		}
+		savePath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName)
+		cfg.EncapsulationWrite(savePath, cfg.Vars.BookInfo.NovelName+"\n\n", 5, 0644)
 	} else {
 		fmt.Println("request was failed!")
 	}
 }
 func (books *BookInits) SfacgBookInit() {
-	if books.Locks != nil {
-		defer books.Locks.Done() // finish this goroutine when this function return
-	}
 	response := boluobao.GetBookDetailedById(books.BookID)
 	if response.Status.HTTPCode == 200 && response.Data.NovelName != "" {
 		books.SfacgBookData = response.Data
@@ -48,7 +44,7 @@ func (books *BookInits) SfacgBookInit() {
 			books.ShowBookDetailed()
 		}
 		savePath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName)
-		cfg.EncapsulationWrite(savePath, cfg.Vars.BookInfo.NovelName+"\n", 5, 0644)
+		cfg.EncapsulationWrite(savePath, cfg.Vars.BookInfo.NovelName+"\n\n", 5, 0644)
 	} else {
 		fmt.Println(books.BookID, "is not a valid book number！")
 	}

@@ -11,7 +11,7 @@ import (
 
 func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
 	var result structs.DivisionStruct
-	response := req.Get(DivisionIdByBookId+BookId, 0)
+	response := req.Get(WebSite+DivisionIdByBookId+BookId+QueryParams(), 0)
 	if err := json.Unmarshal(Decode(string(response), ""), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
@@ -20,24 +20,13 @@ func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
 
 func GetCatalogueByDivisionId(DivisionId string) []structs.ChapterList {
 	var result structs.ChapterStruct
-	response := req.Get(CatalogueDetailedByDivisionId+DivisionId, 0)
+	response := req.Get(WebSite+CatalogueDetailedByDivisionId+DivisionId+QueryParams(), 0)
 	if err := json.Unmarshal(Decode(string(response), ""), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
 	return result.Data.ChapterList
 }
 
-func Login(account, password string) {
-	var result structs.LoginStruct
-	response := req.Get(fmt.Sprintf(WebSite+LoginByAccount, account, password), 0)
-	if json.Unmarshal(Decode(string(response), ""), &result) == nil {
-		cfg.Vars.Cat.CommonParams.LoginToken = result.Data.LoginToken
-		cfg.Vars.Cat.CommonParams.Account = result.Data.ReaderInfo.Account
-		cfg.SaveJson()
-	} else {
-		fmt.Println("Login failed!")
-	}
-}
 func GetBookDetailById(bid string) structs.DetailStruct {
 	var result structs.DetailStruct
 	response := req.Get(WebSite+fmt.Sprintf(BookDetailedById, bid)+QueryParams(), 0)
@@ -50,14 +39,26 @@ func GetBookDetailById(bid string) structs.DetailStruct {
 	return structs.DetailStruct{}
 }
 
-func Search(bookName string, page int) []structs.BookList {
-	var result structs.SearchStruct
-	response := req.Get(WebSite+fmt.Sprintf(SearchDetailedByKeyword, page, bookName), 0)
-	if err := json.Unmarshal(Decode(string(response), ""), &result); err != nil {
-		fmt.Println("json unmarshal error:", err)
-	}
-	return result.Data.BookList
-}
+//func Search(bookName string, page int) []structs.BookList {
+//	var result structs.SearchStruct
+//	response := req.Get(WebSite+fmt.Sprintf(SearchDetailedByKeyword, page, bookName), 0)
+//	if err := json.Unmarshal(Decode(string(response), ""), &result); err != nil {
+//		fmt.Println("json unmarshal error:", err)
+//	}
+//	return result.Data.BookList
+//}
+
+//func Login(account, password string) {
+//	var result structs.LoginStruct
+//	response := req.Get(fmt.Sprintf(WebSite+LoginByAccount, account, password), 0)
+//	if json.Unmarshal(Decode(string(response), ""), &result) == nil {
+//		cfg.Vars.Cat.CommonParams.LoginToken = result.Data.LoginToken
+//		cfg.Vars.Cat.CommonParams.Account = result.Data.ReaderInfo.Account
+//		cfg.SaveJson()
+//	} else {
+//		fmt.Println("Login failed!")
+//	}
+//}
 
 // QueryParams Struct to map
 func QueryParams() string {
@@ -92,11 +93,4 @@ func GetContent(chapterId string) structs.ChapterInfo {
 	}
 	result.Data.ChapterInfo.TxtContent = string(Decode(result.Data.ChapterInfo.TxtContent, chapterKey))
 	return result.Data.ChapterInfo
-}
-
-func main() {
-	Login("", "")
-	GetContent("")
-	Search("", 0)
-
 }
