@@ -29,3 +29,12 @@ func WriteFile(fileName string, content string, perm os.FileMode) error {
 	}
 	return nil
 }
+func EncapsulationWrite(Path string, content string, retry int, perm os.FileMode) {
+	for i := 0; i < retry; i++ {
+		if WriteFile(Path, content, perm) == nil {
+			break
+		} else {
+			fmt.Println("write file error, try again:", i)
+		}
+	}
+}

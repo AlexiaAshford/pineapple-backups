@@ -51,10 +51,10 @@ func GetContentDetailedByCid(cid string) sfacg_structs.Content {
 	}
 }
 
-func GetSearchDetailedByKeyword(keyword string) sfacg_structs.Search {
+func GetSearchDetailedByKeyword(keyword string, page int) sfacg_structs.Search {
 	var SearchData sfacg_structs.Search
-	response := https.Get(fmt.Sprintf(WebSite+SearchDetailedByKeyword, url.QueryEscape(keyword)), 0)
-	if err := json.Unmarshal(response, &SearchData); err == nil {
+	searchAPI := fmt.Sprintf(WebSite+SearchDetailedByKeyword, url.QueryEscape(keyword), page)
+	if err := json.Unmarshal(https.Get(searchAPI, 0), &SearchData); err == nil {
 		return SearchData // return result of search
 	} else {
 		fmt.Println("Error:", err)

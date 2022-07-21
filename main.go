@@ -26,20 +26,20 @@ func ShellLoginAccount(account, password string) {
 	} else if password == "" {
 		fmt.Println("you must input password, like: sf password")
 	} else {
-		src.LoginAccount(account, password, 0)
+		//src.LoginAccount(account, password, 0)
 	}
 }
 
 func ShellBookByBookid(downloadId any) {
 	switch downloadId.(type) {
 	case string:
-		start := src.BookInits{BookID: downloadId.(string), Index: 0, Locks: nil}
+		start := src.BookInits{BookID: downloadId.(string), Index: 0, Locks: nil, ShowBook: true}
 		start.SfacgBookInit()
 	case []string:
 		Locks := multi.NewGoLimit(7)
 		for BookIndex, BookId := range downloadId.([]string) {
 			Locks.Add()
-			start := src.BookInits{BookID: BookId, Index: BookIndex, Locks: Locks}
+			start := src.BookInits{BookID: BookId, Index: BookIndex, Locks: Locks, ShowBook: true}
 			start.SfacgBookInit()
 		}
 		Locks.WaitZero() // wait for all goroutines to finish
