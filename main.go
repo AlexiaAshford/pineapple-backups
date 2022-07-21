@@ -33,12 +33,14 @@ func ShellLoginAccount(account, password string) {
 func ShellBookByBookid(downloadId any) {
 	switch downloadId.(type) {
 	case string:
-		src.SfacgBookInit(downloadId.(string), 0, nil)
+		start := src.BookInits{BookID: downloadId.(string), Index: 0, Locks: nil}
+		start.SfacgBookInit()
 	case []string:
 		Locks := multi.NewGoLimit(7)
 		for BookIndex, BookId := range downloadId.([]string) {
 			Locks.Add()
-			src.SfacgBookInit(BookId, BookIndex, Locks)
+			start := src.BookInits{BookID: BookId, Index: BookIndex, Locks: Locks}
+			start.SfacgBookInit()
 		}
 		Locks.WaitZero() // wait for all goroutines to finish
 	}
@@ -67,6 +69,7 @@ func init() {
 }
 
 func main() {
+	ExitProgram := false
 	bookId := flag.String("id", "", "input book id, like: sf download bookid")
 	sfacgUrl := flag.String("url", "", "input book id, like: sf url")
 	account := flag.String("account", "", "input account, like: sf username")
@@ -74,10 +77,11 @@ func main() {
 	appType := flag.String("app", "sfacg", "input app type, like: app sfacg")
 	search := flag.String("search", "", "input search keyword, like: sf search keyword")
 	flag.Parse()
-	cfg.Vars.AppType = *appType
-	ExitProgram := false
-
-	cfg.SaveJson() // save the config file
+	if *appType != "sfacg" {
+		cfg.Vars.AppType = *appType
+	} else {
+		cfg.Vars.AppType = "sfacg"
+	}
 	if *account != "" || *password != "" {
 		// if account and password are not empty, login
 		ShellLoginAccount(*account, *password)

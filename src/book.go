@@ -1,7 +1,6 @@
 package src
 
 import (
-	"errors"
 	"fmt"
 	"sf/cfg"
 	"sf/multi"
@@ -12,11 +11,20 @@ import (
 	"strconv"
 )
 
-func SfacgBookInit(bookID string, Index int, Locks *multi.GoLimit) {
-	if Locks != nil {
-		defer Locks.Done() // finish this goroutine when this function return
+type BookInits struct {
+	BookID string
+	Index  int
+	Locks  *multi.GoLimit
+}
+
+func (books *BookInits) SfacgBookInit() {
+	if books.Locks != nil {
+		defer books.Locks.Done() // finish this goroutine when this function return
 	}
-	if err := GetSfacgBookDetailed(bookID); err == nil { // get book data by book id
+	response := boluobao.GetBookDetailedById(books.BookID)
+	if response.Status.HTTPCode == 200 && response.Data.NovelName != "" {
+		cfg.Vars.BookInfo = InitBookStruct(response.Data)
+		books.ShowBookDetailed()
 		cachepath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName)
 		for i := 0; i < 5; i++ {
 			if cfg.WriteFile(cachepath, cfg.Vars.BookInfo.NovelName+"\n", 0644) == nil {
@@ -27,17 +35,17 @@ func SfacgBookInit(bookID string, Index int, Locks *multi.GoLimit) {
 		}
 		catalogues := sfacgCatalogue{}
 		if catalogues.SfacgCatalogue() {
-			if Index > 0 {
-				fmt.Printf("\nIndex:%v\t\tNovelName:%vdownload complete!", Index, cfg.Vars.BookInfo.NovelName)
+			if books.Index > 0 {
+				fmt.Printf("\nIndex:%v\t\tNovelName:%vdownload complete!", books.Index, cfg.Vars.BookInfo.NovelName)
 			} else {
 				fmt.Printf("\nNovelName:%vdownload complete!", cfg.Vars.BookInfo.NovelName)
 			}
 		}
 	} else {
-		fmt.Println("Error:", err)
+		fmt.Println(books.BookID, "is not a valid book number！")
 	}
 }
-func ShowDetailed() {
+func (books *BookInits) ShowBookDetailed() {
 	briefIntroduction := fmt.Sprintf(
 		"Name: %v\nBookID: %v\nAuthor: %v\nCount: %v\nMark: %v\n",
 		cfg.Vars.BookInfo.NovelName, cfg.Vars.BookInfo.NovelID,
@@ -73,15 +81,4 @@ func InitBookStruct(bookAny any) structural.Books {
 		}
 	}
 	return structural.Books{}
-}
-func GetSfacgBookDetailed(bookId string) error {
-	response := boluobao.GetBookDetailedById(bookId)
-	if response.Status.HTTPCode == 200 && response.Data.NovelName != "" {
-		cfg.Vars.BookInfo = InitBookStruct(response.Data)
-		ShowDetailed()
-		return nil
-	} else {
-		return errors.New(bookId + " is not a valid book number！")
-	}
-
 }
