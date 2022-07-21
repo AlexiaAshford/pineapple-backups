@@ -13,11 +13,12 @@ import (
 	"time"
 )
 
-type sfacgCatalogue struct {
-	ChapterBar *ProgressBar
+type Catalogue struct {
+	ChapterBar  *ProgressBar
+	ChapterList []structs.ChapterList
 }
 
-func (is *sfacgCatalogue) SfacgCatalogue() bool {
+func (is *Catalogue) SfacgCatalogue() bool {
 	response := boluobao.GetCatalogueDetailedById(cfg.Vars.BookInfo.NovelID)
 	for _, data := range response.Data.VolumeList {
 		fmt.Println("\nstart download volume: ", data.Title)
@@ -33,7 +34,7 @@ func (is *sfacgCatalogue) SfacgCatalogue() bool {
 	return true
 }
 
-func (is *sfacgCatalogue) SfacgContent(ChapterId string) {
+func (is *Catalogue) SfacgContent(ChapterId string) {
 	if err := is.ChapterBar.Add(1); err != nil {
 		fmt.Println("bar error:", err)
 	} else {
@@ -66,12 +67,7 @@ func (is *sfacgCatalogue) SfacgContent(ChapterId string) {
 	}
 }
 
-type catCatalogue struct {
-	ChapterBar  *ProgressBar
-	ChapterList []structs.ChapterList
-}
-
-func (is *catCatalogue) CatCatalogue() bool {
+func (is *Catalogue) CatCatalogue() bool {
 	for index, division := range HbookerAPI.GetDivisionIdByBookId("") {
 		fmt.Println("index:", index, "\t\tdivision:", division.DivisionName)
 		for _, chapter := range HbookerAPI.GetCatalogueByDivisionId(division.DivisionID) {
@@ -83,7 +79,7 @@ func (is *catCatalogue) CatCatalogue() bool {
 	return true
 }
 
-func (is *catCatalogue) SfacgContent(ChapterId string) {
+func (is *Catalogue) CatContent(ChapterId string) {
 	fmt.Println(ChapterId)
 
 }

@@ -47,20 +47,23 @@ func (books *BookInits) SfacgBookInit() {
 		if books.ShowBook {
 			books.ShowBookDetailed()
 		}
-		cfg.EncapsulationWrite(
-			fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName),
-			cfg.Vars.BookInfo.NovelName+"\n", 5, 0644,
-		) // write novel name to file for later use
-		catalogues := sfacgCatalogue{}
-		if catalogues.SfacgCatalogue() {
-			if books.Index > 0 {
-				fmt.Printf("\nIndex:%v\t\tNovelName:%vdownload complete!", books.Index, cfg.Vars.BookInfo.NovelName)
-			} else {
-				fmt.Printf("\nNovelName:%vdownload complete!", cfg.Vars.BookInfo.NovelName)
-			}
-		}
+		savePath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName)
+		cfg.EncapsulationWrite(savePath, cfg.Vars.BookInfo.NovelName+"\n", 5, 0644)
 	} else {
 		fmt.Println(books.BookID, "is not a valid book number！")
+	}
+}
+
+func (books *BookInits) CataloguesInit() {
+	catalogues := Catalogue{}
+	if cfg.Vars.AppType == "sfacg" {
+		if catalogues.SfacgCatalogue() {
+			fmt.Printf("\nNovelName:%vdownload complete!", cfg.Vars.BookInfo.NovelName)
+		}
+	} else if cfg.Vars.AppType == "cat" {
+		if catalogues.CatCatalogue() {
+			fmt.Printf("\nNovelName:%vdownload complete!", cfg.Vars.BookInfo.NovelName)
+		}
 	}
 }
 

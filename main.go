@@ -36,10 +36,12 @@ func ShellBookByBookid(downloadId any) {
 		if cfg.Vars.AppType == "sfacg" {
 			start := src.BookInits{BookID: downloadId.(string), Index: 0, Locks: nil, ShowBook: true}
 			start.SfacgBookInit()
+			start.CataloguesInit()
 		}
 		if cfg.Vars.AppType == "cat" {
 			start := src.BookInits{BookID: downloadId.(string), Index: 0, Locks: nil, ShowBook: true}
 			start.CatBookInit()
+			start.CataloguesInit()
 		}
 	case []string:
 		Locks := multi.NewGoLimit(7)
@@ -48,10 +50,12 @@ func ShellBookByBookid(downloadId any) {
 			if cfg.Vars.AppType == "sfacg" {
 				start := src.BookInits{BookID: BookId, Index: BookIndex, Locks: Locks, ShowBook: true}
 				start.SfacgBookInit()
+				start.CataloguesInit()
 			}
 			if cfg.Vars.AppType == "cat" {
 				start := src.BookInits{BookID: downloadId.(string), Index: 0, Locks: nil, ShowBook: true}
 				start.CatBookInit()
+				start.CataloguesInit()
 			}
 		}
 		Locks.WaitZero() // wait for all goroutines to finish
