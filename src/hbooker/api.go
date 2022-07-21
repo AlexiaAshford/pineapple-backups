@@ -39,7 +39,8 @@ func Login(account, password string) {
 }
 func GetBookDetailById(bid string) structs.BookInfo {
 	var result structs.DetailStruct
-	response := req.Get(fmt.Sprintf(BookDetailedById, bid), 0)
+	response := req.Get(WebSite+fmt.Sprintf(BookDetailedById, bid)+QueryParams(), 0)
+	//fmt.Println("GetBookDetailById", string(response))
 	if err := json.Unmarshal([]byte(Decode(string(response), "")), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 		return structs.BookInfo{}
@@ -49,16 +50,32 @@ func GetBookDetailById(bid string) structs.BookInfo {
 
 func Search(bookName string, page int) []structs.BookList {
 	var result structs.SearchStruct
-	response := req.Get(fmt.Sprintf(SearchDetailedByKeyword, page, bookName), 0)
+	response := req.Get(WebSite+fmt.Sprintf(SearchDetailedByKeyword, page, bookName), 0)
 	if err := json.Unmarshal([]byte(Decode(string(response), "")), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
 	return result.Data.BookList
 }
 
+// QueryParams Struct to map
+func QueryParams() string {
+	var Params string
+	QueryMap := map[string]interface{}{
+		"login_token":  cfg.Vars.Cat.CommonParams.LoginToken,
+		"account":      cfg.Vars.Cat.CommonParams.Account,
+		"app_version":  cfg.Vars.Cat.CommonParams.AppVersion,
+		"device_token": cfg.Vars.Cat.CommonParams.DeviceToken,
+	}
+	for k, v := range QueryMap {
+		Params += fmt.Sprintf("&%s=%s", k, v)
+	}
+	fmt.Println(Params)
+	return Params
+}
+
 func GetKeyByCid(chapterId string) string {
 	var result structs.KeyStruct
-	response := req.Get(ChapterKeyByCid+chapterId, 0)
+	response := req.Get(WebSite+ChapterKeyByCid+chapterId+QueryParams(), 0)
 	if err := json.Unmarshal([]byte(Decode(string(response), "")), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
@@ -68,7 +85,7 @@ func GetKeyByCid(chapterId string) string {
 func GetContent(chapterId string) structs.ChapterInfo {
 	var result structs.ContentStruct
 	chapterKey := GetKeyByCid(chapterId)
-	response := req.Get(fmt.Sprintf(ContentDetailedByCid, chapterId, chapterKey), 0)
+	response := req.Get(WebSite+fmt.Sprintf(ContentDetailedByCid, chapterId, chapterKey)+QueryParams(), 0)
 	if err := json.Unmarshal([]byte(Decode(string(response), "")), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
@@ -79,7 +96,6 @@ func GetContent(chapterId string) structs.ChapterInfo {
 
 func main() {
 	Login("", "")
-	GetBookDetailById("")
 	GetContent("")
 	Search("", 0)
 

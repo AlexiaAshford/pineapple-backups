@@ -5,6 +5,7 @@ import (
 	"sf/cfg"
 	"sf/multi"
 	"sf/src/boluobao"
+	HbookerAPI "sf/src/hbooker"
 	"sf/structural"
 	"sf/structural/hbooker_structs"
 	"sf/structural/sfacg_structs"
@@ -20,6 +21,13 @@ type BookInits struct {
 	CatBookData   hbooker_structs.BookInfo
 }
 
+func (books *BookInits) CatBookInit() {
+	if books.Locks != nil {
+		defer books.Locks.Done() // finish this goroutine when this function return
+	}
+	response := HbookerAPI.GetBookDetailById(books.BookID)
+	fmt.Println(response)
+}
 func (books *BookInits) SfacgBookInit() {
 	if books.Locks != nil {
 		defer books.Locks.Done() // finish this goroutine when this function return
@@ -68,7 +76,7 @@ func (books *BookInits) InitBookStruct() structural.Books {
 			NovelCover: books.CatBookData.Cover,
 			AuthorName: books.CatBookData.AuthorName,
 			CharCount:  books.CatBookData.TotalWordCount,
-			SignStatus: books.CatBookData.Discount,
+			//SignStatus: books.CatBookData.SignStatus,
 		}
 	}
 	return structural.Books{}

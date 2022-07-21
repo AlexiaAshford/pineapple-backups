@@ -11,7 +11,7 @@ func SearchDetailed(keyword string, page int) []string {
 	var searchResult []string
 	response := boluobao.GetSearchDetailedByKeyword(keyword, page)
 	if response.Status.HTTPCode != 200 || len(response.Data.Novels) == 0 {
-		return nil
+		return nil // if the search result is empty
 	} else {
 		fmt.Println("search result length:", len(response.Data.Novels))
 	}
