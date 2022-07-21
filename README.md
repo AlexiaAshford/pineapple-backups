@@ -3,17 +3,21 @@
   <br>Noa Himesaka<br>  
 </h1>
 <h3 align="center">
-    download books from the <a href="https://book.sfacg.com/">sfacg</a> weChat applets api
+    download books from the <a href="https://book.sfacg.com/">sfacg</a> and 
+    <a href="https://app.hbooker.com/">hbooker</a> to read them. 
+    
 </h3> 
 
-## **Functions** 
-  - login your account and save cookies to a ```config.json```
-  - input the book id and download the book to the local directory
-  - input url and download book text from the url
-  - search books by keyword, and download the result
+## **Functions**
+ - **download function is implemented for sfacg WeChat Api and hbooker Android API** 
+ - login your account and save cookies to a ```config.json```
+ - input the book id and download the book to the local directory
+ - input url and download book text from the url
+ - search books by keyword, and download the result
 
 ## **Example**
 
+- --app=```<type[sfacg / cat]>```
 - --account=```<account>```
 - --password=```<password>```
 - --id=```<bid>```
