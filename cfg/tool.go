@@ -20,19 +20,19 @@ func Mkdir(filePath string) {
 }
 
 // input int
-func InputInt(introduction string) int {
-	var input int
-	// if search keyword is not empty, search book and download
-	fmt.Printf(introduction)
-	if _, err := fmt.Scanln(&input); err == nil {
-		return input
-	} else {
-		fmt.Println(err)
-		InputInt(introduction)
-	}
-	fmt.Println("something wrong, return 0")
-	return 0
-}
+//func InputInt(introduction string) int {
+//	var input int
+//	// if search keyword is not empty, search book and download
+//	fmt.Printf(introduction)
+//	if _, err := fmt.Scanln(&input); err == nil {
+//		return input
+//	} else {
+//		fmt.Println(err)
+//		InputInt(introduction)
+//	}
+//	fmt.Println("something wrong, return 0")
+//	return 0
+//}
 
 // input str
 func InputStr(introduction string) string {
@@ -49,4 +49,13 @@ func InputStr(introduction string) string {
 func IsNum(s string) bool {
 	_, err := strconv.ParseFloat(s, 64)
 	return err == nil
+}
+
+// StrToInt string to int
+func StrToInt(str string) int {
+	if i, err := strconv.Atoi(str); err == nil {
+		return i
+	} else {
+		return 0
+	}
 }
