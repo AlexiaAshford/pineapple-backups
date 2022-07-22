@@ -38,21 +38,31 @@ func SfacgSearchDetailed(keyword string, page int) []string {
 	return searchResult
 }
 
+func TestApp(searchName string, page int) []string {
+	if cfg.Vars.AppType == "cat" {
+		return CatSearchDetailed(searchName, page)
+	} else if cfg.Vars.AppType == "sfacg" {
+		return SfacgSearchDetailed(searchName, page)
+	} else {
+		panic("app type is not correct")
+	}
+}
+
 func SearchBook(searchName string) string {
 	var page int
-	searchResult := SfacgSearchDetailed(searchName, 0)
+	searchResult := TestApp(searchName, 0)
 	for {
 		keyword := cfg.InputStr("Please input search keyword:")
 		if keyword == "next" || keyword == "n" {
 			page += 1 // next page
-			searchResult = SfacgSearchDetailed(searchName, page+1)
+			searchResult = TestApp(searchName, page+1)
 		} else if keyword == "previous" || keyword == "p" {
 			if page > 0 {
 				page -= 1 // previous page
-				searchResult = SfacgSearchDetailed(searchName, page)
+				searchResult = TestApp(searchName, page)
 			} else {
 				fmt.Println("page is 0, cannot go previous")
-				searchResult = SfacgSearchDetailed(searchName, 0)
+				searchResult = TestApp(searchName, 0)
 			}
 		} else {
 			if BookID := ReturnBookID(keyword, searchResult); BookID != "" {
