@@ -10,7 +10,7 @@ import (
 	"sf/src"
 )
 
-func getBID(url string) string {
+func ExtractBookID(url string) string {
 	if url != "" {
 		bookID := regexp.MustCompile(`(\d+)`).FindStringSubmatch(url)
 		if len(bookID) > 1 {
@@ -80,18 +80,26 @@ func init() {
 		}
 	}
 }
-
-func main() {
-	ExitProgram := false
+func ParseCommand() map[string]string {
+	commandMap := make(map[string]string)
 	download := flag.String("download", "", "input book id or url, like:download <bookid/url>")
 	account := flag.String("account", "", "input account, like: sf username")
 	password := flag.String("password", "", "input password, like: sf password")
 	appType := flag.String("app", "sfacg", "input app type, like: app sfacg")
 	search := flag.String("search", "", "input search keyword, like: sf search keyword")
 	flag.Parse()
+	commandMap["book_id"] = ExtractBookID(*download)
+	commandMap["account"] = *account
+	commandMap["password"] = *password
+	commandMap["app_type"] = *appType
+	commandMap["key_word"] = *search
 	cfg.Vars.AppType = *appType
-	if *account != "" || *password != "" {
-		ShellLoginAccount(*account, *password)
+	return commandMap
+}
+func main() {
+	command, ExitProgram := ParseCommand(), false
+	if command["account"] != "" || command["password"] != "" {
+		ShellLoginAccount(command["account"], command["password"])
 		ExitProgram = true
 	} else if cfg.Vars.AppType == "sfacg" {
 		if cfg.Vars.Sfacg.UserName == "" || cfg.Vars.Sfacg.Password == "" {
@@ -101,14 +109,16 @@ func main() {
 			src.LoginAccount(cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password, 0)
 		}
 	}
-	if *search != "" {
-		if NovelId := src.SearchBook(*search); NovelId != "" {
+	if command["key_word"] != "" {
+		if NovelId := src.SearchBook(command["key_word"]); NovelId != "" {
 			shell_book_download(NovelId)
+		} else {
+			fmt.Println("no book found")
 		}
 		ExitProgram = true
 	}
-	if getBID(*download) != "" {
-		shell_book_download(getBID(*download))
+	if command["book_id"] != "" {
+		shell_book_download(command["book_id"])
 		ExitProgram = true
 	}
 
