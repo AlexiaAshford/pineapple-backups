@@ -10,7 +10,7 @@ import (
 	"sf/src"
 )
 
-func getBookID(url string) string {
+func getBID(url string) string {
 	if url != "" {
 		bookID := regexp.MustCompile(`(\d+)`).FindStringSubmatch(url)
 		if len(bookID) > 1 {
@@ -20,7 +20,6 @@ func getBookID(url string) string {
 	return ""
 }
 func ShellLoginAccount(account, password string) {
-
 	if account == "" {
 		fmt.Println("you must input account, like: sf username")
 	} else if password == "" {
@@ -30,7 +29,7 @@ func ShellLoginAccount(account, password string) {
 	}
 }
 
-func ShellBookByBookid(downloadId any) {
+func shell_book_download(downloadId any) {
 	switch downloadId.(type) {
 	case string:
 		start := src.BookInits{BookID: downloadId.(string), Index: 0, Locks: nil, ShowBook: true}
@@ -84,8 +83,7 @@ func init() {
 
 func main() {
 	ExitProgram := false
-	bookId := flag.String("id", "", "input book id, like: sf download bookid")
-	sfacgUrl := flag.String("url", "", "input book id, like: sf url")
+	download := flag.String("download", "", "input book id or url, like:download <bookid/url>")
 	account := flag.String("account", "", "input account, like: sf username")
 	password := flag.String("password", "", "input password, like: sf password")
 	appType := flag.String("app", "sfacg", "input app type, like: app sfacg")
@@ -105,18 +103,15 @@ func main() {
 	}
 	if *search != "" {
 		if NovelId := src.SearchBook(*search); NovelId != "" {
-			ShellBookByBookid(NovelId)
+			shell_book_download(NovelId)
 		}
 		ExitProgram = true
 	}
-	if *bookId != "" || *sfacgUrl != "" {
-		if getBookID(*sfacgUrl) != "" {
-			ShellBookByBookid(getBookID(*sfacgUrl))
-		} else if *bookId != "" {
-			ShellBookByBookid(*bookId)
-		}
+	if getBID(*download) != "" {
+		shell_book_download(getBID(*download))
 		ExitProgram = true
 	}
+
 	if ExitProgram {
 		os.Exit(0) // exit the program if no error
 	}

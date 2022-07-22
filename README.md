@@ -9,19 +9,18 @@
 </h3> 
 
 ## **Functions**
- - **download function is implemented for sfacg WeChat Api and hbooker Android API** 
+ - download function is implemented for sfacg WeChat Api and hbooker Android API
  - login your account and save cookies to a ```config.json```
- - input the book id and download the book to the local directory
+ - input the book id or url and download the book to the local directory
  - input url and download book text from the url
- - search books by keyword, and download the result
+ - search books by keyword,and download the search result
 
 ## **Example**
 
 - --app=```<type[sfacg / cat]>```
 - --account=```<account>```
 - --password=```<password>```
-- --id=```<bid>```
-- --url=```<url>```
+- --download=```<type[bid / url]>``` 
 - --search=```<keyword>```
  
 # **Disclaimers**
