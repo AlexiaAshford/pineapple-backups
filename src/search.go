@@ -4,10 +4,26 @@ import (
 	"fmt"
 	"sf/cfg"
 	"sf/src/boluobao"
+	"sf/src/hbooker"
 	"strconv"
 )
 
-func SearchDetailed(keyword string, page int) []string {
+func CatSearchDetailed(searchName string, page int) []string {
+	var searchResult []string
+	response := HbookerAPI.Search(searchName, page)
+	if response.Code == "100000" {
+		for index, book := range response.Data.BookList {
+			fmt.Println("Index:", index, "\t\t\tBookName:", book.BookName)
+			searchResult = append(searchResult, book.BookID)
+		}
+	} else {
+		fmt.Println("search failed, code:", response.Code)
+		return nil
+	}
+	return searchResult
+}
+
+func SfacgSearchDetailed(keyword string, page int) []string {
 	var searchResult []string
 	response := boluobao.GetSearchDetailedByKeyword(keyword, page)
 	if response.Status.HTTPCode != 200 || len(response.Data.Novels) == 0 {
@@ -24,19 +40,19 @@ func SearchDetailed(keyword string, page int) []string {
 
 func SearchBook(searchName string) string {
 	var page int
-	searchResult := SearchDetailed(searchName, 0)
+	searchResult := SfacgSearchDetailed(searchName, 0)
 	for {
 		keyword := cfg.InputStr("Please input search keyword:")
 		if keyword == "next" || keyword == "n" {
 			page += 1 // next page
-			searchResult = SearchDetailed(searchName, page+1)
+			searchResult = SfacgSearchDetailed(searchName, page+1)
 		} else if keyword == "previous" || keyword == "p" {
 			if page > 0 {
 				page -= 1 // previous page
-				searchResult = SearchDetailed(searchName, page)
+				searchResult = SfacgSearchDetailed(searchName, page)
 			} else {
 				fmt.Println("page is 0, cannot go previous")
-				searchResult = SearchDetailed(searchName, 0)
+				searchResult = SfacgSearchDetailed(searchName, 0)
 			}
 		} else {
 			if BookID := ReturnBookID(keyword, searchResult); BookID != "" {

@@ -1,7 +1,10 @@
 package cfg
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"path"
 	"regexp"
@@ -19,22 +22,7 @@ func Mkdir(filePath string) {
 	}
 }
 
-// input int
-//func InputInt(introduction string) int {
-//	var input int
-//	// if search keyword is not empty, search book and download
-//	fmt.Printf(introduction)
-//	if _, err := fmt.Scanln(&input); err == nil {
-//		return input
-//	} else {
-//		fmt.Println(err)
-//		InputInt(introduction)
-//	}
-//	fmt.Println("something wrong, return 0")
-//	return 0
-//}
-
-// input str
+// InputStr input str
 func InputStr(introduction string) string {
 	var input string
 	// if search keyword is not empty, search book and download
@@ -59,3 +47,27 @@ func StrToInt(str string) int {
 		return 0
 	}
 }
+
+func FormatJson(jsonString []byte) {
+	var str bytes.Buffer
+	if err := json.Indent(&str, jsonString, "", "    "); err == nil {
+		fmt.Println(str.String())
+	} else {
+		log.Fatalln(err)
+	}
+}
+
+// input int
+//func InputInt(introduction string) int {
+//	var input int
+//	// if search keyword is not empty, search book and download
+//	fmt.Printf(introduction)
+//	if _, err := fmt.Scanln(&input); err == nil {
+//		return input
+//	} else {
+//		fmt.Println(err)
+//		InputInt(introduction)
+//	}
+//	fmt.Println("something wrong, return 0")
+//	return 0
+//}

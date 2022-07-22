@@ -39,14 +39,14 @@ func GetBookDetailById(bid string) structs.DetailStruct {
 	return structs.DetailStruct{}
 }
 
-//func Search(bookName string, page int) []structs.BookList {
-//	var result structs.SearchStruct
-//	response := req.Get(WebSite+fmt.Sprintf(SearchDetailedByKeyword, page, bookName), 0)
-//	if err := json.Unmarshal(Decode(string(response), ""), &result); err != nil {
-//		fmt.Println("json unmarshal error:", err)
-//	}
-//	return result.Data.BookList
-//}
+func Search(bookName string, page int) structs.SearchStruct {
+	var result structs.SearchStruct
+	response := req.Get(WebSite+fmt.Sprintf(SearchDetailedByKeyword, page, bookName)+QueryParams(), 0)
+	if err := json.Unmarshal(Decode(string(response), ""), &result); err != nil {
+		fmt.Println("json unmarshal error:", err)
+	}
+	return result
+}
 
 //func Login(account, password string) {
 //	var result structs.LoginStruct
