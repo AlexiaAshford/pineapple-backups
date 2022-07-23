@@ -19,6 +19,7 @@ func ExtractBookID(url string) string {
 	}
 	return ""
 }
+
 func ShellLoginAccount(account, password string) {
 	if account == "" {
 		fmt.Println("you must input account, like: sf username")
@@ -80,6 +81,7 @@ func ParseCommand() map[string]string {
 	cfg.Vars.AppType = *appType
 	return commandMap
 }
+
 func TestCatAccount() bool {
 	if cfg.Vars.AppType == "cat" {
 		if cfg.Vars.Cat.Params.Account != "" && cfg.Vars.Cat.Params.LoginToken != "" {
@@ -101,6 +103,7 @@ func TestCatAccount() bool {
 	}
 	return false
 }
+
 func TestSfAccount(account string, password string) bool {
 	if cfg.Vars.AppType == "sfacg" {
 		if account != "" && password != "" {
