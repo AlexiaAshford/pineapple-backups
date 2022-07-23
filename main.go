@@ -61,18 +61,6 @@ func shellBookDownload(downloadId any) {
 	os.Exit(0) // exit the program if no error
 }
 
-func init() {
-	cfg.ConfigInit()
-	if len(os.Args) <= 1 {
-		fmt.Println("please input parameters, like: sf login username password")
-		fmt.Println("or: sf search keyword")
-		fmt.Println("or: sf bookid")
-		fmt.Println("or: sf url")
-		fmt.Println("or: sf account")
-		fmt.Println("or: sf password")
-		os.Exit(1)
-	}
-}
 func ParseCommand() map[string]string {
 	commandMap := make(map[string]string)
 	download := flag.String("download", "", "input book id or url, like:download <bookid/url>")
@@ -140,6 +128,13 @@ func TestSfAccount(account string, password string) bool {
 	return true
 }
 
+func init() {
+	cfg.ConfigInit()
+	if len(os.Args) <= 1 {
+		fmt.Println("please input command line parameters!")
+		os.Exit(1)
+	}
+}
 func main() {
 	command, ExitProgram := ParseCommand(), false
 	if TestSfAccount(command["account"], command["password"]) {
