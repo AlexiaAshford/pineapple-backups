@@ -52,16 +52,25 @@ func CheckFileExist(fileName string) bool {
 
 var FileLock = &sync.Mutex{}
 
+func ReadConfig(fileName string) []byte {
+	if fileName == "" {
+		fileName = "./config.json"
+	}
+	if data, err := ioutil.ReadFile(fileName); err == nil {
+		return data
+	} else {
+		fmt.Println("ReadConfig:", err)
+	}
+	return nil
+}
+
 func Load() {
 	FileLock.Lock()
 	defer FileLock.Unlock()
-	if data, err := ioutil.ReadFile("config.json"); err == nil {
-		if ok := json.Unmarshal(data, &Vars); ok != nil {
-			fmt.Println("Load:", ok)
-		}
-	} else {
-		fmt.Println("Load:", err)
+	if ok := json.Unmarshal(ReadConfig(""), &Vars); ok != nil {
+		fmt.Println("Load:", ok)
 	}
+
 }
 
 func SaveJson() {

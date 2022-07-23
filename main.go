@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"regexp"
 	"sf/cfg"
@@ -76,11 +75,7 @@ func ParseCommand() map[string]string {
 	commandMap["app_type"] = *appType
 	commandMap["key_word"] = *search
 	if *showConfig {
-		if data, err := ioutil.ReadFile("config.json"); err == nil {
-			cfg.FormatJson(data)
-		} else {
-			fmt.Println("showConfig:", err)
-		}
+		cfg.FormatJson(cfg.ReadConfig(""))
 	}
 	cfg.Vars.AppType = *appType
 	return commandMap

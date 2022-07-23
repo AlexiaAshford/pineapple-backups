@@ -38,7 +38,7 @@ func (is *Catalogue) SfacgContent(ChapterId string) {
 	if err := is.ChapterBar.Add(1); err != nil {
 		fmt.Println("bar error:", err)
 	} else {
-		time.Sleep(time.Second * time.Duration(rand.Intn(4)))
+		time.Sleep(time.Second * time.Duration(rand.Intn(2)))
 	}
 	response := boluobao.GetContentDetailedByCid(ChapterId)
 	if response.Status.HTTPCode != 200 {
