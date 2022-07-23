@@ -2,6 +2,7 @@ package cfg
 
 import (
 	"fmt"
+	"io"
 	"os"
 )
 
@@ -37,4 +38,21 @@ func EncapsulationWrite(Path string, content string, retry int, perm os.FileMode
 			fmt.Println("write file error, try again:", i)
 		}
 	}
+}
+func FileSize(FilePath string) int {
+	if file, err := os.Open(FilePath); err != nil {
+		fmt.Println("open file error:", err)
+	} else {
+		sum := 0
+		buf := make([]byte, 2014)
+		for {
+			n, err := file.Read(buf)
+			sum += n
+			if err == io.EOF {
+				break
+			}
+		}
+		return sum
+	}
+	return 0
 }

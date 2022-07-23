@@ -70,14 +70,6 @@ func init() {
 		fmt.Println("or: sf account")
 		fmt.Println("or: sf password")
 		os.Exit(1)
-	} else {
-		if cfg.Vars.Sfacg.Cookie != "" {
-			if src.AccountDetailed() == "需要登录才能访问该资源" {
-				fmt.Println("cookie is Invalid，please login first")
-			}
-		} else {
-			fmt.Println("cookie is empty, please login first!")
-		}
 	}
 }
 func ParseCommand() map[string]string {
@@ -96,18 +88,56 @@ func ParseCommand() map[string]string {
 	cfg.Vars.AppType = *appType
 	return commandMap
 }
+func TestCatAccount() bool {
+	if cfg.Vars.AppType == "cat" {
+		if cfg.Vars.Cat.Params.Account != "" && cfg.Vars.Cat.Params.LoginToken != "" {
+			return false
+		}
+		for {
+			LoginToken := cfg.InputStr("you must input 32 characters login token:")
+			if len(LoginToken) != 32 {
+				fmt.Println("Login token is 32 characters, please input again:")
+			} else {
+				cfg.Vars.Cat.Params.LoginToken = LoginToken
+				cfg.SaveJson()
+				break
+			}
+		}
+		cfg.Vars.Cat.Params.Account = cfg.InputStr("you must input account:")
+		cfg.SaveJson()
+		return false
+	}
+	return false
+}
+func TestSfAccount(account string, password string) bool {
+	if cfg.Vars.AppType == "sfacg" {
+		if account != "" && password != "" {
+			ShellLoginAccount(account, password)
+		} else if cfg.Vars.Sfacg.UserName != "" || cfg.Vars.Sfacg.Password != "" {
+			if cfg.Vars.Sfacg.Cookie != "" {
+				if src.AccountDetailed() == "需要登录才能访问该资源" {
+					fmt.Printf("cookie is Invalid,attempt to auto login!\naccount:%v\npassword:%v\n",
+						cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password)
+					ShellLoginAccount(cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password)
+				}
+			} else {
+				fmt.Printf("cookie is empty,attempt to auto login!\naccount:%v\npassword:%v\n",
+					cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password)
+				ShellLoginAccount(cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password)
+			}
+			return false
+		}
+	}
+	return true
+}
+
 func main() {
 	command, ExitProgram := ParseCommand(), false
-	if command["account"] != "" || command["password"] != "" {
-		ShellLoginAccount(command["account"], command["password"])
+	if TestSfAccount(command["account"], command["password"]) {
 		ExitProgram = true
-	} else if cfg.Vars.AppType == "sfacg" {
-		if cfg.Vars.Sfacg.UserName == "" || cfg.Vars.Sfacg.Password == "" {
-			fmt.Println("you must input account and password, like: sf username password")
-			ExitProgram = true
-		} else {
-			src.LoginAccount(cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password, 0)
-		}
+	}
+	if TestCatAccount() {
+		ExitProgram = true
 	}
 	if command["key_word"] != "" {
 		if NovelId := src.SearchBook(command["key_word"]); NovelId != "" {

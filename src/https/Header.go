@@ -32,8 +32,8 @@ func CatAppHeaders() map[string]string {
 	HeaderCollection := make(map[string]string)
 	HeaderCollection["User-Agent"] = cfg.Vars.Cat.UserAgent
 	HeaderCollection["Content-Type"] = "application/json"
-	HeaderCollection["Cookie"] = "Account:" + cfg.Vars.Cat.CommonParams.Account +
-		"; LoginToken:" + cfg.Vars.Cat.CommonParams.LoginToken
+	HeaderCollection["Cookie"] = "Account:" + cfg.Vars.Cat.Params.Account +
+		"; LoginToken:" + cfg.Vars.Cat.Params.LoginToken
 	return HeaderCollection
 }
 
@@ -59,7 +59,7 @@ func SetHeaders(req *http.Request, TestCookie bool) {
 	} else if cfg.Vars.AppType == "cat" {
 		HeaderCollection = CatAppHeaders()
 	} else {
-		fmt.Println("AppType is invalid, please check config file")
+		fmt.Println(cfg.Vars.AppType, "AppType is invalid, please check config file")
 		os.Exit(1)
 	}
 

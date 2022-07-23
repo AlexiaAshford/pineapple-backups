@@ -12,13 +12,12 @@ import (
 var Vars = structural.MyJsonPro{}
 
 func ConfigInit() {
-
-	if !CheckFileExist("./config.json") {
+	if !CheckFileExist("./config.json") || FileSize("./config.json") == 0 {
 		Vars.SaveFile = "save"
 		Vars.ConfigFile = "cache"
 		Vars.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
-		Vars.Cat.CommonParams.DeviceToken = "ciweimao_"
-		Vars.Cat.CommonParams.AppVersion = "2.9.290"
+		Vars.Cat.Params.DeviceToken = "ciweimao_"
+		Vars.Cat.Params.AppVersion = "2.9.290"
 		SaveJson()
 	}
 	Load()

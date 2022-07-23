@@ -20,7 +20,7 @@ type MyJsonPro struct {
 		Cookie   string `json:"Cookie"`
 	} `json:"sfacg"`
 	Cat struct {
-		CommonParams struct {
+		Params struct {
 			LoginToken  string `json:"login_token"`
 			Account     string `json:"account"`
 			AppVersion  string `json:"app_version"`

@@ -29,7 +29,7 @@ func SfacgSearchDetailed(keyword string, page int) []string {
 	if response.Status.HTTPCode != 200 || len(response.Data.Novels) == 0 {
 		return nil // if the search result is empty
 	} else {
-		fmt.Println("search result length:", len(response.Data.Novels))
+		fmt.Println("this page has", len(response.Data.Novels), "novels")
 	}
 	for index, book := range response.Data.Novels {
 		fmt.Println("Index:", index, "\t\t\tBookName:", book.NovelName)
