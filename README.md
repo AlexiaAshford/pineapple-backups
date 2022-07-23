@@ -22,6 +22,7 @@
 - --password=```<password>```
 - --download=```<type[bid / url]>``` 
 - --search=```<keyword>```
+- --show  < show the config.json file >
  
 # **Disclaimers**
 - This tool is for learning only. Please delete it from your computer within 24 hours after downloading.

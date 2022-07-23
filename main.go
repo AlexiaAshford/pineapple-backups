@@ -64,11 +64,11 @@ func shellBookDownload(downloadId any) {
 func ParseCommand() map[string]string {
 	commandMap := make(map[string]string)
 	download := flag.String("download", "", "input book id or url, like:download <bookid/url>")
-	account := flag.String("account", "", "input account, like: sf username")
-	password := flag.String("password", "", "input password, like: sf password")
+	account := flag.String("account", "", "input account")
+	password := flag.String("password", "", "input password")
 	appType := flag.String("app", "sfacg", "input app type, like: app sfacg")
-	search := flag.String("search", "", "input search keyword, like: sf search keyword")
-	showConfig := flag.Bool("show", false, "show config, like: sf show config")
+	search := flag.String("search", "", "input search keyword, like: search keyword")
+	showConfig := flag.Bool("show", false, "show config, like: show config")
 	flag.Parse()
 	commandMap["book_id"] = ExtractBookID(*download)
 	commandMap["account"] = *account
