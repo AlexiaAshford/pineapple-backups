@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"regexp"
 	"sf/cfg"
@@ -29,7 +30,7 @@ func ShellLoginAccount(account, password string) {
 	}
 }
 
-func shell_book_download(downloadId any) {
+func shellBookDownload(downloadId any) {
 	switch downloadId.(type) {
 	case string:
 		start := src.BookInits{BookID: downloadId.(string), Index: 0, Locks: nil, ShowBook: true}
@@ -79,12 +80,20 @@ func ParseCommand() map[string]string {
 	password := flag.String("password", "", "input password, like: sf password")
 	appType := flag.String("app", "sfacg", "input app type, like: app sfacg")
 	search := flag.String("search", "", "input search keyword, like: sf search keyword")
+	showConfig := flag.Bool("show", false, "show config, like: sf show config")
 	flag.Parse()
 	commandMap["book_id"] = ExtractBookID(*download)
 	commandMap["account"] = *account
 	commandMap["password"] = *password
 	commandMap["app_type"] = *appType
 	commandMap["key_word"] = *search
+	if *showConfig {
+		if data, err := ioutil.ReadFile("config.json"); err == nil {
+			cfg.FormatJson(data)
+		} else {
+			fmt.Println("showConfig:", err)
+		}
+	}
 	cfg.Vars.AppType = *appType
 	return commandMap
 }
@@ -141,14 +150,14 @@ func main() {
 	}
 	if command["key_word"] != "" {
 		if NovelId := src.SearchBook(command["key_word"]); NovelId != "" {
-			shell_book_download(NovelId)
+			shellBookDownload(NovelId)
 		} else {
 			fmt.Println("no book found")
 		}
 		ExitProgram = true
 	}
 	if command["book_id"] != "" {
-		shell_book_download(command["book_id"])
+		shellBookDownload(command["book_id"])
 		ExitProgram = true
 	}
 
