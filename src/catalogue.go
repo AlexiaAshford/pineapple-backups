@@ -9,6 +9,7 @@ import (
 	"sf/src/boluobao"
 	"sf/src/hbooker"
 	structs "sf/structural/hbooker_structs"
+	"sf/structural/sfacg_structs"
 	"strconv"
 	"time"
 )
@@ -50,14 +51,20 @@ func (is *Catalogue) SfacgContent(ChapterId string) {
 			is.SfacgContent(ChapterId)
 		}
 	} else {
-		writeContent, SavePath := fmt.Sprintf("%v:%v\n%v\n%v\n\n\n",
-			response.Data.Title,
-			response.Data.AddTime,
-			response.Data.Expand.Content,
-			cfg.Vars.BookInfo.AuthorName,
-		), path.Join(cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName+".txt")
-		cfg.EncapsulationWrite(SavePath, writeContent, 5, 0666)
+		makeContentInformation(response)
 	}
+}
+
+func makeContentInformation(response sfacg_structs.Content) {
+	writeContent := fmt.Sprintf("%v:%v\n%v\n%v\n\n\n",
+		response.Data.Title,
+		response.Data.AddTime,
+		response.Data.Expand.Content,
+		cfg.Vars.BookInfo.AuthorName,
+	)
+	SavePath := path.Join(cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName+".txt")
+	cfg.EncapsulationWrite(SavePath, writeContent, 5, "a")
+
 }
 
 func (is *Catalogue) CatCatalogue() bool {
@@ -89,6 +96,6 @@ func (is *Catalogue) CatContent(ChapterId string) {
 		response.TxtContent,
 		cfg.Vars.BookInfo.AuthorName,
 	), path.Join(cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName+".txt")
-	cfg.EncapsulationWrite(SavePath, writeContent, 5, 0666)
+	cfg.EncapsulationWrite(SavePath, writeContent, 5, "a")
 
 }

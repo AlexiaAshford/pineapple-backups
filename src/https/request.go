@@ -12,7 +12,7 @@ func Request(method string, URL string, dataJson string) ([]byte, []*http.Cookie
 		panic("Error: method must be GET or POST or PUT, but now is " + method)
 	}
 	if request, err := http.NewRequest(method, URL, bytes.NewBuffer([]byte(dataJson))); err != nil {
-		fmt.Printf("NewRequest %v error:%v", method, err)
+		fmt.Printf("NewRequest %v error:%v\n", method, err)
 	} else {
 		if URL == "https://minipapi.sfacg.com/pas/mpapi/sessions" {
 			SetHeaders(request, false)

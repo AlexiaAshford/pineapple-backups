@@ -30,7 +30,7 @@ func (books *BookInits) CatBookInit() {
 			books.ShowBookDetailed()
 		}
 		savePath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName)
-		cfg.EncapsulationWrite(savePath, cfg.Vars.BookInfo.NovelName+"\n\n", 5, 0644)
+		cfg.EncapsulationWrite(savePath, cfg.Vars.BookInfo.NovelName+"\n\n", 5, "w")
 	} else {
 		fmt.Println("request was failed!")
 	}
@@ -44,7 +44,7 @@ func (books *BookInits) SfacgBookInit() {
 			books.ShowBookDetailed()
 		}
 		savePath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName)
-		cfg.EncapsulationWrite(savePath, cfg.Vars.BookInfo.NovelName+"\n\n", 5, 0644)
+		cfg.EncapsulationWrite(savePath, cfg.Vars.BookInfo.NovelName+"\n\n", 5, "w")
 	} else {
 		fmt.Println(books.BookID, "is not a valid book number！")
 	}
