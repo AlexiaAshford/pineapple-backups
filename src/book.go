@@ -30,7 +30,9 @@ func (books *BookInits) CatBookInit() {
 			books.ShowBookDetailed()
 		}
 		savePath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName)
-		cfg.EncapsulationWrite(savePath, cfg.Vars.BookInfo.NovelName+"\n\n", 5, "w")
+		if !cfg.CheckFileExist(savePath) {
+			cfg.EncapsulationWrite(savePath, cfg.Vars.BookInfo.NovelName+"\n\n", 5, "w")
+		}
 	} else {
 		fmt.Println("request was failed!")
 	}
@@ -43,8 +45,12 @@ func (books *BookInits) SfacgBookInit() {
 		if books.ShowBook {
 			books.ShowBookDetailed()
 		}
+
 		savePath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName)
-		cfg.EncapsulationWrite(savePath, cfg.Vars.BookInfo.NovelName+"\n\n", 5, "w")
+		if !cfg.CheckFileExist(savePath) {
+			cfg.EncapsulationWrite(savePath, cfg.Vars.BookInfo.NovelName+"\n\n", 5, "w")
+		}
+
 	} else {
 		fmt.Println(books.BookID, "is not a valid book number！")
 	}
@@ -90,7 +96,7 @@ func (books *BookInits) InitBookStruct() structural.Books {
 	return structural.Books{}
 }
 
-func (books *BookInits) ShowBookDetailed() {
+func (books *BookInits) ShowBookDetailed() string {
 	briefIntroduction := fmt.Sprintf(
 		"Name: %v\nBookID: %v\nAuthor: %v\nCount: %v\nMark: %v\n",
 		cfg.Vars.BookInfo.NovelName, cfg.Vars.BookInfo.NovelID,
@@ -98,4 +104,5 @@ func (books *BookInits) ShowBookDetailed() {
 		cfg.Vars.BookInfo.MarkCount,
 	)
 	fmt.Println(briefIntroduction)
+	return briefIntroduction
 }

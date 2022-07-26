@@ -3,6 +3,7 @@ package cfg
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 )
 
@@ -63,4 +64,14 @@ func FileSize(FilePath string) int {
 		return sum
 	}
 	return 0
+}
+
+// ReadFile read file content to string
+func ReadFile(filePath string) string {
+	if content, err := ioutil.ReadFile(filePath); err == nil {
+		return string(content)
+	} else {
+		fmt.Println("ReadFile:", err)
+	}
+	return ""
 }
