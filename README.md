@@ -1,8 +1,8 @@
-# <center> <img src="./docs/81841388.png" width="400" height='' alt="Noa Himesaka">
+# <center> <img src="./docs/81841388.png" alt="Noa Himesaka"></center>
 
-##  <center> Noa Himesaka
+##  <center> Noa Himesaka </center>
 
-### <center> Download books from the [sfacg](https://book.sfacg.com/) and [hbooker](https://app.hbooker.com/) to read them.
+### <center> Download books from the [sfacg](https://book.sfacg.com/) and [hbooker](https://app.hbooker.com/) to read them.</center>
 
 ## **Functions**
 
