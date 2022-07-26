@@ -1,7 +1,8 @@
-<div style="text-align: center;"><img src="./docs/81841388.png" width="400" height='' alt="Noa Himesaka"></div>  
+# <center> <img src="./docs/81841388.png" width="400" height='' alt="Noa Himesaka">
 
-##  **_<div style="text-align: center;">Noa Himesaka</div>_**
-### <div style="text-align: center;">Download books from the [sfacg](https://book.sfacg.com/) and [hbooker](https://app.hbooker.com/) to read them. </div>
+##  <center> Noa Himesaka
+
+### <center> Download books from the [sfacg](https://book.sfacg.com/) and [hbooker](https://app.hbooker.com/) to read them.
 
 ## **Functions**
 
