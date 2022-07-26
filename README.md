@@ -24,7 +24,7 @@
 - --search=```<keyword>```
 - --show  < show the config.json file >
  
-# **Disclaimers**
+## **Disclaimers**
 - This tool is for learning only. Please delete it from your computer within 24 hours after downloading.
 - Please respect the copyright and do not spread the crawled books by yourself.
 - In no event shall the authors or copyright holders be liable for any claim
