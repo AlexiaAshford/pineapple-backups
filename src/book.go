@@ -26,12 +26,11 @@ func (books *BookInits) CatBookInit() {
 	if response.Code == "100000" {
 		books.CatBookData = response.Data.BookInfo
 		cfg.Vars.BookInfo = books.InitBookStruct()
-		if books.ShowBook {
-			books.ShowBookDetailed()
-		}
 		savePath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName)
 		if !cfg.CheckFileExist(savePath) {
-			cfg.EncapsulationWrite(savePath, cfg.Vars.BookInfo.NovelName+"\n\n", 5, "w")
+			cfg.EncapsulationWrite(savePath, books.ShowBookDetailed()+"\n\n", 5, "w")
+		} else {
+			books.ShowBookDetailed()
 		}
 	} else {
 		fmt.Println("request was failed!")
@@ -42,13 +41,11 @@ func (books *BookInits) SfacgBookInit() {
 	if response.Status.HTTPCode == 200 && response.Data.NovelName != "" {
 		books.SfacgBookData = response.Data
 		cfg.Vars.BookInfo = books.InitBookStruct()
-		if books.ShowBook {
-			books.ShowBookDetailed()
-		}
-
 		savePath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName)
 		if !cfg.CheckFileExist(savePath) {
-			cfg.EncapsulationWrite(savePath, cfg.Vars.BookInfo.NovelName+"\n\n", 5, "w")
+			cfg.EncapsulationWrite(savePath, books.ShowBookDetailed()+"\n\n", 5, "w")
+		} else {
+			books.ShowBookDetailed()
 		}
 
 	} else {
@@ -103,6 +100,8 @@ func (books *BookInits) ShowBookDetailed() string {
 		cfg.Vars.BookInfo.AuthorName, cfg.Vars.BookInfo.CharCount,
 		cfg.Vars.BookInfo.MarkCount,
 	)
-	fmt.Println(briefIntroduction)
+	if books.ShowBook {
+		fmt.Println(briefIntroduction)
+	}
 	return briefIntroduction
 }
