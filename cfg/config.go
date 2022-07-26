@@ -33,9 +33,9 @@ func ConfigInit() {
 		Vars.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
 		fmt.Println("UserAgent is empty, use default Android com.kuangxiangciweimao.novel 2.9.290")
 	}
-	//if !CheckFileExist(Vars.ConfigFile) {
-	//	Mkdir(Vars.ConfigFile)
-	//}
+	if !CheckFileExist(Vars.ConfigFile) {
+		Mkdir(Vars.ConfigFile)
+	}
 	if !CheckFileExist(Vars.SaveFile) {
 		Mkdir(Vars.SaveFile)
 	}

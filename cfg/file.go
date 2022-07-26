@@ -31,13 +31,16 @@ func WriteFile(fileName string, content string, perm os.FileMode) error {
 	}
 	return nil
 }
-func EncapsulationWrite(Path string, content string, retry int, permMode string) {
+func EncapsulationWrite(Path string, content string, retry int, permMode string) string {
 	var perm os.FileMode
 	if permMode == "w" {
 		perm = 0644
 	} else if permMode == "a" {
 		perm = 0666
+	} else if permMode == "r" {
+		return ReadFile(Path)
 	} else {
+
 		panic("permMode error")
 	}
 	for i := 0; i < retry; i++ {
@@ -47,6 +50,7 @@ func EncapsulationWrite(Path string, content string, retry int, permMode string)
 			fmt.Println("write file error, try again:", i)
 		}
 	}
+	return ""
 }
 func FileSize(FilePath string) int {
 	if file, err := os.Open(FilePath); err != nil {
