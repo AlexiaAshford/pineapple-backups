@@ -5,12 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"path"
 	"regexp"
 	"strconv"
-	"time"
 )
 
 func RegexpName(Name string) string {
@@ -57,10 +55,6 @@ func FormatJson(jsonString []byte) {
 	} else {
 		log.Fatalln(err)
 	}
-}
-
-func DelayTime() {
-	time.Sleep(time.Second * time.Duration(rand.Intn(2)))
 }
 
 // input int
