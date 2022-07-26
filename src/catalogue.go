@@ -72,9 +72,9 @@ func makeContentInformation(response sfacg_structs.Content) {
 }
 
 func (catalogue *Catalogue) CatCatalogue() bool {
-	for index, division := range HbookerAPI.GetDivisionIdByBookId(cfg.Vars.BookInfo.NovelID) {
+	for index, division := range hbooker.GetDivisionIdByBookId(cfg.Vars.BookInfo.NovelID) {
 		fmt.Println("index:", index, "\t\tdivision:", division.DivisionName)
-		for _, chapter := range HbookerAPI.GetCatalogueByDivisionId(division.DivisionID) {
+		for _, chapter := range hbooker.GetCatalogueByDivisionId(division.DivisionID) {
 			if chapter.IsValid == "1" {
 				catalogue.ChapterList = append(catalogue.ChapterList, chapter.ChapterID)
 			}
@@ -90,7 +90,7 @@ func (catalogue *Catalogue) CatCatalogue() bool {
 
 func (catalogue *Catalogue) CatContent(ChapterId string) {
 	catalogue.DelayTime()
-	response := HbookerAPI.GetContent(ChapterId)
+	response := hbooker.GetContent(ChapterId)
 	writeContent, SavePath := fmt.Sprintf("%v:%v\n%v\n\n\n",
 		response.ChapterTitle,
 		response.Uptime,

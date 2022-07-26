@@ -5,7 +5,7 @@ import (
 	"sf/cfg"
 	"sf/multi"
 	"sf/src/boluobao"
-	HbookerAPI "sf/src/hbooker"
+	"sf/src/hbooker"
 	"sf/structural"
 	"sf/structural/hbooker_structs"
 	"sf/structural/sfacg_structs"
@@ -22,7 +22,7 @@ type BookInits struct {
 }
 
 func (books *BookInits) CatBookInit() {
-	response := HbookerAPI.GetBookDetailById(books.BookID)
+	response := hbooker.GetBookDetailById(books.BookID)
 	if response.Code == "100000" {
 		books.CatBookData = response.Data.BookInfo
 		cfg.Vars.BookInfo = books.InitBookStruct()

@@ -1,4 +1,4 @@
-package HbookerAPI
+package hbooker
 
 import (
 	"fmt"

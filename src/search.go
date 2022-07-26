@@ -10,7 +10,7 @@ import (
 
 func CatSearchDetailed(searchName string, page int) []string {
 	var searchResult []string
-	response := HbookerAPI.Search(searchName, page)
+	response := hbooker.Search(searchName, page)
 	if response.Code == "100000" {
 		for index, book := range response.Data.BookList {
 			fmt.Println("Index:", index, "\t\t\tBookName:", book.BookName)
