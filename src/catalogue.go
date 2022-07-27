@@ -21,7 +21,7 @@ type Catalogue struct {
 func (catalogue *Catalogue) SfacgCatalogue() bool {
 	response := boluobao.GetCatalogueDetailedById(cfg.Vars.BookInfo.NovelID)
 	for divisionIndex, division := range response.Data.VolumeList {
-		fmt.Println("index:", divisionIndex, "\t\tdivision:", division.Title)
+		fmt.Printf("第%v卷\t\t%v\n", divisionIndex+1, division.Title)
 		for _, chapter := range division.ChapterList {
 			if chapter.OriginNeedFireMoney == 0 {
 				catalogue.ChapterList = append(catalogue.ChapterList, strconv.Itoa(chapter.ChapID))
@@ -34,6 +34,7 @@ func (catalogue *Catalogue) SfacgCatalogue() bool {
 		}
 	}
 	catalogue.ChapterBar = New(len(catalogue.ChapterList))
+	catalogue.ChapterBar.Describe("进度:")
 	for _, ChapID := range catalogue.ChapterList {
 		catalogue.SfacgContent(ChapID)
 	}
@@ -73,7 +74,7 @@ func makeContentInformation(response sfacg_structs.Content) {
 
 func (catalogue *Catalogue) CatCatalogue() bool {
 	for index, division := range hbooker.GetDivisionIdByBookId(cfg.Vars.BookInfo.NovelID) {
-		fmt.Println("index:", index, "\t\tdivision:", division.DivisionName)
+		fmt.Printf("第%v卷\t\t%v\n", index+1, division.DivisionName)
 		for _, chapter := range hbooker.GetCatalogueByDivisionId(division.DivisionID) {
 			if chapter.IsValid == "1" {
 				catalogue.ChapterList = append(catalogue.ChapterList, chapter.ChapterID)
