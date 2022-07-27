@@ -16,6 +16,16 @@ func RegexpName(Name string) string {
 	return regexp.MustCompile(`[\\/:*?"<>|]`).ReplaceAllString(Name, "")
 }
 
+func ExtractBookID(url string) string {
+	if url != "" {
+		bookID := regexp.MustCompile(`(\d+)`).FindStringSubmatch(url)
+		if len(bookID) > 1 {
+			return bookID[1]
+		}
+	}
+	return ""
+}
+
 func Mkdir(filePath string) {
 	dirPath, _ := os.Getwd()
 	if err := os.MkdirAll(path.Join(dirPath, filePath), os.ModePerm); err != nil {

@@ -4,21 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"regexp"
 	"sf/cfg"
 	"sf/multi"
 	"sf/src"
 )
-
-func ExtractBookID(url string) string {
-	if url != "" {
-		bookID := regexp.MustCompile(`(\d+)`).FindStringSubmatch(url)
-		if len(bookID) > 1 {
-			return bookID[1]
-		}
-	}
-	return ""
-}
 
 func ShellLoginAccount(account, password string) {
 	if account == "" {
@@ -59,7 +48,7 @@ func ParseCommand() map[string]string {
 	search := flag.String("search", "", "input search keyword, like: search keyword")
 	showConfig := flag.Bool("show", false, "show config, like: show config")
 	flag.Parse()
-	commandMap["book_id"] = ExtractBookID(*download)
+	commandMap["book_id"] = cfg.ExtractBookID(*download)
 	commandMap["account"] = *account
 	commandMap["password"] = *password
 	commandMap["app_type"] = *appType
