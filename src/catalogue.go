@@ -25,7 +25,6 @@ func (catalogue *Catalogue) ReadChapterConfig() {
 	catalogue.ConfigPath = path.Join(cfg.Vars.ConfigFile, cfg.Vars.BookInfo.NovelName+".conf")
 	catalogue.SaveTextPath = path.Join(cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName+".txt")
 }
-
 func (catalogue *Catalogue) SfacgCatalogue() bool {
 	catalogue.ReadChapterConfig()
 	response := boluobao.GetCatalogueDetailedById(cfg.Vars.BookInfo.NovelID)
@@ -74,7 +73,7 @@ func (catalogue *Catalogue) makeContentInformation(response sfacg_structs.Conten
 		response.Data.Title, response.Data.AddTime, response.Data.Expand.Content,
 	)
 	cfg.EncapsulationWrite(catalogue.SaveTextPath, writeContent, 5, "a")
-	cfg.EncapsulationWrite(catalogue.ConfigPath, strconv.Itoa(response.Data.ChapID)+",", 5, "a")
+	//catalogue.AddChapterConfig(response.Data.ChapID)
 
 }
 
@@ -103,6 +102,7 @@ func (catalogue *Catalogue) CatContent(ChapterId string) {
 		response.ChapterTitle, response.Uptime, response.TxtContent,
 	)
 	cfg.EncapsulationWrite(catalogue.SaveTextPath, writeContent, 5, "a")
+	//catalogue.AddChapterConfig(response.ChapterID)
 
 }
 func (catalogue *Catalogue) DelayTime() {
