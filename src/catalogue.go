@@ -8,6 +8,7 @@ import (
 	"sf/cfg"
 	"sf/src/boluobao"
 	"sf/src/hbooker"
+	"sf/structural/hbooker_structs"
 	"sf/structural/sfacg_structs"
 	"strconv"
 	"time"
@@ -25,6 +26,7 @@ func (catalogue *Catalogue) ReadChapterConfig() {
 	catalogue.ConfigPath = path.Join(cfg.Vars.ConfigFile, cfg.Vars.BookInfo.NovelName+".conf")
 	catalogue.SaveTextPath = path.Join(cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName+".txt")
 }
+
 func (catalogue *Catalogue) SfacgCatalogue() bool {
 	catalogue.ReadChapterConfig()
 	response := boluobao.GetCatalogueDetailedById(cfg.Vars.BookInfo.NovelID)
@@ -51,14 +53,13 @@ func (catalogue *Catalogue) SfacgCatalogue() bool {
 }
 
 func (catalogue *Catalogue) SfacgContent(ChapterId string) {
-	catalogue.DelayTime()
-	response := boluobao.GetContentDetailedByCid(ChapterId)
 	for i := 0; i < 5; i++ {
+		response := boluobao.GetContentDetailedByCid(ChapterId)
 		if response.Status.HTTPCode == 200 {
 			catalogue.makeContentInformation(response)
 			break
 		} else {
-			if response.Status.Msg == "接口校验失败,请尽快把APP升级到最新版哦~" || i == 4 {
+			if response.Status.Msg == "接口校验失败,请尽快把APP升级到最新版哦~" {
 				fmt.Println(response.Status.Msg)
 				os.Exit(0)
 			} else {
@@ -68,12 +69,20 @@ func (catalogue *Catalogue) SfacgContent(ChapterId string) {
 	}
 }
 
-func (catalogue *Catalogue) makeContentInformation(response sfacg_structs.Content) {
-	writeContent := fmt.Sprintf("%v:%v\n%v\n\n\n",
-		response.Data.Title, response.Data.AddTime, response.Data.Expand.Content,
-	)
+func (catalogue *Catalogue) makeContentInformation(response any) {
+	var writeContent string
+	switch response.(type) {
+	case sfacg_structs.Content:
+		result := response.(sfacg_structs.Content).Data
+		writeContent = fmt.Sprintf("%v:%v\n%v\n\n\n", result.Title, result.AddTime, result.Expand.Content)
+		//catalogue.AddChapterConfig(result.ChapID)
+	case hbooker_structs.ContentStruct:
+		result := response.(hbooker_structs.ContentStruct).Data.ChapterInfo
+		writeContent = fmt.Sprintf("%v:%v\n%v\n\n\n", result.ChapterTitle, result.Uptime, result.TxtContent)
+		//catalogue.AddChapterConfig(result.ChapterID)
+	}
 	cfg.EncapsulationWrite(catalogue.SaveTextPath, writeContent, 5, "a")
-	//catalogue.AddChapterConfig(response.Data.ChapID)
+	catalogue.SpeedProgressAndDelayTime()
 
 }
 
@@ -84,6 +93,10 @@ func (catalogue *Catalogue) CatCatalogue() bool {
 		for _, chapter := range hbooker.GetCatalogueByDivisionId(division.DivisionID) {
 			if chapter.IsValid == "1" {
 				catalogue.ChapterList = append(catalogue.ChapterList, chapter.ChapterID)
+			} else {
+				if chapter.IsValid == "1" {
+					fmt.Println(chapter.ChapterTitle, "已经下载过了")
+				}
 			}
 		}
 	}
@@ -96,16 +109,16 @@ func (catalogue *Catalogue) CatCatalogue() bool {
 }
 
 func (catalogue *Catalogue) CatContent(ChapterId string) {
-	catalogue.DelayTime()
-	response := hbooker.GetContent(ChapterId)
-	writeContent := fmt.Sprintf("%v:%v\n%v\n\n\n",
-		response.ChapterTitle, response.Uptime, response.TxtContent,
-	)
-	cfg.EncapsulationWrite(catalogue.SaveTextPath, writeContent, 5, "a")
-	//catalogue.AddChapterConfig(response.ChapterID)
+	for i := 0; i < 5; i++ {
+		response := hbooker.GetContent(ChapterId)
+		if response.Code == "100000" {
+			catalogue.makeContentInformation(response)
+			break
+		}
+	}
 
 }
-func (catalogue *Catalogue) DelayTime() {
+func (catalogue *Catalogue) SpeedProgressAndDelayTime() {
 	if err := catalogue.ChapterBar.Add(1); err != nil {
 		fmt.Println("bar error:", err)
 	} else {

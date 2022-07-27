@@ -69,7 +69,7 @@ func GetKeyByCid(chapterId string) string {
 	return result.Data.Command
 }
 
-func GetContent(chapterId string) structs.ChapterInfo {
+func GetContent(chapterId string) structs.ContentStruct {
 	var result structs.ContentStruct
 	chapterKey := GetKeyByCid(chapterId)
 	response, _ := req.Request("POST", QueryParams(fmt.Sprintf(ContentDetailedByCid, chapterId, chapterKey)), "")
@@ -77,5 +77,5 @@ func GetContent(chapterId string) structs.ChapterInfo {
 		fmt.Println("json unmarshal error:", err)
 	}
 	result.Data.ChapterInfo.TxtContent = string(Decode(result.Data.ChapterInfo.TxtContent, chapterKey))
-	return result.Data.ChapterInfo
+	return result
 }
