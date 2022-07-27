@@ -2,6 +2,7 @@ package src
 
 import (
 	"fmt"
+	"math/rand"
 	"path"
 	"sf/cfg"
 	"sf/src/boluobao"
@@ -9,6 +10,7 @@ import (
 	"sf/structural/hbooker_structs"
 	"sf/structural/sfacg_structs"
 	"strconv"
+	"time"
 )
 
 type Catalogue struct {
@@ -21,10 +23,8 @@ type Catalogue struct {
 
 func (catalogue *Catalogue) ReadChapterConfig() string {
 	catalogue.ConfigPath = path.Join(cfg.Vars.ConfigFile, cfg.BookConfig.BookInfo.NovelName+".conf")
-	catalogue.SaveTextPath = path.Join(cfg.Vars.SaveFile, cfg.BookConfig.BookInfo.NovelName+".txt")
 	return cfg.Vars.AppType
 }
-
 func (catalogue *Catalogue) InitCatalogue() {
 	switch catalogue.ReadChapterConfig() {
 	case "sfacg":
@@ -103,6 +103,6 @@ func (catalogue *Catalogue) SpeedProgressAndDelayTime() {
 	if err := catalogue.ChapterBar.Add(1); err != nil {
 		fmt.Println("bar error:", err)
 	} else {
-		//time.Sleep(time.Second * time.Duration(rand.Intn(2)))
+		time.Sleep(time.Second * time.Duration(rand.Intn(2)))
 	}
 }
