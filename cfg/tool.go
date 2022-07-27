@@ -9,6 +9,7 @@ import (
 	"path"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 func RegexpName(Name string) string {
@@ -54,6 +55,16 @@ func FormatJson(jsonString []byte) {
 		fmt.Println(str.String())
 	} else {
 		log.Fatalln(err)
+	}
+}
+func TestKeyword(Text string, keyword any) bool {
+	switch keyword.(type) {
+	case string:
+		return strings.Contains(Text, keyword.(string))
+	case int:
+		return strings.Contains(Text, strconv.Itoa(keyword.(int)))
+	default:
+		panic("keyword type error")
 	}
 }
 
