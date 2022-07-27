@@ -34,27 +34,16 @@ func shellBookDownload(downloadId any) {
 	switch downloadId.(type) {
 	case string:
 		start := src.BookInits{BookID: downloadId.(string), Index: 0, Locks: nil, ShowBook: true}
-		if cfg.Vars.AppType == "sfacg" {
-			start.SfacgBookInit()
-			start.CataloguesInit()
-		}
-		if cfg.Vars.AppType == "cat" {
-			start.CatBookInit()
-			start.CataloguesInit()
-		}
+		catalogues := start.DownloadBookInit() // get book catalogues
+		catalogues.InitCatalogue()
+
 	case []string:
 		Locks := multi.NewGoLimit(7)
 		for BookIndex, BookId := range downloadId.([]string) {
 			Locks.Add()
 			start := src.BookInits{BookID: BookId, Index: BookIndex, Locks: Locks, ShowBook: true}
-			if cfg.Vars.AppType == "sfacg" {
-				start.SfacgBookInit()
-				start.CataloguesInit()
-			}
-			if cfg.Vars.AppType == "cat" {
-				start.CatBookInit()
-				start.CataloguesInit()
-			}
+			catalogues := start.DownloadBookInit() // get book catalogues
+			catalogues.InitCatalogue()
 		}
 		Locks.WaitZero() // wait for all goroutines to finish
 	}
