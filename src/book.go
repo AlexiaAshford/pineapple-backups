@@ -21,51 +21,34 @@ type BookInits struct {
 	CatBookData   hbooker_structs.BookInfo
 }
 
-func (books *BookInits) CatBookInit() {
-	response := hbooker.GetBookDetailById(books.BookID)
-	if response.Code == "100000" {
-		books.CatBookData = response.Data.BookInfo
-		cfg.Vars.BookInfo = books.InitBookStruct()
-		savePath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName)
-		if !cfg.CheckFileExist(savePath) {
-			cfg.EncapsulationWrite(savePath, books.ShowBookDetailed()+"\n\n", 5, "w")
-		} else {
-			books.ShowBookDetailed()
-		}
-	} else {
-		fmt.Println("request was failed!")
-	}
-}
-func (books *BookInits) SfacgBookInit() {
-	response := boluobao.GetBookDetailedById(books.BookID)
-	if response.Status.HTTPCode == 200 && response.Data.NovelName != "" {
-		books.SfacgBookData = response.Data
-		cfg.Vars.BookInfo = books.InitBookStruct()
-		savePath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName)
-		if !cfg.CheckFileExist(savePath) {
-			cfg.EncapsulationWrite(savePath, books.ShowBookDetailed()+"\n\n", 5, "w")
-		} else {
-			books.ShowBookDetailed()
-		}
-
-	} else {
-		fmt.Println(books.BookID, "is not a valid book number！")
-	}
-}
-
-func (books *BookInits) CataloguesInit() {
-	catalogues := Catalogue{}
+func (books *BookInits) DownloadBookInit() Catalogue {
 	if cfg.Vars.AppType == "sfacg" {
-		if catalogues.SfacgCatalogue() {
-			fmt.Printf("\nNovelName:%vdownload complete!", cfg.Vars.BookInfo.NovelName)
+		response := boluobao.GetBookDetailedById(books.BookID)
+		if response.Status.HTTPCode == 200 && response.Data.NovelName != "" {
+			books.SfacgBookData = response.Data
+		} else {
+			fmt.Println(books.BookID, "is not a valid book number！\n", response.Status.Msg)
 		}
 	} else if cfg.Vars.AppType == "cat" {
-		if catalogues.CatCatalogue() {
-			fmt.Printf("\nNovelName:%vdownload complete!", cfg.Vars.BookInfo.NovelName)
+		response := hbooker.GetBookDetailById(books.BookID)
+		if response.Code == "100000" {
+			books.CatBookData = response.Data.BookInfo
+		} else {
+			fmt.Println(books.BookID, "is not a valid book number！")
 		}
+	} else {
+		panic("app type is not valid!")
 	}
-}
 
+	cfg.BookConfig.BookInfo = books.InitBookStruct()
+	savePath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, cfg.BookConfig.BookInfo.NovelName)
+	if !cfg.CheckFileExist(savePath) {
+		cfg.EncapsulationWrite(savePath, books.ShowBookDetailed()+"\n\n", 5, "w")
+	} else {
+		books.ShowBookDetailed()
+	}
+	return Catalogue{}
+}
 func (books *BookInits) InitBookStruct() structural.Books {
 	if cfg.Vars.AppType == "sfacg" {
 		return structural.Books{
@@ -96,9 +79,9 @@ func (books *BookInits) InitBookStruct() structural.Books {
 func (books *BookInits) ShowBookDetailed() string {
 	briefIntroduction := fmt.Sprintf(
 		"Name: %v\nBookID: %v\nAuthor: %v\nCount: %v\nMark: %v\n",
-		cfg.Vars.BookInfo.NovelName, cfg.Vars.BookInfo.NovelID,
-		cfg.Vars.BookInfo.AuthorName, cfg.Vars.BookInfo.CharCount,
-		cfg.Vars.BookInfo.MarkCount,
+		cfg.BookConfig.BookInfo.NovelName, cfg.BookConfig.BookInfo.NovelID,
+		cfg.BookConfig.BookInfo.AuthorName, cfg.BookConfig.BookInfo.CharCount,
+		cfg.BookConfig.BookInfo.MarkCount,
 	)
 	if books.ShowBook {
 		fmt.Println(briefIntroduction)
