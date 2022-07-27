@@ -5,12 +5,12 @@ import (
 )
 
 type GoLimit struct {
-	max       uint             //并发最大数量
-	count     uint             //当前已有并发数
-	isAddLock bool             //是否已锁定增加
-	zeroChan  chan interface{} //为0时广播
-	addLock   sync.Mutex       //(增加并发数的)锁
-	dataLock  sync.Mutex       //(修改数据的)锁
+	max       uint             //max concurrent goroutine
+	count     uint             //now concurrent goroutine
+	isAddLock bool             //is lock add
+	zeroChan  chan interface{} //the channel when count is 0
+	addLock   sync.Mutex       //add lock
+	dataLock  sync.Mutex       //add data lock
 }
 
 func NewGoLimit(max uint) *GoLimit {
@@ -23,16 +23,16 @@ func (g *GoLimit) Add() {
 
 	g.count += 1
 
-	if g.count < g.max { //未超并发时解锁,后续可以继续增加
+	if g.count < g.max { //if count < max, can unlock
 		g.addLock.Unlock()
-	} else { //已到最大并发数, 不解锁并标记. 等数量减少后解锁
+	} else { //if count >= max, can't unlock
 		g.isAddLock = true
 	}
 
 	g.dataLock.Unlock()
 }
 
-// Done 并发计数减1
+// Done then count - 1
 //若计数<max_num, 可以使原阻塞的Add()快速解除阻塞
 func (g *GoLimit) Done() {
 	g.dataLock.Lock()

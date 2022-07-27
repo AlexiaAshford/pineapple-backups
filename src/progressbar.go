@@ -582,16 +582,14 @@ func renderProgressBar(c configProgressbar, s *state) (int, error) {
 				bytesString,
 			)
 		} else {
-			str = fmt.Sprintf("\r%s%4d%% %s%s%s%s %s [%s:%s]",
+			str = fmt.Sprintf("\r%s%s%s%s%s %s%4d%% ",
 				c.description,
-				s.currentPercent,
 				c.theme.BarStart,
 				saucer,
 				strings.Repeat(c.theme.SaucerPadding, repeatAmount),
 				c.theme.BarEnd,
 				bytesString,
-				leftBrac,
-				rightBrac,
+				s.currentPercent,
 			)
 		}
 	}
