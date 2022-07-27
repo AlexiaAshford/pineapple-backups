@@ -28,6 +28,9 @@ type MyJsonPro struct {
 		} `json:"common_params"`
 		UserAgent string `json:"UserAgent"`
 	} `json:"cat"`
+}
+
+type MyBookInfoJsonPro struct {
 	BookInfo     Books
 	BookInfoList []Books
 }
