@@ -2,6 +2,7 @@ package src
 
 import (
 	"fmt"
+	"path"
 	"sf/cfg"
 	"sf/multi"
 	"sf/src/boluobao"
@@ -13,64 +14,66 @@ import (
 )
 
 type BookInits struct {
-	BookID        string
-	Index         int
-	ShowBook      bool
-	Locks         *multi.GoLimit
-	SfacgBookData sfacg_structs.BookInfoData
-	CatBookData   hbooker_structs.BookInfo
+	BookID   string
+	Index    int
+	ShowBook bool
+	Locks    *multi.GoLimit
+	BookData any
 }
 
 func (books *BookInits) DownloadBookInit() Catalogue {
 	if cfg.Vars.AppType == "sfacg" {
 		response := boluobao.GetBookDetailedById(books.BookID)
 		if response.Status.HTTPCode == 200 && response.Data.NovelName != "" {
-			books.SfacgBookData = response.Data
+			books.BookData = response
 		} else {
 			fmt.Println(books.BookID, "is not a valid book number！\n", response.Status.Msg)
 		}
 	} else if cfg.Vars.AppType == "cat" {
 		response := hbooker.GetBookDetailById(books.BookID)
 		if response.Code == "100000" {
-			books.CatBookData = response.Data.BookInfo
+			books.BookData = response
 		} else {
 			fmt.Println(books.BookID, "is not a valid book number！")
 		}
 	} else {
 		panic("app type is not valid!")
 	}
-
 	cfg.BookConfig.BookInfo = books.InitBookStruct()
-	savePath := fmt.Sprintf("%v/%v.txt", cfg.Vars.SaveFile, cfg.BookConfig.BookInfo.NovelName)
+
+	savePath := path.Join(cfg.Vars.SaveFile, cfg.BookConfig.BookInfo.NovelName+".txt")
 	if !cfg.CheckFileExist(savePath) {
 		cfg.EncapsulationWrite(savePath, books.ShowBookDetailed()+"\n\n", 5, "w")
 	} else {
 		books.ShowBookDetailed()
 	}
-	return Catalogue{}
+	return Catalogue{SaveTextPath: savePath}
+
 }
 func (books *BookInits) InitBookStruct() structural.Books {
-	if cfg.Vars.AppType == "sfacg" {
+	switch books.BookData.(type) {
+	case sfacg_structs.BookInfo:
+		result := books.BookData.(sfacg_structs.BookInfo).Data
 		return structural.Books{
-			NovelName:  cfg.RegexpName(books.SfacgBookData.NovelName),
-			NovelID:    strconv.Itoa(books.SfacgBookData.NovelID),
-			IsFinish:   books.SfacgBookData.IsFinish,
-			MarkCount:  strconv.Itoa(books.SfacgBookData.MarkCount),
-			NovelCover: books.SfacgBookData.NovelCover,
-			AuthorName: books.SfacgBookData.AuthorName,
-			CharCount:  strconv.Itoa(books.SfacgBookData.CharCount),
-			SignStatus: books.SfacgBookData.SignStatus,
+			NovelName:  cfg.RegexpName(result.NovelName),
+			NovelID:    strconv.Itoa(result.NovelID),
+			IsFinish:   result.IsFinish,
+			MarkCount:  strconv.Itoa(result.MarkCount),
+			NovelCover: result.NovelCover,
+			AuthorName: result.AuthorName,
+			CharCount:  strconv.Itoa(result.CharCount),
+			SignStatus: result.SignStatus,
 		}
-	}
-	if cfg.Vars.AppType == "cat" {
+	case hbooker_structs.DetailStruct:
+		result := books.BookData.(hbooker_structs.DetailStruct).Data.BookInfo
 		return structural.Books{
-			NovelName:  cfg.RegexpName(books.CatBookData.BookName),
-			NovelID:    books.CatBookData.BookID,
-			NovelCover: books.CatBookData.Cover,
-			AuthorName: books.CatBookData.AuthorName,
-			CharCount:  books.CatBookData.TotalWordCount,
-			MarkCount:  books.CatBookData.UpdateStatus,
-			//SignStatus: books.CatBookData.SignStatus,
+			NovelName:  cfg.RegexpName(result.BookName),
+			NovelID:    result.BookID,
+			NovelCover: result.Cover,
+			AuthorName: result.AuthorName,
+			CharCount:  result.TotalWordCount,
+			MarkCount:  result.UpdateStatus,
+			//SignStatus: result.SignStatus,
 		}
 	}
 	return structural.Books{}
