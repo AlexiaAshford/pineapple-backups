@@ -10,6 +10,7 @@ import (
 )
 
 var Vars = structural.MyJsonPro{}
+var BookConfig = structural.MyBookInfoJsonPro{}
 
 func ConfigInit() {
 	if !CheckFileExist("./config.json") || FileSize("./config.json") == 0 {
