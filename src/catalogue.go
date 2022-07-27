@@ -14,11 +14,20 @@ import (
 )
 
 type Catalogue struct {
-	ChapterBar  *ProgressBar
-	ChapterList []string
+	ChapterBar   *ProgressBar
+	ChapterList  []string
+	ConfigPath   string
+	SaveTextPath string
+	ChapterCfg   string
+}
+
+func (catalogue *Catalogue) ReadChapterConfig() {
+	catalogue.ConfigPath = path.Join(cfg.Vars.ConfigFile, cfg.Vars.BookInfo.NovelName+".conf")
+	catalogue.SaveTextPath = path.Join(cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName+".txt")
 }
 
 func (catalogue *Catalogue) SfacgCatalogue() bool {
+	catalogue.ReadChapterConfig()
 	response := boluobao.GetCatalogueDetailedById(cfg.Vars.BookInfo.NovelID)
 	for divisionIndex, division := range response.Data.VolumeList {
 		fmt.Printf("第%v卷\t\t%v\n", divisionIndex+1, division.Title)
@@ -47,7 +56,7 @@ func (catalogue *Catalogue) SfacgContent(ChapterId string) {
 	response := boluobao.GetContentDetailedByCid(ChapterId)
 	for i := 0; i < 5; i++ {
 		if response.Status.HTTPCode == 200 {
-			makeContentInformation(response)
+			catalogue.makeContentInformation(response)
 			break
 		} else {
 			if response.Status.Msg == "接口校验失败,请尽快把APP升级到最新版哦~" || i == 4 {
@@ -60,19 +69,17 @@ func (catalogue *Catalogue) SfacgContent(ChapterId string) {
 	}
 }
 
-func makeContentInformation(response sfacg_structs.Content) {
+func (catalogue *Catalogue) makeContentInformation(response sfacg_structs.Content) {
 	writeContent := fmt.Sprintf("%v:%v\n%v\n\n\n",
 		response.Data.Title, response.Data.AddTime, response.Data.Expand.Content,
 	)
-	configPath := path.Join(cfg.Vars.ConfigFile, cfg.Vars.BookInfo.NovelName+".conf")
-	cfg.EncapsulationWrite(
-		path.Join(cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName+".txt"), writeContent, 5, "a",
-	)
-	cfg.EncapsulationWrite(configPath, strconv.Itoa(response.Data.ChapID)+",", 5, "a")
+	cfg.EncapsulationWrite(catalogue.SaveTextPath, writeContent, 5, "a")
+	cfg.EncapsulationWrite(catalogue.ConfigPath, strconv.Itoa(response.Data.ChapID)+",", 5, "a")
 
 }
 
 func (catalogue *Catalogue) CatCatalogue() bool {
+	catalogue.ReadChapterConfig()
 	for index, division := range hbooker.GetDivisionIdByBookId(cfg.Vars.BookInfo.NovelID) {
 		fmt.Printf("第%v卷\t\t%v\n", index+1, division.DivisionName)
 		for _, chapter := range hbooker.GetCatalogueByDivisionId(division.DivisionID) {
@@ -92,12 +99,10 @@ func (catalogue *Catalogue) CatCatalogue() bool {
 func (catalogue *Catalogue) CatContent(ChapterId string) {
 	catalogue.DelayTime()
 	response := hbooker.GetContent(ChapterId)
-	writeContent, SavePath := fmt.Sprintf("%v:%v\n%v\n\n\n",
-		response.ChapterTitle,
-		response.Uptime,
-		response.TxtContent,
-	), path.Join(cfg.Vars.SaveFile, cfg.Vars.BookInfo.NovelName+".txt")
-	cfg.EncapsulationWrite(SavePath, writeContent, 5, "a")
+	writeContent := fmt.Sprintf("%v:%v\n%v\n\n\n",
+		response.ChapterTitle, response.Uptime, response.TxtContent,
+	)
+	cfg.EncapsulationWrite(catalogue.SaveTextPath, writeContent, 5, "a")
 
 }
 func (catalogue *Catalogue) DelayTime() {
