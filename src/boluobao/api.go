@@ -29,7 +29,7 @@ func GetAccountDetailedByApi() sfacg_structs.Account {
 	}
 }
 
-func GetCatalogueDetailedById(NovelID string) sfacg_structs.Catalogue {
+func GetCatalogue(NovelID string) sfacg_structs.Catalogue {
 	var CatalogueData sfacg_structs.Catalogue
 	response, _ := https.Request("GET", fmt.Sprintf(WebSite+CatalogueDetailedById, NovelID), "")
 	if err := json.Unmarshal(response, &CatalogueData); err == nil {
