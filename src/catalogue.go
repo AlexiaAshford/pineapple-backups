@@ -23,15 +23,30 @@ type Catalogue struct {
 
 func (catalogue *Catalogue) ReadChapterConfig() string {
 	catalogue.ConfigPath = path.Join(cfg.Vars.ConfigFile, cfg.BookConfig.BookInfo.NovelName+".conf")
+	if !cfg.CheckFileExist(catalogue.ConfigPath) {
+		cfg.EncapsulationWrite(catalogue.ConfigPath, "", 5, "w")
+		catalogue.ChapterCfg = ""
+	} else { // read config file
+		catalogue.ChapterCfg = cfg.EncapsulationWrite(catalogue.ConfigPath, "", 5, "r")
+	}
 	return cfg.Vars.AppType
 }
+func (catalogue *Catalogue) AddChapterConfig(chapId any) {
+	switch chapId.(type) {
+	case string:
+		cfg.EncapsulationWrite(catalogue.ConfigPath, chapId.(string)+",", 5, "a")
+	case int:
+		cfg.EncapsulationWrite(catalogue.ConfigPath, strconv.Itoa(chapId.(int))+",", 5, "a")
+	}
+}
+
 func (catalogue *Catalogue) InitCatalogue() {
 	switch catalogue.ReadChapterConfig() {
 	case "sfacg":
 		for divisionIndex, division := range boluobao.GetCatalogue(cfg.BookConfig.BookInfo.NovelID).Data.VolumeList {
 			fmt.Printf("第%v卷\t\t%v\n", divisionIndex+1, division.Title)
 			for _, chapter := range division.ChapterList {
-				if chapter.OriginNeedFireMoney == 0 {
+				if chapter.OriginNeedFireMoney == 0 && !cfg.TestKeyword(catalogue.ChapterCfg, chapter.ChapID) {
 					catalogue.ChapterList = append(catalogue.ChapterList, strconv.Itoa(chapter.ChapID))
 				}
 			}
@@ -40,7 +55,7 @@ func (catalogue *Catalogue) InitCatalogue() {
 		for index, division := range hbooker.GetDivisionIdByBookId(cfg.BookConfig.BookInfo.NovelID) {
 			fmt.Printf("第%v卷\t\t%v\n", index+1, division.DivisionName)
 			for _, chapter := range hbooker.GetCatalogueByDivisionId(division.DivisionID) {
-				if chapter.IsValid == "1" {
+				if chapter.IsValid == "1" && !cfg.TestKeyword(catalogue.ChapterCfg, chapter.ChapterID) {
 					catalogue.ChapterList = append(catalogue.ChapterList, chapter.ChapterID)
 				}
 			}
@@ -88,11 +103,11 @@ func (catalogue *Catalogue) makeContentInformation(response any) {
 	case sfacg_structs.Content:
 		result := response.(sfacg_structs.Content).Data
 		writeContent = fmt.Sprintf("%v:%v\n%v\n\n\n", result.Title, result.AddTime, result.Expand.Content)
-		//catalogue.AddChapterConfig(result.ChapID)
+		catalogue.AddChapterConfig(result.ChapID)
 	case hbooker_structs.ContentStruct:
 		result := response.(hbooker_structs.ContentStruct).Data.ChapterInfo
 		writeContent = fmt.Sprintf("%v:%v\n%v\n\n\n", result.ChapterTitle, result.Uptime, result.TxtContent)
-		//catalogue.AddChapterConfig(result.ChapterID)
+		catalogue.AddChapterConfig(result.ChapterID)
 	}
 	cfg.EncapsulationWrite(catalogue.SaveTextPath, writeContent, 5, "a")
 	catalogue.SpeedProgressAndDelayTime()
