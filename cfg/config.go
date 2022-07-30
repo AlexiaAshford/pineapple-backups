@@ -18,10 +18,14 @@ func ConfigInit() {
 		Vars.ConfigFile = "cache"
 		Vars.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
 		Vars.Cat.Params.DeviceToken = "ciweimao_"
+		Vars.MaxThreadNumber = 32
 		Vars.Cat.Params.AppVersion = "2.9.290"
 		SaveJson()
 	}
 	Load()
+	if Vars.MaxThreadNumber == 0 || Vars.MaxThreadNumber >= 64 {
+		Vars.MaxThreadNumber = 32
+	}
 	if Vars.ConfigFile == "" {
 		Vars.ConfigFile = "cache"
 		fmt.Println("ConfigFile is empty, use default cache")

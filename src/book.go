@@ -27,7 +27,8 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 		if response.Status.HTTPCode == 200 && response.Data.NovelName != "" {
 			books.BookData = response
 		} else {
-			fmt.Println(books.BookID, "is not a valid book number！\n", response.Status.Msg)
+			fmt.Println(books.BookID, "is not a valid book number！\nmessage:", response.Status.Msg)
+			return Catalogue{TestBookResult: false}
 		}
 	} else if cfg.Vars.AppType == "cat" {
 		response := hbooker.GetBookDetailById(books.BookID)
@@ -37,7 +38,7 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 			fmt.Println(books.BookID, "is not a valid book number！")
 		}
 	} else {
-		panic("app type is not valid!")
+		panic("app type" + cfg.Vars.AppType + " is not valid!")
 	}
 	cfg.BookConfig.BookInfo = books.InitBookStruct()
 
@@ -47,7 +48,7 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 	} else {
 		books.ShowBookDetailed()
 	}
-	return Catalogue{SaveTextPath: savePath}
+	return Catalogue{SaveTextPath: savePath, TestBookResult: true}
 
 }
 func (books *BookInits) InitBookStruct() structural.Books {

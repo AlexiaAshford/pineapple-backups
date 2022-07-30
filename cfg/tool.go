@@ -16,6 +16,15 @@ func RegexpName(Name string) string {
 	return regexp.MustCompile(`[\\/:*?"<>|]`).ReplaceAllString(Name, "")
 }
 
+func TestList(List []string, testString string) bool {
+	for _, s := range List {
+		if s == testString {
+			return true
+		}
+	}
+	return false
+}
+
 func ExtractBookID(url string) string {
 	if url != "" {
 		bookID := regexp.MustCompile(`(\d+)`).FindStringSubmatch(url)
