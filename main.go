@@ -24,7 +24,9 @@ func shellBookDownload(downloadId any) {
 	case string:
 		start := src.BookInits{BookID: downloadId.(string), Index: 0, Locks: nil, ShowBook: true}
 		catalogues := start.DownloadBookInit() // get book catalogues
-		catalogues.InitCatalogue()
+		if catalogues.TestBookResult {
+			catalogues.InitCatalogue()
+		}
 
 	case []string:
 		Locks := multi.NewGoLimit(7)
@@ -32,7 +34,9 @@ func shellBookDownload(downloadId any) {
 			Locks.Add()
 			start := src.BookInits{BookID: BookId, Index: BookIndex, Locks: Locks, ShowBook: true}
 			catalogues := start.DownloadBookInit() // get book catalogues
-			catalogues.InitCatalogue()
+			if catalogues.TestBookResult {
+				catalogues.InitCatalogue()
+			}
 		}
 		Locks.WaitZero() // wait for all goroutines to finish
 	}
@@ -40,24 +44,41 @@ func shellBookDownload(downloadId any) {
 }
 
 func ParseCommand() map[string]string {
-	commandMap := make(map[string]string)
+	AppList := []string{"sfacg", "cat"}
+	CommandMap := make(map[string]string)
 	download := flag.String("download", "", "input book id or url, like:download <bookid/url>")
 	account := flag.String("account", "", "input account")
 	password := flag.String("password", "", "input password")
 	appType := flag.String("app", "sfacg", "input app type, like: app sfacg")
 	search := flag.String("search", "", "input search keyword, like: search keyword")
+	Thread := flag.Int("max", 0, "input thread number, like: thread 1")
 	showConfig := flag.Bool("show", false, "show config, like: show config")
 	flag.Parse()
-	commandMap["book_id"] = cfg.ExtractBookID(*download)
-	commandMap["account"] = *account
-	commandMap["password"] = *password
-	commandMap["app_type"] = *appType
-	commandMap["key_word"] = *search
+	CommandMap["book_id"] = cfg.ExtractBookID(*download)
+	CommandMap["account"] = *account
+	CommandMap["password"] = *password
+	CommandMap["app_type"] = *appType
+	CommandMap["key_word"] = *search
 	if *showConfig {
+		// print config json file information to console
 		cfg.FormatJson(cfg.ReadConfig(""))
 	}
-	cfg.Vars.AppType = *appType
-	return commandMap
+	// check app type and cheng edit config
+	if cfg.TestList(AppList, *appType) {
+		cfg.Vars.AppType = *appType
+	} else {
+		fmt.Printf("app type %v is invalid, please input again:", *appType)
+		cfg.Vars.AppType = "sfacg"
+	}
+	if *Thread != 0 {
+		if *Thread >= 64 {
+			fmt.Println("thread number is too large, please input again:")
+		} else {
+			cfg.Vars.MaxThreadNumber = *Thread
+			fmt.Println("change thread number to:", *Thread, "thread")
+		}
+	}
+	return CommandMap
 }
 
 func TestCatAccount() bool {
