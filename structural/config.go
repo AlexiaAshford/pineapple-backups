@@ -11,10 +11,11 @@ type Books struct {
 	SignStatus string
 }
 type MyJsonPro struct {
-	ConfigFile string `json:"ConfigFile"`
-	SaveFile   string `json:"SaveFile"`
-	AppType    string `json:"AppType"`
-	Sfacg      struct {
+	ConfigFile      string `json:"config_file"`
+	SaveFile        string `json:"save_file"`
+	AppType         string `json:"app_type"`
+	MaxThreadNumber int    `json:"max_thread_number"`
+	Sfacg           struct {
 		UserName string `json:"UserName"`
 		Password string `json:"Password"`
 		Cookie   string `json:"Cookie"`
