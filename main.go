@@ -140,16 +140,7 @@ func init() {
 
 func main() {
 	if len(os.Args) <= 1 {
-		//ConsoleTestAppType("")
-		//for {
-		//	spaceRe, _ := regexp.Compile(`\s+`)
-		//	inputs := spaceRe.Split(strings.TrimSpace(cfg.Input(">")), -1)
-		//	if len(inputs) > 1 {
-		//		shellConsole(inputs)
-		//	} else if inputs[0] != "" {
-		//		fmt.Println("you must input command, like: sf command")
-		//	}
-		//}
+		ConsoleTestAppType("")
 	} else {
 		shellConsole(ParseCommandLine())
 	}

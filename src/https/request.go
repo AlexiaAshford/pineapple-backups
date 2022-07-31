@@ -15,6 +15,7 @@ func Request(method string, URL string, dataJson string) ([]byte, []*http.Cookie
 		fmt.Printf("NewRequest %v error:%v\n", method, err)
 	} else {
 		if URL == "https://minipapi.sfacg.com/pas/mpapi/sessions" {
+			// login request no need to test cookie
 			SetHeaders(request, false)
 		} else {
 			SetHeaders(request, true)
