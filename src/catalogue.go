@@ -78,17 +78,14 @@ func (catalogue *Catalogue) InitCatalogue() {
 }
 
 func (catalogue *Catalogue) DownloadContent() {
-	// set  multi thread number
 	for _, ChapterId := range catalogue.ChapterList {
-
 		func(ChapterId string) {
 			if cfg.Vars.AppType == "sfacg" {
 				if response, ok := boluobao.GetContentDetailedByCid(ChapterId); ok {
 					catalogue.makeContentInformation(response)
 				}
 			} else if cfg.Vars.AppType == "cat" {
-				response := hbooker.GetContent(ChapterId)
-				if response.Code == "100000" {
+				if response, ok := hbooker.GetContent(ChapterId); ok {
 					catalogue.makeContentInformation(response)
 				}
 			} else {

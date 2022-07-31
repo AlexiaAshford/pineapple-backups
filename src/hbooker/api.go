@@ -69,13 +69,19 @@ func GetKeyByCid(chapterId string) string {
 	return result.Data.Command
 }
 
-func GetContent(chapterId string) structs.ContentStruct {
+func GetContent(chapterId string) (structs.ContentStruct, bool) {
 	var result structs.ContentStruct
 	chapterKey := GetKeyByCid(chapterId)
 	response, _ := req.Request("POST", QueryParams(fmt.Sprintf(ContentDetailedByCid, chapterId, chapterKey)), "")
-	if err := json.Unmarshal(Decode(string(response), ""), &result); err != nil {
+	if err := json.Unmarshal(Decode(string(response), ""), &result); err == nil {
+		for i := 0; i < 5; i++ {
+			if result.Code == "100000" {
+				result.Data.ChapterInfo.TxtContent = string(Decode(result.Data.ChapterInfo.TxtContent, chapterKey))
+				return result, true
+			}
+		}
+	} else {
 		fmt.Println("json unmarshal error:", err)
 	}
-	result.Data.ChapterInfo.TxtContent = string(Decode(result.Data.ChapterInfo.TxtContent, chapterKey))
-	return result
+	return structs.ContentStruct{}, false
 }
