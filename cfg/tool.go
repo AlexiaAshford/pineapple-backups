@@ -1,6 +1,7 @@
 package cfg
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -53,6 +54,17 @@ func InputStr(introduction string) string {
 		}
 	}
 	return InputStr(">")
+}
+
+func Input(prompt string) string {
+	for {
+		fmt.Printf(prompt)
+		input, err := bufio.NewReader(os.Stdin).ReadString('\n')
+		if err == nil {
+			return input
+		}
+		return ""
+	}
 }
 func IsNum(s string) bool {
 	_, err := strconv.ParseFloat(s, 64)

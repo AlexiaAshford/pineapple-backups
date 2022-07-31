@@ -4,9 +4,11 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
 	"sf/cfg"
 	"sf/multi"
 	"sf/src"
+	"strings"
 )
 
 func ShellLoginAccount(account, password string) {
@@ -125,15 +127,8 @@ func TestSfAccount(account string, password string) bool {
 	return true
 }
 
-func init() {
-	cfg.ConfigInit()
-	if len(os.Args) <= 1 {
-		fmt.Println("please input command line parameters!")
-		os.Exit(1)
-	}
-}
-func main() {
-	command, ExitProgram := ParseCommand(), false
+func shellConsole(command map[string]string) {
+	ExitProgram := false
 	if TestSfAccount(command["account"], command["password"]) {
 		ExitProgram = true
 	}
@@ -155,5 +150,29 @@ func main() {
 
 	if ExitProgram {
 		os.Exit(0) // exit the program if no error
+	}
+
+}
+func init() {
+	cfg.ConfigInit()
+}
+
+func main() {
+
+	if len(os.Args) <= 1 {
+		for {
+			spaceRe, _ := regexp.Compile(`\s+`)
+			inputs := spaceRe.Split(strings.TrimSpace(cfg.Input(">")), -1)
+			if len(inputs) > 1 {
+				commands := make(map[string]string)
+				commands[inputs[0]] = inputs[1]
+				shellConsole(commands)
+			} else {
+				fmt.Println("you must input command, like: sf command")
+			}
+		}
+	} else {
+
+		shellConsole(ParseCommand())
 	}
 }
