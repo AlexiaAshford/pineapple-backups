@@ -19,7 +19,9 @@ func ConfigInit() {
 		Vars.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
 		Vars.Cat.Params.DeviceToken = "ciweimao_"
 		Vars.MaxThreadNumber = 32
-		Vars.Cat.Params.AppVersion = "2.9.290"
+		Vars.MaxRetry = 5 // retry times when failed
+		Vars.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
+		Vars.Cat.Params.AppVersion = "2.9.290" // hbooker app version
 		SaveJson()
 	}
 	Load()

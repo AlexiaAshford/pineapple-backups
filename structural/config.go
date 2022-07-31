@@ -15,10 +15,12 @@ type MyJsonPro struct {
 	SaveFile        string `json:"save_file"`
 	AppType         string `json:"app_type"`
 	MaxThreadNumber int    `json:"max_thread_number"`
+	MaxRetry        int    `json:"max_retry"`
 	Sfacg           struct {
-		UserName string `json:"UserName"`
-		Password string `json:"Password"`
-		Cookie   string `json:"Cookie"`
+		UserName  string `json:"account"`
+		Password  string `json:"password"`
+		Cookie    string `json:"Cookie"`
+		UserAgent string `json:"user-agent"`
 	} `json:"sfacg"`
 	Cat struct {
 		Params struct {
@@ -27,7 +29,7 @@ type MyJsonPro struct {
 			AppVersion  string `json:"app_version"`
 			DeviceToken string `json:"device_token"`
 		} `json:"common_params"`
-		UserAgent string `json:"UserAgent"`
+		UserAgent string `json:"user-agent"`
 	} `json:"cat"`
 }
 
