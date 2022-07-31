@@ -9,6 +9,7 @@ import (
 	"sf/structural/hbooker_structs"
 	"sf/structural/sfacg_structs"
 	"strconv"
+	"time"
 )
 
 type Catalogue struct {
@@ -76,30 +77,25 @@ func (catalogue *Catalogue) InitCatalogue() {
 	}
 }
 
-func (catalogue *Catalogue) downloadChapter(ChapterId string) {
-
-	if cfg.Vars.AppType == "sfacg" {
-		response := boluobao.GetContentDetailedByCid(ChapterId)
-		if response.Status.HTTPCode == 200 {
-			catalogue.makeContentInformation(response)
-		} else {
-			fmt.Println("error message:", response.Status.Msg)
-		}
-	} else if cfg.Vars.AppType == "cat" {
-		response := hbooker.GetContent(ChapterId)
-		if response.Code == "100000" {
-			catalogue.makeContentInformation(response)
-		}
-	} else {
-		panic("app type error please check config file")
-	}
-
-}
-
 func (catalogue *Catalogue) DownloadContent() {
 	// set  multi thread number
 	for _, ChapterId := range catalogue.ChapterList {
-		catalogue.downloadChapter(ChapterId)
+
+		func(ChapterId string) {
+			if cfg.Vars.AppType == "sfacg" {
+				if response, ok := boluobao.GetContentDetailedByCid(ChapterId); ok {
+					catalogue.makeContentInformation(response)
+				}
+			} else if cfg.Vars.AppType == "cat" {
+				response := hbooker.GetContent(ChapterId)
+				if response.Code == "100000" {
+					catalogue.makeContentInformation(response)
+				}
+			} else {
+				panic("app type error please check config file, the app type is:" + cfg.Vars.AppType)
+			}
+		}(ChapterId)
+
 	}
 	cfg.EncapsulationWrite(catalogue.SaveTextPath, catalogue.contentList["cache"], 5, "w")
 	for _, ChapterId := range catalogue.ChapterList {
@@ -134,6 +130,6 @@ func (catalogue *Catalogue) SpeedProgressAndDelayTime() {
 	if err := catalogue.ChapterBar.Add(1); err != nil {
 		fmt.Println("bar error:", err)
 	} else {
-		//time.Sleep(time.Second * time.Duration(2))
+		time.Sleep(time.Second * time.Duration(2))
 	}
 }

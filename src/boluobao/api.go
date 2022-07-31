@@ -40,15 +40,21 @@ func GetCatalogue(NovelID string) sfacg_structs.Catalogue {
 	}
 }
 
-func GetContentDetailedByCid(cid string) sfacg_structs.Content {
+func GetContentDetailedByCid(cid string) (sfacg_structs.Content, bool) {
 	var ContentData sfacg_structs.Content
 	response, _ := https.Request("GET", fmt.Sprintf(WebSite+ContentDetailedByCid, cid), "")
 	if err := json.Unmarshal(response, &ContentData); err == nil {
-		return ContentData
+		for i := 0; i < 5; i++ {
+			if ContentData.Status.HTTPCode == 200 {
+				return ContentData, true
+			} else {
+				fmt.Println("Error:", ContentData.Status.Msg)
+			}
+		}
 	} else {
-		fmt.Println("Error:", err)
-		return sfacg_structs.Content{}
+		fmt.Println("ContentData Json Error:", err)
 	}
+	return sfacg_structs.Content{}, false
 }
 
 func GetSearchDetailedByKeyword(keyword string, page int) sfacg_structs.Search {
