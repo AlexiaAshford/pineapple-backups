@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"regexp"
@@ -43,44 +42,6 @@ func shellBookDownload(downloadId any) {
 		Locks.WaitZero() // wait for all goroutines to finish
 	}
 	os.Exit(0) // exit the program if no error
-}
-
-func ParseCommand() map[string]string {
-	AppList := []string{"sfacg", "cat"}
-	CommandMap := make(map[string]string)
-	download := flag.String("download", "", "input book id or url, like:download <bookid/url>")
-	account := flag.String("account", "", "input account")
-	password := flag.String("password", "", "input password")
-	appType := flag.String("app", "sfacg", "input app type, like: app sfacg")
-	search := flag.String("search", "", "input search keyword, like: search keyword")
-	Thread := flag.Int("max", 0, "input thread number, like: thread 1")
-	showConfig := flag.Bool("show", false, "show config, like: show config")
-	flag.Parse()
-	CommandMap["book_id"] = cfg.ExtractBookID(*download)
-	CommandMap["account"] = *account
-	CommandMap["password"] = *password
-	CommandMap["app_type"] = *appType
-	CommandMap["key_word"] = *search
-	if *showConfig {
-		// print config json file information to console
-		cfg.FormatJson(cfg.ReadConfig(""))
-	}
-	// check app type and cheng edit config
-	if cfg.TestList(AppList, *appType) {
-		cfg.Vars.AppType = *appType
-	} else {
-		fmt.Printf("app type %v is invalid, please input again:", *appType)
-		cfg.Vars.AppType = "sfacg"
-	}
-	if *Thread != 0 {
-		if *Thread >= 64 {
-			fmt.Println("thread number is too large, please input again:")
-		} else {
-			cfg.Vars.MaxThreadNumber = *Thread
-			fmt.Println("change thread number to:", *Thread, "thread")
-		}
-	}
-	return CommandMap
 }
 
 func TestCatAccount() bool {
@@ -127,24 +88,24 @@ func TestSfAccount(account string, password string) bool {
 	return true
 }
 
-func shellConsole(command map[string]string) {
+func shell(command map[string]any) {
 	ExitProgram := false
-	if TestSfAccount(command["account"], command["password"]) {
+	if TestSfAccount(command["account"].(string), command["password"].(string)) {
 		ExitProgram = true
 	}
 	if TestCatAccount() {
 		ExitProgram = true
 	}
 	if command["key_word"] != "" {
-		if NovelId := src.SearchBook(command["key_word"]); NovelId != "" {
+		if NovelId := src.SearchBook(command["key_word"].(string)); NovelId != "" {
 			shellBookDownload(NovelId)
 		} else {
 			fmt.Println("no book found")
 		}
 		ExitProgram = true
 	}
-	if command["book_id"] != "" {
-		shellBookDownload(command["book_id"])
+	if command["book"] != "" {
+		shellBookDownload(command["book"].(string))
 		ExitProgram = true
 	}
 
@@ -153,26 +114,63 @@ func shellConsole(command map[string]string) {
 	}
 
 }
+func shellConsole(inputs []string) {
+	switch inputs[0] {
+	case "exit":
+		os.Exit(0)
+	case "help":
+		fmt.Println("help:")
+	case "download":
+		if len(inputs) == 2 {
+			shellBookDownload(inputs[1])
+		} else {
+			fmt.Println("input book id or url, like:download <bookid/url>")
+		}
+	case "search":
+		if len(inputs) == 2 {
+			if NovelId := src.SearchBook(inputs[1]); NovelId != "" {
+				shellBookDownload(NovelId)
+			} else {
+				fmt.Println("no book found")
+			}
+		} else {
+			fmt.Println("input book id or url, like:download <bookid/url>")
+		}
+	case "show":
+		if len(inputs) == 2 {
+			if inputs[1] == "config" {
+				cfg.FormatJson(cfg.ReadConfig(""))
+			}
+		} else {
+			fmt.Println("input config, like:show config")
+		}
+	}
+
+	if inputs[0] == "exit" {
+		os.Exit(0)
+	}
+
+	if len(inputs) >= 2 {
+
+	}
+
+}
 func init() {
 	cfg.ConfigInit()
 }
 
 func main() {
-
 	if len(os.Args) <= 1 {
 		for {
 			spaceRe, _ := regexp.Compile(`\s+`)
 			inputs := spaceRe.Split(strings.TrimSpace(cfg.Input(">")), -1)
 			if len(inputs) > 1 {
-				commands := make(map[string]string)
-				commands[inputs[0]] = inputs[1]
-				shellConsole(commands)
+				shellConsole(inputs)
 			} else {
 				fmt.Println("you must input command, like: sf command")
 			}
 		}
 	} else {
-
-		shellConsole(ParseCommand())
+		shell(cfg.ParseCommandLine())
 	}
 }
