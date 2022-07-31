@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"sf/cfg"
 	"sf/src/https"
 	"sf/structural/sfacg_structs"
 )
@@ -44,7 +45,7 @@ func GetContentDetailedByCid(cid string) (sfacg_structs.Content, bool) {
 	var ContentData sfacg_structs.Content
 	response, _ := https.Request("GET", fmt.Sprintf(WebSite+ContentDetailedByCid, cid), "")
 	if err := json.Unmarshal(response, &ContentData); err == nil {
-		for i := 0; i < 5; i++ {
+		for i := 0; i < cfg.Vars.MaxRetry; i++ {
 			if ContentData.Status.HTTPCode == 200 {
 				return ContentData, true
 			} else {

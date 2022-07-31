@@ -26,21 +26,21 @@ func (catalogue *Catalogue) ReadChapterConfig() string {
 	catalogue.ConfigPath = path.Join(cfg.Vars.ConfigFile, cfg.BookConfig.BookInfo.NovelName+".conf")
 	catalogue.contentList = make(map[string]string)
 	if !cfg.CheckFileExist(catalogue.ConfigPath) {
-		cfg.EncapsulationWrite(catalogue.ConfigPath, "", 5, "w")
+		cfg.EncapsulationWrite(catalogue.ConfigPath, "", "w")
 		catalogue.ChapterCfg = ""
 	} else { // read config file
-		catalogue.ChapterCfg = cfg.EncapsulationWrite(catalogue.ConfigPath, "", 5, "r")
+		catalogue.ChapterCfg = cfg.EncapsulationWrite(catalogue.ConfigPath, "", "r")
 	}
-	catalogue.contentList["cache"] = cfg.EncapsulationWrite(catalogue.SaveTextPath, "", 5, "r")
+	catalogue.contentList["cache"] = cfg.EncapsulationWrite(catalogue.SaveTextPath, "", "r")
 
 	return cfg.Vars.AppType
 }
 func (catalogue *Catalogue) AddChapterConfig(chapId any) {
 	switch chapId.(type) {
 	case string:
-		cfg.EncapsulationWrite(catalogue.ConfigPath, chapId.(string)+",", 5, "a")
+		cfg.EncapsulationWrite(catalogue.ConfigPath, chapId.(string)+",", "a")
 	case int:
-		cfg.EncapsulationWrite(catalogue.ConfigPath, strconv.Itoa(chapId.(int))+",", 5, "a")
+		cfg.EncapsulationWrite(catalogue.ConfigPath, strconv.Itoa(chapId.(int))+",", "a")
 	}
 }
 
@@ -79,6 +79,7 @@ func (catalogue *Catalogue) InitCatalogue() {
 
 func (catalogue *Catalogue) DownloadContent() {
 	for _, ChapterId := range catalogue.ChapterList {
+
 		func(ChapterId string) {
 			if cfg.Vars.AppType == "sfacg" {
 				if response, ok := boluobao.GetContentDetailedByCid(ChapterId); ok {
@@ -94,9 +95,9 @@ func (catalogue *Catalogue) DownloadContent() {
 		}(ChapterId)
 
 	}
-	cfg.EncapsulationWrite(catalogue.SaveTextPath, catalogue.contentList["cache"], 5, "w")
+	cfg.EncapsulationWrite(catalogue.SaveTextPath, catalogue.contentList["cache"], "w")
 	for _, ChapterId := range catalogue.ChapterList {
-		cfg.EncapsulationWrite(catalogue.SaveTextPath, catalogue.contentList[ChapterId], 5, "a")
+		cfg.EncapsulationWrite(catalogue.SaveTextPath, catalogue.contentList[ChapterId], "a")
 	}
 	catalogue.ChapterList = nil
 }

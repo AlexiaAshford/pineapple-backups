@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sf/cfg"
 	req "sf/src/https"
 	structs "sf/structural/hbooker_structs"
 )
@@ -74,7 +75,7 @@ func GetContent(chapterId string) (structs.ContentStruct, bool) {
 	chapterKey := GetKeyByCid(chapterId)
 	response, _ := req.Request("POST", QueryParams(fmt.Sprintf(ContentDetailedByCid, chapterId, chapterKey)), "")
 	if err := json.Unmarshal(Decode(string(response), ""), &result); err == nil {
-		for i := 0; i < 5; i++ {
+		for i := 0; i < cfg.Vars.MaxRetry; i++ {
 			if result.Code == "100000" {
 				result.Data.ChapterInfo.TxtContent = string(Decode(result.Data.ChapterInfo.TxtContent, chapterKey))
 				return result, true

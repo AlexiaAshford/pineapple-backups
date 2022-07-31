@@ -12,21 +12,17 @@ import (
 var Vars = structural.MyJsonPro{}
 var BookConfig = structural.MyBookInfoJsonPro{}
 
-func ConfigInit() {
-	if !CheckFileExist("./config.json") || FileSize("./config.json") == 0 {
-		Vars.SaveFile = "save"
-		Vars.ConfigFile = "cache"
-		Vars.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
-		Vars.Cat.Params.DeviceToken = "ciweimao_"
-		Vars.MaxThreadNumber = 32
-		Vars.MaxRetry = 5 // retry times when failed
-		Vars.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
-		Vars.Cat.Params.AppVersion = "2.9.290" // hbooker app version
-		SaveJson()
-	}
+func updateConfig() {
 	Load()
+	if Vars.MaxRetry == 0 || Vars.MaxRetry > 10 {
+		Vars.MaxRetry = 5
+	}
 	if Vars.MaxThreadNumber == 0 || Vars.MaxThreadNumber >= 64 {
 		Vars.MaxThreadNumber = 32
+	}
+	if Vars.Sfacg.UserAgent == "" {
+		Vars.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
+		fmt.Println("Sfacg.UserAgent is empty, set to default value:", Vars.Sfacg.UserAgent)
 	}
 	if Vars.ConfigFile == "" {
 		Vars.ConfigFile = "cache"
@@ -46,6 +42,21 @@ func ConfigInit() {
 	if !CheckFileExist(Vars.SaveFile) {
 		Mkdir(Vars.SaveFile)
 	}
+}
+
+func ConfigInit() {
+	if !CheckFileExist("./config.json") || FileSize("./config.json") == 0 {
+		Vars.SaveFile = "save"
+		Vars.ConfigFile = "cache"
+		Vars.MaxThreadNumber = 32
+		Vars.MaxRetry = 5 // retry times when failed
+		Vars.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
+		Vars.Cat.Params.DeviceToken = "ciweimao_"
+		Vars.Cat.Params.AppVersion = "2.9.290" // hbooker app version
+		Vars.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
+		SaveJson()
+	}
+	updateConfig()
 }
 
 func CheckFileExist(fileName string) bool {

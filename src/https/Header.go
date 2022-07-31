@@ -43,7 +43,7 @@ func SfWeChatHeaders(TestCookie bool) map[string]string {
 		fmt.Println("Cookie is empty, please login first!")
 		os.Exit(1)
 	}
-	HeaderCollection["sf-minip-info"] = "minip_novel/1.0.70(android;11)/wxmp"
+	HeaderCollection["sf-minip-info"] = cfg.Vars.Sfacg.UserAgent
 	HeaderCollection["Content-Type"] = "application/json"
 	HeaderCollection["test-sfacg-cookie"] = "cookie:" + cfg.Vars.Sfacg.Cookie
 	HeaderCollection["Authorization"] = Base64Bytes()
