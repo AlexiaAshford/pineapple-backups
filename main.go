@@ -3,11 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"sf/cfg"
 	"sf/multi"
 	"sf/src"
-	"strings"
 )
 
 func ShellLoginAccount(account, password string) {
@@ -146,14 +144,6 @@ func shellConsole(inputs []string) {
 		}
 	}
 
-	if inputs[0] == "exit" {
-		os.Exit(0)
-	}
-
-	if len(inputs) >= 2 {
-
-	}
-
 }
 func init() {
 	cfg.ConfigInit()
@@ -161,15 +151,17 @@ func init() {
 
 func main() {
 	if len(os.Args) <= 1 {
-		for {
-			spaceRe, _ := regexp.Compile(`\s+`)
-			inputs := spaceRe.Split(strings.TrimSpace(cfg.Input(">")), -1)
-			if len(inputs) > 1 {
-				shellConsole(inputs)
-			} else {
-				fmt.Println("you must input command, like: sf command")
-			}
-		}
+		fmt.Println("please input command, like:sf help")
+		os.Exit(0)
+		//for {
+		//	spaceRe, _ := regexp.Compile(`\s+`)
+		//	inputs := spaceRe.Split(strings.TrimSpace(cfg.Input(">")), -1)
+		//	if len(inputs) > 1 {
+		//		shellConsole(inputs)
+		//	} else {
+		//		fmt.Println("you must input command, like: sf command")
+		//	}
+		//}
 	} else {
 		shell(cfg.ParseCommandLine())
 	}
