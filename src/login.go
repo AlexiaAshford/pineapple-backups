@@ -44,3 +44,69 @@ func LoginAccount(username string, password string, retry int) {
 		os.Exit(1)
 	}
 }
+
+func TestCatAccount() bool {
+	if cfg.Vars.Cat.Params.Account != "" && cfg.Vars.Cat.Params.LoginToken != "" {
+		return true
+	} else {
+		if ok := InputAccountToken(); !ok {
+			return false
+		}
+		return true
+	}
+}
+
+func AutoAccount() bool {
+	if cfg.Vars.Sfacg.UserName != "" && cfg.Vars.Sfacg.Password != "" {
+		if cfg.Vars.Sfacg.Cookie != "" {
+			if AccountDetailed() == "需要登录才能访问该资源" {
+				fmt.Printf("cookie is Invalid,attempt to auto login!\naccount:%v\npassword:%v\n",
+					cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password)
+				// auto login and get cookie
+				LoginAccount(cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password, 0)
+			}
+		} else {
+			fmt.Printf("cookie is empty,attempt to auto login!\naccount:%v\npassword:%v\n",
+				cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password)
+			// auto login and get cookie
+			LoginAccount(cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password, 0)
+		}
+		return true
+	}
+	return false
+}
+
+func InputAccountToken() bool {
+	for i := 0; i < cfg.Vars.MaxRetry; i++ {
+		LoginToken := cfg.InputStr("you must input 32 characters login token:")
+		if len(LoginToken) != 32 {
+			fmt.Println("Login token is 32 characters, please input again:")
+		} else {
+			cfg.Vars.Cat.Params.LoginToken = LoginToken
+			cfg.Vars.Cat.Params.Account = cfg.InputStr("you must input account:")
+			cfg.SaveJson()
+			return true
+		}
+	}
+	return false
+}
+
+func TestAppTypeAndAccount(appType string) {
+	if cfg.TestList([]string{"sfacg", "cat"}, appType) { // check app type and cheng edit config
+		cfg.Vars.AppType = appType
+		if cfg.Vars.AppType == "cat" {
+			if !TestCatAccount() {
+				fmt.Println("input account and login token, please input again:")
+				os.Exit(1)
+			}
+			cfg.Vars.AppType = "cat"
+		} else if cfg.Vars.AppType == "sfacg" {
+			if !AutoAccount() {
+				fmt.Println("input account and password, please input again:")
+				os.Exit(1)
+			}
+		}
+	} else {
+		panic("app type %v is invalid, please input again:" + appType)
+	}
+}

@@ -1,22 +1,13 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"sf/cfg"
 	"sf/multi"
 	"sf/src"
 )
-
-func ShellLoginAccount(account, password string) {
-	if account == "" {
-		fmt.Println("you must input account, like: sf username")
-	} else if password == "" {
-		fmt.Println("you must input password, like: sf password")
-	} else {
-		src.LoginAccount(account, password, 0)
-	}
-}
 
 func shellBookDownload(downloadId any) {
 	switch downloadId.(type) {
@@ -26,7 +17,6 @@ func shellBookDownload(downloadId any) {
 		if catalogues.TestBookResult {
 			catalogues.InitCatalogue()
 		}
-
 	case []string:
 		Locks := multi.NewGoLimit(7)
 		for BookIndex, BookId := range downloadId.([]string) {
@@ -42,106 +32,105 @@ func shellBookDownload(downloadId any) {
 	os.Exit(0) // exit the program if no error
 }
 
-func TestCatAccount() bool {
-	if cfg.Vars.AppType == "cat" {
-		if cfg.Vars.Cat.Params.Account != "" && cfg.Vars.Cat.Params.LoginToken != "" {
-			return false
-		}
-		for {
-			LoginToken := cfg.InputStr("you must input 32 characters login token:")
-			if len(LoginToken) != 32 {
-				fmt.Println("Login token is 32 characters, please input again:")
-			} else {
-				cfg.Vars.Cat.Params.LoginToken = LoginToken
-				cfg.SaveJson()
-				break
-			}
-		}
-		cfg.Vars.Cat.Params.Account = cfg.InputStr("you must input account:")
-		cfg.SaveJson()
-		return false
-	}
-	return false
-}
-
-func TestSfAccount(account string, password string) bool {
+func shellLoginAccount(inputs []string) bool {
 	if cfg.Vars.AppType == "sfacg" {
-		if account != "" && password != "" {
-			ShellLoginAccount(account, password)
-		} else if cfg.Vars.Sfacg.UserName != "" || cfg.Vars.Sfacg.Password != "" {
-			if cfg.Vars.Sfacg.Cookie != "" {
-				if src.AccountDetailed() == "需要登录才能访问该资源" {
-					fmt.Printf("cookie is Invalid,attempt to auto login!\naccount:%v\npassword:%v\n",
-						cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password)
-					ShellLoginAccount(cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password)
-				}
-			} else {
-				fmt.Printf("cookie is empty,attempt to auto login!\naccount:%v\npassword:%v\n",
-					cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password)
-				ShellLoginAccount(cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password)
-			}
-			return false
+		if len(inputs) >= 3 {
+			src.LoginAccount(inputs[1], inputs[2], 0)
+		} else {
+			fmt.Println("you must input account and password, like: sf account password")
+		}
+	} else if cfg.Vars.AppType == "cat" {
+		if ok := src.InputAccountToken(); !ok {
+			fmt.Println("you must input account and token.")
 		}
 	}
 	return true
 }
 
-func shell(command map[string]any) {
-	ExitProgram := false
-	if TestSfAccount(command["account"].(string), command["password"].(string)) {
-		ExitProgram = true
+func shellBookMain(inputs []string) {
+	if len(inputs) == 2 {
+		if cfg.Vars.AppType == "cat" {
+			if len(inputs[1]) == 9 { // test if the input is hbooker book id
+				shellBookDownload(inputs[1])
+			} else {
+				fmt.Println("hbooker bookid is 9 characters, please input again:")
+			}
+		} else {
+			shellBookDownload(inputs[1])
+		}
+	} else {
+		fmt.Println("input book id or url, like:download <bookid/url>")
 	}
-	if TestCatAccount() {
-		ExitProgram = true
-	}
-	if command["key_word"] != "" {
-		if NovelId := src.SearchBook(command["key_word"].(string)); NovelId != "" {
+}
+
+func shellSearchBookMain(inputs []string) {
+	if len(inputs) == 2 {
+		if NovelId := src.SearchBook(inputs[1]); NovelId != "" {
 			shellBookDownload(NovelId)
 		} else {
-			fmt.Println("no book found")
+			fmt.Println("No found search book, please input again:")
 		}
-		ExitProgram = true
+	} else {
+		fmt.Println("input book id or url, like:download <bookid/url>")
 	}
-	if command["book"] != "" {
-		shellBookDownload(command["book"].(string))
-		ExitProgram = true
-	}
-
-	if ExitProgram {
-		os.Exit(0) // exit the program if no error
-	}
-
 }
+func ConsoleTestAppType(inputs any) {
+	switch inputs.(type) {
+	case []string:
+		if len(inputs.([]string)) == 2 {
+			src.TestAppTypeAndAccount(inputs.([]string)[1])
+		}
+	default:
+		src.TestAppTypeAndAccount(cfg.Vars.AppType)
+	}
+}
+
+func ParseCommandLine() []string {
+	download := flag.String("download", "", "input book id or url")
+	account := flag.String("account", "", "input account")
+	password := flag.String("password", "", "input password")
+	appType := flag.String("app", "sfacg", "input app type, like: app sfacg")
+	search := flag.String("search", "", "input search keyword, like: search keyword")
+	Thread := flag.Int("max", 0, "input thread number, like: thread 1")
+	showConfig := flag.Bool("show", false, "show config, like: show config")
+	flag.Parse()
+	src.TestAppTypeAndAccount(*appType)
+	if *Thread > 0 && *Thread < 64 {
+		cfg.Vars.MaxThreadNumber = *Thread
+	}
+	if *showConfig {
+		return []string{"show", "config"}
+	}
+	if *download != "" {
+		return []string{"download", *download}
+	}
+	if *account != "" && *password != "" {
+		return []string{"login", *account, *password}
+	}
+	if *search != "" {
+		return []string{"search", *search}
+	}
+	return nil
+}
+
 func shellConsole(inputs []string) {
 	switch inputs[0] {
-	case "exit":
+	case "a", "app":
+		ConsoleTestAppType(inputs)
+	case "q", "quit":
 		os.Exit(0)
-	case "help":
+	case "h", "help":
 		fmt.Println("help:")
-	case "download":
-		if len(inputs) == 2 {
-			shellBookDownload(inputs[1])
-		} else {
-			fmt.Println("input book id or url, like:download <bookid/url>")
-		}
-	case "search":
-		if len(inputs) == 2 {
-			if NovelId := src.SearchBook(inputs[1]); NovelId != "" {
-				shellBookDownload(NovelId)
-			} else {
-				fmt.Println("no book found")
-			}
-		} else {
-			fmt.Println("input book id or url, like:download <bookid/url>")
-		}
-	case "show":
-		if len(inputs) == 2 {
-			if inputs[1] == "config" {
-				cfg.FormatJson(cfg.ReadConfig(""))
-			}
-		} else {
-			fmt.Println("input config, like:show config")
-		}
+	case "show", "test":
+		cfg.FormatJson(cfg.ReadConfig(""))
+	case "book", "download":
+		shellBookMain(inputs)
+	case "s", "search":
+		shellSearchBookMain(inputs)
+	case "l", "login":
+		shellLoginAccount(inputs)
+	default:
+		fmt.Println("command not found,please input help to see the command list:", inputs[0])
 	}
 
 }
@@ -151,18 +140,17 @@ func init() {
 
 func main() {
 	if len(os.Args) <= 1 {
-		fmt.Println("please input command, like:sf help")
-		os.Exit(0)
+		//ConsoleTestAppType("")
 		//for {
 		//	spaceRe, _ := regexp.Compile(`\s+`)
 		//	inputs := spaceRe.Split(strings.TrimSpace(cfg.Input(">")), -1)
 		//	if len(inputs) > 1 {
 		//		shellConsole(inputs)
-		//	} else {
+		//	} else if inputs[0] != "" {
 		//		fmt.Println("you must input command, like: sf command")
 		//	}
 		//}
 	} else {
-		shell(cfg.ParseCommandLine())
+		shellConsole(ParseCommandLine())
 	}
 }
