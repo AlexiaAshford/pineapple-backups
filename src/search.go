@@ -11,14 +11,15 @@ import (
 func CatSearchDetailed(searchName string, page int) []string {
 	var searchResult []string
 	response := hbooker.Search(searchName, page)
-	if response.Code == "100000" {
-		for index, book := range response.Data.BookList {
-			fmt.Println("Index:", index, "\t\t\tBookName:", book.BookName)
-			searchResult = append(searchResult, book.BookID)
-		}
-	} else {
+	if response.Code != "100000" || len(response.Data.BookList) == 0 {
 		fmt.Println("search failed, code:", response.Code)
 		return nil
+	} else {
+		fmt.Println("this page has", len(response.Data.BookList), "books")
+	}
+	for index, book := range response.Data.BookList {
+		fmt.Println("Index:", index, "\t\t\tBookName:", book.BookName)
+		searchResult = append(searchResult, book.BookID)
 	}
 	return searchResult
 }
@@ -44,7 +45,7 @@ func TestApp(searchName string, page int) []string {
 	} else if cfg.Vars.AppType == "sfacg" {
 		return SfacgSearchDetailed(searchName, page)
 	} else {
-		panic("app type is not correct")
+		panic("app type is not correct" + cfg.Vars.AppType)
 	}
 }
 
