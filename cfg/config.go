@@ -28,7 +28,7 @@ func updateConfig() {
 		Vars.ConfigFile = "cache"
 	}
 	if Vars.AppType == "" {
-		Vars.ConfigFile = "sfacg"
+		Vars.AppType = "sfacg"
 	}
 	if Vars.SaveFile == "" {
 		Vars.SaveFile = "save"
