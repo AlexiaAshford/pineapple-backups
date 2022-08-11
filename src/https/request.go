@@ -3,7 +3,7 @@ package https
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -23,7 +23,8 @@ func Request(method string, URL string, dataJson string) ([]byte, []*http.Cookie
 			SetHeaders(request, true)
 		}
 		if response, ok := client.Do(request); ok == nil {
-			if body, bodyError := ioutil.ReadAll(response.Body); bodyError == nil {
+			// delete ioutil.ReadAll and use io.ReadAll instead
+			if body, bodyError := io.ReadAll(response.Body); bodyError == nil {
 				return body, response.Cookies()
 			}
 		} else {
