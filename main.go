@@ -122,12 +122,14 @@ func shellConsole(inputs []string) {
 
 }
 func init() {
-	cfg.ConfigInit()
-	cfg.Vars.SaveFile = "save"
-	cfg.Vars.ConfigFile = "cache"
-	cfg.Vars.AppType = "sfacg"
-	cfg.Vars.MaxThreadNumber = 32
-	cfg.Vars.MaxRetry = 5 // retry times when failed
+	if !cfg.Exist("./config.json") || cfg.FileSize("./config.json") == 0 {
+		fmt.Println("config.json not exist, create a new one!")
+	} else {
+		cfg.LoadJson()
+	}
+	if cfg.UpdateConfig() {
+		cfg.SaveJson()
+	}
 }
 
 func main() {

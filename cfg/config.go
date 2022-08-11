@@ -14,10 +14,14 @@ var (
 	CurrentBook = structural.MyBookInfoJsonPro{}
 )
 
-func updateConfig() bool { // update config.json if necessary
+func UpdateConfig() bool { // update config.json if necessary
 	changeVar := false
 	if Vars.MaxThreadNumber == 0 || Vars.MaxThreadNumber >= 64 {
-		Vars.MaxThreadNumber = 32
+		Vars.MaxThreadNumber = 32 // default value is 32 thread
+		changeVar = true
+	}
+	if Vars.MaxRetry == 0 || Vars.MaxRetry >= 10 {
+		Vars.MaxRetry = 5 // retry times when failed
 		changeVar = true
 	}
 	if Vars.AppType == "" {
@@ -39,17 +43,6 @@ func updateConfig() bool { // update config.json if necessary
 	}
 	Exist([]string{Vars.ConfigFile, Vars.SaveFile})
 	return changeVar
-}
-
-func ConfigInit() {
-	if !Exist("./config.json") || FileSize("./config.json") == 0 {
-		fmt.Println("config.json not exist, create a new one!")
-	}
-	LoadJson()
-	if updateConfig() {
-		SaveJson()
-	}
-
 }
 
 func Exist(fileName any) bool {
