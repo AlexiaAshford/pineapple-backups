@@ -3,7 +3,6 @@ package cfg
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 )
 
@@ -31,7 +30,7 @@ func WriteFile(fileName string, content string, perm os.FileMode) error {
 	}
 	return nil
 }
-func EncapsulationWrite(Path string, content string, permMode string) string {
+func Write(Path string, content string, permMode string) string {
 	var perm os.FileMode
 	if permMode == "w" {
 		perm = 0644
@@ -72,7 +71,7 @@ func FileSize(FilePath string) int {
 
 // ReadFile read file content to string
 func ReadFile(filePath string) string {
-	if content, err := ioutil.ReadFile(filePath); err == nil {
+	if content, err := os.ReadFile(filePath); err == nil {
 		return string(content)
 	} else {
 		fmt.Println("ReadFile:", err)
