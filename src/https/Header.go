@@ -9,8 +9,6 @@ import (
 	"sf/cfg"
 )
 
-var client = &http.Client{}
-
 func Base64Bytes() string {
 	var encoded bytes.Buffer
 	encoder := base64.NewEncoder(base64.StdEncoding, &encoded)

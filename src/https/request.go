@@ -8,6 +8,8 @@ import (
 )
 
 func Request(method string, URL string, dataJson string) ([]byte, []*http.Cookie) {
+	var client = &http.Client{}
+
 	if method != "GET" && method != "POST" && method != "PUT" {
 		panic("Error: method must be GET or POST or PUT, but now is " + method)
 	}

@@ -96,6 +96,9 @@ func ParseCommandLine() []string {
 	Thread := flag.Int("max", 0, "input thread number, like: thread 1")
 	showConfig := flag.Bool("show", false, "show config, like: show config")
 	flag.Parse()
+	if *account != "" && *password != "" {
+		return []string{"login", *account, *password}
+	}
 	src.TestAppTypeAndAccount(*appType)
 	if *Thread > 0 && *Thread < 64 {
 		cfg.Vars.MaxThreadNumber = *Thread
@@ -105,9 +108,6 @@ func ParseCommandLine() []string {
 	}
 	if *download != "" {
 		return []string{"download", *download}
-	}
-	if *account != "" && *password != "" {
-		return []string{"login", *account, *password}
 	}
 	if *search != "" {
 		return []string{"search", *search}

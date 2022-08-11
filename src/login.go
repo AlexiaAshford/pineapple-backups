@@ -58,15 +58,8 @@ func TestCatAccount() bool {
 
 func AutoAccount() bool {
 	if cfg.Vars.Sfacg.UserName != "" && cfg.Vars.Sfacg.Password != "" {
-		if cfg.Vars.Sfacg.Cookie != "" {
-			if AccountDetailed() == "需要登录才能访问该资源" {
-				fmt.Printf("cookie is Invalid,attempt to auto login!\naccount:%v\npassword:%v\n",
-					cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password)
-				// auto login and get cookie
-				LoginAccount(cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password, 0)
-			}
-		} else {
-			fmt.Printf("cookie is empty,attempt to auto login!\naccount:%v\npassword:%v\n",
+		if AccountDetailed() == "需要登录才能访问该资源" {
+			fmt.Printf("cookie is Invalid,attempt to auto login!\naccount:%v\npassword:%v\n",
 				cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password)
 			// auto login and get cookie
 			LoginAccount(cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password, 0)
@@ -96,13 +89,13 @@ func TestAppTypeAndAccount(appType string) {
 		cfg.Vars.AppType = appType
 		if cfg.Vars.AppType == "cat" {
 			if !TestCatAccount() {
-				fmt.Println("input account and login token, please input again:")
+				fmt.Println("please input account and login token, please input again:")
 				os.Exit(1)
 			}
 			cfg.Vars.AppType = "cat"
 		} else if cfg.Vars.AppType == "sfacg" {
 			if !AutoAccount() {
-				fmt.Println("input account and password, please input again:")
+				fmt.Println("please input account and password, please input again:")
 				os.Exit(1)
 			}
 		}

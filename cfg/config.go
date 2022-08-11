@@ -28,6 +28,9 @@ func updateConfig() {
 		Vars.ConfigFile = "cache"
 		fmt.Println("ConfigFile is empty, use default cache")
 	}
+	if Vars.AppType == "" {
+		Vars.ConfigFile = "sfacg"
+	}
 	if Vars.SaveFile == "" {
 		Vars.SaveFile = "save"
 		fmt.Println("SaveFile is empty, use default save")
@@ -42,12 +45,14 @@ func updateConfig() {
 	if !CheckFileExist(Vars.SaveFile) {
 		Mkdir(Vars.SaveFile)
 	}
+	SaveJson()
 }
 
 func ConfigInit() {
 	if !CheckFileExist("./config.json") || FileSize("./config.json") == 0 {
 		Vars.SaveFile = "save"
 		Vars.ConfigFile = "cache"
+		Vars.AppType = "sfacg"
 		Vars.MaxThreadNumber = 32
 		Vars.MaxRetry = 5 // retry times when failed
 		Vars.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
