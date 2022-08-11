@@ -14,8 +14,7 @@ var (
 	CurrentBook = structural.MyBookInfoJsonPro{}
 )
 
-func updateConfig() bool {
-	LoadJson()
+func updateConfig() bool { // update config.json if necessary
 	changeVar := false
 	if Vars.MaxThreadNumber == 0 || Vars.MaxThreadNumber >= 64 {
 		Vars.MaxThreadNumber = 32
@@ -38,16 +37,15 @@ func updateConfig() bool {
 		Apps.Cat.Params.DeviceToken, Apps.Cat.Params.AppVersion = "ciweimao_", "2.9.290"
 		changeVar = true
 	}
-
 	Exist([]string{Vars.ConfigFile, Vars.SaveFile})
 	return changeVar
 }
 
 func ConfigInit() {
 	if !Exist("./config.json") || FileSize("./config.json") == 0 {
-		fmt.Println("config.json not exist")
-
+		fmt.Println("config.json not exist, create a new one!")
 	}
+	LoadJson()
 	if updateConfig() {
 		SaveJson()
 	}
