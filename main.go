@@ -8,6 +8,7 @@ import (
 	"sf/cfg"
 	"sf/multi"
 	"sf/src"
+	"sf/structural"
 	"strings"
 )
 
@@ -76,49 +77,33 @@ func shellSearchBookMain(inputs []string) {
 		fmt.Println("input book id or url, like:download <bookid/url>")
 	}
 }
-func ConsoleTestAppType(inputs any) {
-	switch inputs.(type) {
-	case []string:
-		if len(inputs.([]string)) == 2 {
-			src.TestAppTypeAndAccount(inputs.([]string)[1])
-		}
-	default:
-		src.TestAppTypeAndAccount(cfg.Vars.AppType)
-	}
-}
 
-func ParseCommandLine() []string {
+func ParseCommandLine() structural.Command {
 	download := flag.String("download", "", "input book id or url")
 	account := flag.String("account", "", "input account")
 	password := flag.String("password", "", "input password")
 	appType := flag.String("app", "sfacg", "input app type, like: app sfacg")
 	search := flag.String("search", "", "input search keyword, like: search keyword")
-	Thread := flag.Int("max", 0, "input thread number, like: thread 1")
+	thread := flag.Int("max", 0, "input thread number, like: thread 1")
 	showConfig := flag.Bool("show", false, "show config, like: show config")
 	flag.Parse()
+	if *thread > 0 && *thread < 64 {
+		cfg.Vars.MaxThreadNumber = *thread
+	}
 	if *account != "" && *password != "" {
-		return []string{"login", *account, *password}
+		shellConsole([]string{"login", *account, *password})
+	} else {
+		cfg.Vars.AppType = *appType
+		src.TestAppTypeAndAccount()
 	}
-	src.TestAppTypeAndAccount(*appType)
-	if *Thread > 0 && *Thread < 64 {
-		cfg.Vars.MaxThreadNumber = *Thread
-	}
-	if *showConfig {
-		return []string{"show", "config"}
-	}
-	if *download != "" {
-		return []string{"download", *download}
-	}
-	if *search != "" {
-		return []string{"search", *search}
-	}
-	return nil
+	return structural.Command{Download: *download, Search: *search, ShowConfig: *showConfig}
 }
 
 func shellConsole(inputs []string) {
 	switch inputs[0] {
 	case "a", "app":
-		ConsoleTestAppType(inputs)
+		cfg.Vars.AppType = inputs[1]
+		src.TestAppTypeAndAccount()
 	case "q", "quit":
 		os.Exit(0)
 	case "h", "help":
@@ -138,11 +123,16 @@ func shellConsole(inputs []string) {
 }
 func init() {
 	cfg.ConfigInit()
+	cfg.Vars.SaveFile = "save"
+	cfg.Vars.ConfigFile = "cache"
+	cfg.Vars.AppType = "sfacg"
+	cfg.Vars.MaxThreadNumber = 32
+	cfg.Vars.MaxRetry = 5 // retry times when failed
 }
 
 func main() {
 	if len(os.Args) <= 1 {
-		ConsoleTestAppType("")
+		src.TestAppTypeAndAccount()
 		for {
 			spaceRe, _ := regexp.Compile(`\s+`)
 			inputs := spaceRe.Split(strings.TrimSpace(cfg.Input(">")), -1)
@@ -154,6 +144,19 @@ func main() {
 			os.Exit(1)
 		}
 	} else {
-		shellConsole(ParseCommandLine())
+		var CommandLine []string
+		ArgsCommandLine := ParseCommandLine()
+		if ArgsCommandLine.ShowConfig {
+			CommandLine = []string{"show", "config"}
+		}
+		if ArgsCommandLine.Download != "" {
+			CommandLine = []string{"download", ArgsCommandLine.Download}
+		}
+		if ArgsCommandLine.Search != "" {
+			CommandLine = []string{"search", ArgsCommandLine.Search}
+		}
+		if len(CommandLine) > 0 {
+			shellConsole(CommandLine)
+		}
 	}
 }

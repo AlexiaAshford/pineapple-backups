@@ -8,7 +8,8 @@ import (
 	"sync"
 )
 
-var Vars = structural.MyJsonPro{}
+var Vars = structural.MyConfigPro{}
+var Apps = structural.MyAppPro{}
 var BookConfig = structural.MyBookInfoJsonPro{}
 
 func updateConfig() {
@@ -19,24 +20,21 @@ func updateConfig() {
 	if Vars.MaxThreadNumber == 0 || Vars.MaxThreadNumber >= 64 {
 		Vars.MaxThreadNumber = 32
 	}
-	if Vars.Sfacg.UserAgent == "" {
-		Vars.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
-		fmt.Println("Sfacg.UserAgent is empty, set to default value:", Vars.Sfacg.UserAgent)
+	if Apps.Sfacg.UserAgent == "" {
+		Apps.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
+		fmt.Println("Sfacg.UserAgent is empty, set to default value:", Apps.Sfacg.UserAgent)
 	}
 	if Vars.ConfigFile == "" {
 		Vars.ConfigFile = "cache"
-		fmt.Println("ConfigFile is empty, use default cache")
 	}
 	if Vars.AppType == "" {
 		Vars.ConfigFile = "sfacg"
 	}
 	if Vars.SaveFile == "" {
 		Vars.SaveFile = "save"
-		fmt.Println("SaveFile is empty, use default save")
 	}
-	if Vars.Cat.UserAgent == "" {
-		Vars.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
-		fmt.Println("UserAgent is empty, use default Android com.kuangxiangciweimao.novel 2.9.290")
+	if Apps.Cat.UserAgent == "" {
+		Apps.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
 	}
 	if !CheckFileExist(Vars.ConfigFile) {
 		Mkdir(Vars.ConfigFile)
@@ -49,15 +47,10 @@ func updateConfig() {
 
 func ConfigInit() {
 	if !CheckFileExist("./config.json") || FileSize("./config.json") == 0 {
-		Vars.SaveFile = "save"
-		Vars.ConfigFile = "cache"
-		Vars.AppType = "sfacg"
-		Vars.MaxThreadNumber = 32
-		Vars.MaxRetry = 5 // retry times when failed
-		Vars.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
-		Vars.Cat.Params.DeviceToken = "ciweimao_"
-		Vars.Cat.Params.AppVersion = "2.9.290" // hbooker app version
-		Vars.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
+		Apps.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
+		Apps.Cat.Params.DeviceToken = "ciweimao_"
+		Apps.Cat.Params.AppVersion = "2.9.290" // hbooker app version
+		Apps.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
 		SaveJson()
 	}
 	updateConfig()
@@ -89,14 +82,14 @@ func ReadConfig(fileName string) []byte {
 func Load() {
 	FileLock.Lock()
 	defer FileLock.Unlock()
-	if ok := json.Unmarshal(ReadConfig(""), &Vars); ok != nil {
+	if ok := json.Unmarshal(ReadConfig(""), &Apps); ok != nil {
 		fmt.Println("Load:", ok)
 	}
 
 }
 
 func SaveJson() {
-	if save, ok := json.MarshalIndent(Vars, "", "    "); ok == nil {
+	if save, ok := json.MarshalIndent(Apps, "", "    "); ok == nil {
 		// del ioutil and use os
 		if err := os.WriteFile("config.json", save, 0777); err != nil {
 			fmt.Println("SaveJson:", err)

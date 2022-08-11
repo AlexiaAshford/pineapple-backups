@@ -53,8 +53,8 @@ func Search(bookName string, page int) structs.SearchStruct {
 //	var result structs.LoginStruct
 //	response, _ := req.Request("POST", fmt.Sprintf(WebSite+LoginByAccount, account, password), "")
 //	if json.Unmarshal(Decode(string(response), ""), &result) == nil {
-//		cfg.Vars.Cat.Params.LoginToken = result.Data.LoginToken
-//		cfg.Vars.Cat.Params.Account = result.Data.ReaderInfo.Account
+//		cfg.Apps.Cat.Params.LoginToken = result.Data.LoginToken
+//		cfg.Apps.Cat.Params.Account = result.Data.ReaderInfo.Account
 //		cfg.SaveJson()
 //	} else {
 //		fmt.Println("Login failed!")

@@ -21,13 +21,13 @@ func AccountDetailed() string {
 
 func LoginAccount(username string, password string, retry int) {
 	LoginData := boluobao.PostLoginByAccount(username, password)
-	cfg.Vars.Sfacg.Cookie = ""
+	cfg.Apps.Sfacg.Cookie = ""
 	if LoginData.Status.HTTPCode == 200 {
-		cfg.Vars.Sfacg.Cookie = ""
+		cfg.Apps.Sfacg.Cookie = ""
 		for _, cookie := range LoginData.Cookie {
-			cfg.Vars.Sfacg.Cookie += cookie.Name + "=" + cookie.Value + ";"
+			cfg.Apps.Sfacg.Cookie += cookie.Name + "=" + cookie.Value + ";"
 		}
-		cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password = username, password
+		cfg.Apps.Sfacg.UserName, cfg.Apps.Sfacg.Password = username, password
 		cfg.SaveJson()
 		if AccountDetailed() == "需要登录才能访问该资源" {
 			fmt.Println("Your login attempt was not successful, try again retry:", retry+1)
@@ -46,7 +46,7 @@ func LoginAccount(username string, password string, retry int) {
 }
 
 func TestCatAccount() bool {
-	if cfg.Vars.Cat.Params.Account != "" && cfg.Vars.Cat.Params.LoginToken != "" {
+	if cfg.Apps.Cat.Params.Account != "" && cfg.Apps.Cat.Params.LoginToken != "" {
 		return true
 	} else {
 		if ok := InputAccountToken(); !ok {
@@ -57,12 +57,12 @@ func TestCatAccount() bool {
 }
 
 func AutoAccount() bool {
-	if cfg.Vars.Sfacg.UserName != "" && cfg.Vars.Sfacg.Password != "" {
+	if cfg.Apps.Sfacg.UserName != "" && cfg.Apps.Sfacg.Password != "" {
 		if AccountDetailed() == "需要登录才能访问该资源" {
 			fmt.Printf("cookie is Invalid,attempt to auto login!\naccount:%v\npassword:%v\n",
-				cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password)
+				cfg.Apps.Sfacg.UserName, cfg.Apps.Sfacg.Password)
 			// auto login and get cookie
-			LoginAccount(cfg.Vars.Sfacg.UserName, cfg.Vars.Sfacg.Password, 0)
+			LoginAccount(cfg.Apps.Sfacg.UserName, cfg.Apps.Sfacg.Password, 0)
 		}
 		return true
 	}
@@ -75,8 +75,8 @@ func InputAccountToken() bool {
 		if len(LoginToken) != 32 {
 			fmt.Println("Login token is 32 characters, please input again:")
 		} else {
-			cfg.Vars.Cat.Params.LoginToken = LoginToken
-			cfg.Vars.Cat.Params.Account = cfg.InputStr("you must input account:")
+			cfg.Apps.Cat.Params.LoginToken = LoginToken
+			cfg.Apps.Cat.Params.Account = cfg.InputStr("you must input account:")
 			cfg.SaveJson()
 			return true
 		}
@@ -84,22 +84,21 @@ func InputAccountToken() bool {
 	return false
 }
 
-func TestAppTypeAndAccount(appType string) {
-	if cfg.TestList([]string{"sfacg", "cat"}, appType) { // check app type and cheng edit config
-		cfg.Vars.AppType = appType
-		if cfg.Vars.AppType == "cat" {
-			if !TestCatAccount() {
-				fmt.Println("please input account and login token, please input again:")
-				os.Exit(1)
-			}
-			cfg.Vars.AppType = "cat"
-		} else if cfg.Vars.AppType == "sfacg" {
-			if !AutoAccount() {
-				fmt.Println("please input account and password, please input again:")
-				os.Exit(1)
-			}
+func TestAppTypeAndAccount() {
+	if !cfg.TestList([]string{"sfacg", "cat"}, cfg.Vars.AppType) { // check app type and cheng edit config
+		panic("app type %v is invalid, please input again:" + cfg.Vars.AppType)
+	}
+
+	if cfg.Vars.AppType == "cat" {
+		if !TestCatAccount() {
+			fmt.Println("please input account and login token, please input again:")
+			os.Exit(1)
 		}
-	} else {
-		panic("app type %v is invalid, please input again:" + appType)
+		cfg.Vars.AppType = "cat"
+	} else if cfg.Vars.AppType == "sfacg" {
+		if !AutoAccount() {
+			fmt.Println("please input account and password, please input again:")
+			os.Exit(1)
+		}
 	}
 }

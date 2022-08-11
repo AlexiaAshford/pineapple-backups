@@ -12,7 +12,7 @@ import (
 func Base64Bytes() string {
 	var encoded bytes.Buffer
 	encoder := base64.NewEncoder(base64.StdEncoding, &encoded)
-	authentication := []byte(cfg.Vars.Sfacg.UserName + "&" + cfg.Vars.Sfacg.Password)
+	authentication := []byte(cfg.Apps.Sfacg.UserName + "&" + cfg.Apps.Sfacg.Password)
 	if _, err := encoder.Write(authentication); err == nil {
 		if err = encoder.Close(); err == nil {
 			return string(encoded.Bytes())
@@ -28,25 +28,25 @@ func Base64Bytes() string {
 
 func CatAppHeaders() map[string]string {
 	HeaderCollection := make(map[string]string)
-	HeaderCollection["User-Agent"] = cfg.Vars.Cat.UserAgent
+	HeaderCollection["User-Agent"] = cfg.Apps.Cat.UserAgent
 	HeaderCollection["Content-Type"] = "application/json"
-	HeaderCollection["Cookie"] = "Account:" + cfg.Vars.Cat.Params.Account +
-		"; LoginToken:" + cfg.Vars.Cat.Params.LoginToken
+	HeaderCollection["Cookie"] = "Account:" + cfg.Apps.Cat.Params.Account +
+		"; LoginToken:" + cfg.Apps.Cat.Params.LoginToken
 	return HeaderCollection
 }
 
 func SfWeChatHeaders(TestCookie bool) map[string]string {
 	HeaderCollection := make(map[string]string)
-	if cfg.Vars.Sfacg.Cookie == "" && TestCookie == true {
+	if cfg.Apps.Sfacg.Cookie == "" && TestCookie == true {
 		fmt.Println("Cookie is empty, please login first!")
 		os.Exit(1)
 	}
-	HeaderCollection["sf-minip-info"] = cfg.Vars.Sfacg.UserAgent
+	HeaderCollection["sf-minip-info"] = cfg.Apps.Sfacg.UserAgent
 	HeaderCollection["Content-Type"] = "application/json"
-	HeaderCollection["test-sfacg-cookie"] = "cookie:" + cfg.Vars.Sfacg.Cookie
+	HeaderCollection["test-sfacg-cookie"] = "cookie:" + cfg.Apps.Sfacg.Cookie
 	HeaderCollection["Authorization"] = Base64Bytes()
-	HeaderCollection["Cookie"] = cfg.Vars.Sfacg.Cookie
-	HeaderCollection["account-sfacg"] = cfg.Vars.Sfacg.UserName + "&" + cfg.Vars.Sfacg.Password
+	HeaderCollection["Cookie"] = cfg.Apps.Sfacg.Cookie
+	HeaderCollection["account-sfacg"] = cfg.Apps.Sfacg.UserName + "&" + cfg.Apps.Sfacg.Password
 	return HeaderCollection
 }
 

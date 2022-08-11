@@ -20,10 +20,10 @@ const (
 func QueryParams(url string) string {
 	var Params string
 	QueryMap := map[string]interface{}{
-		"login_token":  cfg.Vars.Cat.Params.LoginToken,
-		"account":      cfg.Vars.Cat.Params.Account,
-		"app_version":  cfg.Vars.Cat.Params.AppVersion,
-		"device_token": cfg.Vars.Cat.Params.DeviceToken,
+		"login_token":  cfg.Apps.Cat.Params.LoginToken,
+		"account":      cfg.Apps.Cat.Params.Account,
+		"app_version":  cfg.Apps.Cat.Params.AppVersion,
+		"device_token": cfg.Apps.Cat.Params.DeviceToken,
 	}
 	for k, v := range QueryMap {
 		Params += fmt.Sprintf("&%s=%s", k, v)

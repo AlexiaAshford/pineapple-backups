@@ -77,7 +77,7 @@ func PostLoginByAccount(username, password string) sfacg_structs.Login {
 		fmt.Sprintf(`{"username":"%s", "password": "%s"}`, username, password),
 	)
 	if err := json.Unmarshal(result, &LoginData); err != nil {
-		fmt.Println(err)
+		fmt.Println("LoginData err:", err)
 		return sfacg_structs.Login{}
 	}
 	LoginData.Cookie = Cookie
