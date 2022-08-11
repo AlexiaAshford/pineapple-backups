@@ -14,55 +14,63 @@ var (
 	CurrentBook = structural.MyBookInfoJsonPro{}
 )
 
-func updateConfig() {
-	Load()
-	if Vars.MaxRetry == 0 || Vars.MaxRetry > 10 {
-		Vars.MaxRetry = 5
-	}
+func updateConfig() bool {
+	LoadJson()
+	changeVar := false
 	if Vars.MaxThreadNumber == 0 || Vars.MaxThreadNumber >= 64 {
 		Vars.MaxThreadNumber = 32
-	}
-	if Apps.Sfacg.UserAgent == "" {
-		Apps.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
-	}
-	if Vars.ConfigFile == "" {
-		Vars.ConfigFile = "cache"
+		changeVar = true
 	}
 	if Vars.AppType == "" {
 		Vars.AppType = "sfacg"
+		changeVar = true
 	}
-	if Vars.SaveFile == "" {
-		Vars.SaveFile = "save"
-	}
-	if Apps.Cat.UserAgent == "" {
+	if Apps.Sfacg.UserAgent == "" || Apps.Cat.UserAgent == "" {
+		Apps.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
 		Apps.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
+		changeVar = true
 	}
-	if !Exist(Vars.ConfigFile) {
-		Mkdir(Vars.ConfigFile)
+	if Vars.ConfigFile == "" || Vars.SaveFile == "" {
+		Vars.ConfigFile, Vars.SaveFile = "cache", "save"
+		changeVar = true
 	}
-	if !Exist(Vars.SaveFile) {
-		Mkdir(Vars.SaveFile)
+	if Apps.Cat.Params.DeviceToken == "" || Apps.Cat.Params.AppVersion == "" {
+		Apps.Cat.Params.DeviceToken, Apps.Cat.Params.AppVersion = "ciweimao_", "2.9.290"
+		changeVar = true
 	}
-	SaveJson()
+
+	Exist([]string{Vars.ConfigFile, Vars.SaveFile})
+	return changeVar
 }
 
 func ConfigInit() {
 	if !Exist("./config.json") || FileSize("./config.json") == 0 {
-		Apps.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
-		Apps.Cat.Params.DeviceToken = "ciweimao_"
-		Apps.Cat.Params.AppVersion = "2.9.290" // hbooker app version
-		Apps.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
+		fmt.Println("config.json not exist")
+
+	}
+	if updateConfig() {
 		SaveJson()
 	}
-	updateConfig()
+
 }
 
-func Exist(fileName string) bool {
-	_, err := os.Stat(fileName)
-	if os.IsNotExist(err) {
-		return false
+func Exist(fileName any) bool {
+	switch fileName.(type) {
+	case string:
+		_, err := os.Stat(fileName.(string))
+		if os.IsNotExist(err) {
+			return false
+		} else {
+			return true
+		}
+	case []string:
+		for _, v := range fileName.([]string) {
+			if !Exist(v) {
+				Mkdir(v)
+			}
+		}
 	}
-	return true
+	return false
 }
 
 var FileLock = &sync.Mutex{}
@@ -80,7 +88,7 @@ func ReadConfig(fileName string) []byte {
 	return nil
 }
 
-func Load() {
+func LoadJson() {
 	FileLock.Lock()
 	defer FileLock.Unlock()
 	if ok := json.Unmarshal(ReadConfig(""), &Apps); ok != nil {
@@ -95,7 +103,7 @@ func SaveJson() {
 		if err := os.WriteFile("config.json", save, 0777); err != nil {
 			fmt.Println("SaveJson:", err)
 		}
-		Load()
+		LoadJson()
 	} else {
 		fmt.Println("SaveJson:", ok)
 	}
