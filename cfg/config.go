@@ -37,17 +37,17 @@ func updateConfig() {
 	if Apps.Cat.UserAgent == "" {
 		Apps.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
 	}
-	if !CheckFileExist(Vars.ConfigFile) {
+	if !Exist(Vars.ConfigFile) {
 		Mkdir(Vars.ConfigFile)
 	}
-	if !CheckFileExist(Vars.SaveFile) {
+	if !Exist(Vars.SaveFile) {
 		Mkdir(Vars.SaveFile)
 	}
 	SaveJson()
 }
 
 func ConfigInit() {
-	if !CheckFileExist("./config.json") || FileSize("./config.json") == 0 {
+	if !Exist("./config.json") || FileSize("./config.json") == 0 {
 		Apps.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
 		Apps.Cat.Params.DeviceToken = "ciweimao_"
 		Apps.Cat.Params.AppVersion = "2.9.290" // hbooker app version
@@ -57,7 +57,7 @@ func ConfigInit() {
 	updateConfig()
 }
 
-func CheckFileExist(fileName string) bool {
+func Exist(fileName string) bool {
 	_, err := os.Stat(fileName)
 	if os.IsNotExist(err) {
 		return false

@@ -25,7 +25,7 @@ type Catalogue struct {
 func (catalogue *Catalogue) ReadChapterConfig() string {
 	catalogue.ConfigPath = path.Join(cfg.Vars.ConfigFile, cfg.CurrentBook.BookInfo.NovelName+".conf")
 	catalogue.contentList = make(map[string]string)
-	if !cfg.CheckFileExist(catalogue.ConfigPath) {
+	if !cfg.Exist(catalogue.ConfigPath) {
 		cfg.Write(catalogue.ConfigPath, "", "w")
 		catalogue.ChapterCfg = ""
 	} else { // read config file
@@ -112,7 +112,6 @@ func (catalogue *Catalogue) makeContentInformation(response any) {
 		writeContent = fmt.Sprintf("%v:%v\n%v\n\n\n", result.Title, result.AddTime, result.Expand.Content)
 		catalogue.AddChapterConfig(result.ChapID)
 		catalogue.contentList[strconv.Itoa(result.ChapID)] = writeContent
-		//fmt.Println(catalogue.contentList)
 	case hbooker_structs.ContentStruct:
 		result := response.(hbooker_structs.ContentStruct).Data.ChapterInfo
 		writeContent = fmt.Sprintf("%v:%v\n%v\n\n\n", result.ChapterTitle, result.Uptime, result.TxtContent)

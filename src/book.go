@@ -43,7 +43,7 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 	cfg.CurrentBook.BookInfo = books.InitBookStruct()
 
 	savePath := path.Join(cfg.Vars.SaveFile, cfg.CurrentBook.BookInfo.NovelName+".txt")
-	if !cfg.CheckFileExist(savePath) {
+	if !cfg.Exist(savePath) {
 		cfg.Write(savePath, books.ShowBookDetailed()+"\n\n", "w")
 	} else {
 		books.ShowBookDetailed()
