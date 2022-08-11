@@ -85,20 +85,20 @@ func InputAccountToken() bool {
 }
 
 func TestAppTypeAndAccount() {
-	if !cfg.TestList([]string{"sfacg", "cat"}, cfg.Vars.AppType) { // check app type and cheng edit config
-		panic("app type %v is invalid, please input again:" + cfg.Vars.AppType)
-	}
-
-	if cfg.Vars.AppType == "cat" {
+	// test AppType and Account is valid
+	switch cfg.Vars.AppType {
+	case "cat":
 		if !TestCatAccount() {
 			fmt.Println("please input account and login token, please input again:")
 			os.Exit(1)
 		}
-		cfg.Vars.AppType = "cat"
-	} else if cfg.Vars.AppType == "sfacg" {
+	case "sfacg":
 		if !AutoAccount() {
 			fmt.Println("please input account and password, please input again:")
 			os.Exit(1)
 		}
+	default:
+		panic("app type %v is invalid, please input again:" + cfg.Vars.AppType)
 	}
+
 }
