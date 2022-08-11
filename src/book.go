@@ -40,9 +40,9 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 	} else {
 		panic("app type" + cfg.Vars.AppType + " is not valid!")
 	}
-	cfg.BookConfig.BookInfo = books.InitBookStruct()
+	cfg.CurrentBook.BookInfo = books.InitBookStruct()
 
-	savePath := path.Join(cfg.Vars.SaveFile, cfg.BookConfig.BookInfo.NovelName+".txt")
+	savePath := path.Join(cfg.Vars.SaveFile, cfg.CurrentBook.BookInfo.NovelName+".txt")
 	if !cfg.CheckFileExist(savePath) {
 		cfg.Write(savePath, books.ShowBookDetailed()+"\n\n", "w")
 	} else {
@@ -83,9 +83,9 @@ func (books *BookInits) InitBookStruct() structural.Books {
 func (books *BookInits) ShowBookDetailed() string {
 	briefIntroduction := fmt.Sprintf(
 		"Name: %v\nBookID: %v\nAuthor: %v\nCount: %v\nMark: %v\n",
-		cfg.BookConfig.BookInfo.NovelName, cfg.BookConfig.BookInfo.NovelID,
-		cfg.BookConfig.BookInfo.AuthorName, cfg.BookConfig.BookInfo.CharCount,
-		cfg.BookConfig.BookInfo.MarkCount,
+		cfg.CurrentBook.BookInfo.NovelName, cfg.CurrentBook.BookInfo.NovelID,
+		cfg.CurrentBook.BookInfo.AuthorName, cfg.CurrentBook.BookInfo.CharCount,
+		cfg.CurrentBook.BookInfo.MarkCount,
 	)
 	if books.ShowBook {
 		fmt.Println(briefIntroduction)

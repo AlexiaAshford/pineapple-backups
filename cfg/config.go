@@ -8,9 +8,11 @@ import (
 	"sync"
 )
 
-var Vars = structural.MyConfigPro{}
-var Apps = structural.MyAppPro{}
-var BookConfig = structural.MyBookInfoJsonPro{}
+var (
+	Vars        = structural.MyConfigPro{}
+	Apps        = structural.MyAppPro{}
+	CurrentBook = structural.MyBookInfoJsonPro{}
+)
 
 func updateConfig() {
 	Load()
@@ -22,7 +24,6 @@ func updateConfig() {
 	}
 	if Apps.Sfacg.UserAgent == "" {
 		Apps.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
-		fmt.Println("Sfacg.UserAgent is empty, set to default value:", Apps.Sfacg.UserAgent)
 	}
 	if Vars.ConfigFile == "" {
 		Vars.ConfigFile = "cache"
