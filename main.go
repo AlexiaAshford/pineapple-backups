@@ -50,6 +50,16 @@ func shellLoginAccount(inputs []string) bool {
 	return true
 }
 
+func shellUpdateLocalBook() {
+	if cfg.Exist("./bookList.txt") && cfg.FileSize("./config.json") > 0 {
+		LocalBookList := cfg.Write("./bookList.json", "", "r")
+		LocalBookList = strings.Replace(LocalBookList, "\n", "", -1)
+		shellBookDownload(LocalBookList)
+	} else {
+		fmt.Println("bookList.txt not exist, create a new one!")
+	}
+}
+
 func shellBookMain(inputs []string) {
 	if len(inputs) == 2 {
 		if cfg.Vars.AppType == "cat" {
@@ -79,13 +89,15 @@ func shellSearchBookMain(inputs []string) {
 }
 
 func ParseCommandLine() structural.Command {
-	download := flag.String("download", "", "input book id or url")
+	bookid := flag.String("download", "", "input book id or url")
 	account := flag.String("account", "", "input account")
 	password := flag.String("password", "", "input password")
 	appType := flag.String("app", "sfacg", "input app type, like: app sfacg")
 	search := flag.String("search", "", "input search keyword, like: search keyword")
 	thread := flag.Int("max", 0, "input thread number, like: thread 1")
-	showConfig := flag.Bool("show", false, "show config, like: show config")
+	showInfo := flag.Bool("show", false, "show config, like: show config")
+	update := flag.Bool("update", false, "update config, like: update config")
+
 	flag.Parse()
 	if *thread > 0 && *thread < 64 {
 		cfg.Vars.MaxThreadNumber = *thread
@@ -96,7 +108,7 @@ func ParseCommandLine() structural.Command {
 		cfg.Vars.AppType = *appType
 		src.TestAppTypeAndAccount()
 	}
-	return structural.Command{Download: *download, Search: *search, ShowConfig: *showConfig}
+	return structural.Command{Download: *bookid, Search: *search, ShowConfig: *showInfo, Update: *update}
 }
 
 func shellConsole(inputs []string) {
@@ -106,6 +118,8 @@ func shellConsole(inputs []string) {
 		src.TestAppTypeAndAccount()
 	case "q", "quit":
 		os.Exit(0)
+	case "uo", "update":
+		shellUpdateLocalBook()
 	case "h", "help":
 		fmt.Println("help:")
 	case "show", "test":
