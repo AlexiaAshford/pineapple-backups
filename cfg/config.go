@@ -3,7 +3,6 @@ package cfg
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"sf/structural"
 	"sync"
@@ -78,7 +77,8 @@ func ReadConfig(fileName string) []byte {
 	if fileName == "" {
 		fileName = "./config.json"
 	}
-	if data, err := ioutil.ReadFile(fileName); err == nil {
+	// del ioutil and use os
+	if data, err := os.ReadFile(fileName); err == nil {
 		return data
 	} else {
 		fmt.Println("ReadConfig:", err)
@@ -97,7 +97,8 @@ func Load() {
 
 func SaveJson() {
 	if save, ok := json.MarshalIndent(Vars, "", "    "); ok == nil {
-		if err := ioutil.WriteFile("config.json", save, 0777); err != nil {
+		// del ioutil and use os
+		if err := os.WriteFile("config.json", save, 0777); err != nil {
 			fmt.Println("SaveJson:", err)
 		}
 		Load()
