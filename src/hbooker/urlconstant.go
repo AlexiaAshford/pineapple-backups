@@ -13,6 +13,8 @@ const (
 	ChapterKeyByCid               = "chapter/get_chapter_cmd?chapter_id="
 	ContentDetailedByCid          = "chapter/get_cpt_ifm?chapter_id=%v&chapter_command=%v"
 	WebSite                       = "https://app.hbooker.com/"
+	UseGeetestSignup              = "signup/use_geetest"
+	GeetestFirstRegister          = "signup/geetest_first_register?t=%v&user_id=%v"
 	//LoginByAccount                = "signup/login?login_name=%v&password=%v"
 )
 

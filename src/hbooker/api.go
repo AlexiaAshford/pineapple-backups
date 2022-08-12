@@ -7,6 +7,8 @@ import (
 	"sf/cfg"
 	req "sf/src/https"
 	structs "sf/structural/hbooker_structs"
+	"strconv"
+	"time"
 )
 
 func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
@@ -60,6 +62,25 @@ func Search(bookName string, page int) structs.SearchStruct {
 //		fmt.Println("Login failed!")
 //	}
 //}
+
+func UseGeetest() {
+	var result structs.GeetestStruct
+	response, _ := req.Request("POST", WebSite+UseGeetestSignup, "")
+	if err := json.Unmarshal(Decode(string(response), ""), &result); err != nil {
+		fmt.Println("json unmarshal error:", err)
+	}
+	fmt.Println(result.Tip)
+}
+
+func GeetestRegister(userID string) (string, string) {
+	var result structs.GeetestChallenge
+	RegisterApi := fmt.Sprintf(GeetestFirstRegister, strconv.FormatInt(time.Now().UnixNano()/1e6, 10), userID)
+	response, _ := req.Request("POST", QueryParams(RegisterApi), "")
+	if err := json.Unmarshal(response, &result); err != nil {
+		fmt.Println("json unmarshal error:", err)
+	}
+	return result.Challenge, result.Gt
+}
 
 func GetKeyByCid(chapterId string) string {
 	var result structs.KeyStruct
