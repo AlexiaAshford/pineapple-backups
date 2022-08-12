@@ -3,8 +3,10 @@ package hbooker
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gookit/color"
 	"os"
 	"sf/cfg"
+	"sf/src/hbooker/Geetest"
 	req "sf/src/https"
 	structs "sf/structural/hbooker_structs"
 	"strconv"
@@ -80,6 +82,18 @@ func GeetestRegister(userID string) (string, string) {
 		fmt.Println("json unmarshal error:", err)
 	}
 	return result.Challenge, result.Gt
+}
+func TestGeetest(userID string) {
+	UseGeetest()
+	challenge, gt := GeetestRegister(userID)
+	status, CaptchaType, errorDetail := Geetest.GetFullBG(&Geetest.Geetest{GT: gt, Challenge: challenge})
+	fmt.Println(status, CaptchaType, errorDetail)
+	if status == "success" {
+		color.Infoln("验证码类型：", CaptchaType, "")
+	} else {
+		color.Errorln("获取图片失败 Error: ", status, " ErrorDetail:", errorDetail)
+		TestGeetest(userID)
+	}
 }
 
 func GetKeyByCid(chapterId string) string {

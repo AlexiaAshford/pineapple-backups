@@ -8,6 +8,7 @@ import (
 	"sf/cfg"
 	"sf/multi"
 	"sf/src"
+	"sf/src/hbooker"
 	"sf/structural"
 	"strings"
 )
@@ -148,6 +149,7 @@ func init() {
 
 func main() {
 	if len(os.Args) <= 1 {
+		hbooker.TestGeetest("7987980")
 		src.TestAppTypeAndAccount()
 		for {
 			spaceRe, _ := regexp.Compile(`\s+`)
