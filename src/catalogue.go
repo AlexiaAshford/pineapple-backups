@@ -9,6 +9,7 @@ import (
 	"sf/structural/hbooker_structs"
 	"sf/structural/sfacg_structs"
 	"strconv"
+	"time"
 )
 
 type Catalogue struct {
@@ -126,6 +127,6 @@ func (catalogue *Catalogue) SpeedProgressAndDelayTime() {
 	if err := catalogue.ChapterBar.Add(1); err != nil {
 		fmt.Println("bar error:", err)
 	} else {
-		//time.Sleep(time.Second * time.Duration(2))
+		time.Sleep(time.Second * time.Duration(2))
 	}
 }
