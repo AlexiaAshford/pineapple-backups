@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"sf/cfg"
@@ -14,13 +15,12 @@ func Base64Bytes() string {
 	encoder := base64.NewEncoder(base64.StdEncoding, &encoded)
 	authentication := []byte(cfg.Apps.Sfacg.UserName + "&" + cfg.Apps.Sfacg.Password)
 	if _, err := encoder.Write(authentication); err == nil {
-		if err = encoder.Close(); err == nil {
-			return string(encoded.Bytes())
-		} else {
-			fmt.Println(err)
-		}
+		defer func(encoder io.WriteCloser) {
+			_ = encoder.Close()
+		}(encoder)
+		return string(encoded.Bytes())
 	} else {
-		fmt.Println(err)
+		fmt.Println("encoder.Write:", err)
 	}
 	return ""
 

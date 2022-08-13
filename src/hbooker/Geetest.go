@@ -172,7 +172,7 @@ func (g Geetest) CalW(text string, flag bool) string {
 	if !flag {
 		secKey := Encrypt.CreateSecretKey()
 		if len(secKey) == 16 {
-			EncSecKey := Encrypt.RSAEncrypt(secKey)
+			EncSecKey = Encrypt.RSAEncrypt(secKey)
 			encTextByte := Encrypt.AESEncrypt([]byte(text), secKey)
 			encText := Encrypt.BytesToString(encTextByte)
 			return encText + EncSecKey

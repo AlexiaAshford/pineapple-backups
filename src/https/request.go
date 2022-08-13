@@ -7,16 +7,16 @@ import (
 	"net/http"
 )
 
-func Request(method string, URL string, dataJson string) ([]byte, []*http.Cookie) {
+func Request(method string, url string, dataJson string) ([]byte, []*http.Cookie) {
 	var client = &http.Client{}
 
 	if method != "GET" && method != "POST" && method != "PUT" {
 		panic("Error: method must be GET or POST or PUT, but now is " + method)
 	}
-	if request, err := http.NewRequest(method, URL, bytes.NewBuffer([]byte(dataJson))); err != nil {
+	if request, err := http.NewRequest(method, url, bytes.NewBuffer([]byte(dataJson))); err != nil {
 		fmt.Printf("NewRequest %v error:%v\n", method, err)
 	} else {
-		if URL == "https://minipapi.sfacg.com/pas/mpapi/sessions" {
+		if url == "https://minipapi.sfacg.com/pas/mpapi/sessions" {
 			// login request no need to test cookie
 			SetHeaders(request, false)
 		} else {
