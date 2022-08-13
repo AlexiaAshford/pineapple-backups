@@ -6,7 +6,7 @@ import (
 	"github.com/gookit/color"
 	"os"
 	"sf/cfg"
-	"sf/src/hbooker/Geetest"
+	"sf/src/hbooker/Encrypt"
 	req "sf/src/https"
 	structs "sf/structural/hbooker_structs"
 	"strconv"
@@ -16,7 +16,7 @@ import (
 func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
 	var result structs.DivisionStruct
 	response, _ := req.Request("POST", QueryParams(DivisionIdByBookId+BookId), "")
-	if err := json.Unmarshal(Decode(string(response), ""), &result); err != nil {
+	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
 	return result.Data.DivisionList
@@ -25,7 +25,7 @@ func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
 func GetCatalogueByDivisionId(DivisionId string) []structs.ChapterList {
 	var result structs.ChapterStruct
 	response, _ := req.Request("POST", QueryParams(CatalogueDetailedByDivisionId+DivisionId), "")
-	if err := json.Unmarshal(Decode(string(response), ""), &result); err != nil {
+	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
 	return result.Data.ChapterList
@@ -34,7 +34,7 @@ func GetCatalogueByDivisionId(DivisionId string) []structs.ChapterList {
 func GetBookDetailById(bid string) structs.DetailStruct {
 	var result structs.DetailStruct
 	response, _ := req.Request("POST", QueryParams(fmt.Sprintf(BookDetailedById, bid)), "")
-	if err := json.Unmarshal(Decode(string(response), ""), &result); err == nil {
+	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err == nil {
 		return result
 	} else {
 		fmt.Println("BookDetailById json unmarshal error:", err)
@@ -47,7 +47,7 @@ func Search(bookName string, page int) structs.SearchStruct {
 	var result structs.SearchStruct
 	response, _ := req.Request(
 		"POST", QueryParams(fmt.Sprintf(SearchDetailedByKeyword, page, bookName)), "")
-	if err := json.Unmarshal(Decode(string(response), ""), &result); err != nil {
+	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
 	return result
@@ -68,7 +68,7 @@ func Search(bookName string, page int) structs.SearchStruct {
 func UseGeetest() {
 	var result structs.GeetestStruct
 	response, _ := req.Request("POST", WebSite+UseGeetestSignup, "")
-	if err := json.Unmarshal(Decode(string(response), ""), &result); err != nil {
+	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
 	fmt.Println(result.Tip)
@@ -86,7 +86,7 @@ func GeetestRegister(userID string) (string, string) {
 func TestGeetest(userID string) {
 	UseGeetest()
 	challenge, gt := GeetestRegister(userID)
-	status, CaptchaType, errorDetail := Geetest.GetFullBG(&Geetest.Geetest{GT: gt, Challenge: challenge})
+	status, CaptchaType, errorDetail := GetFullBG(&Geetest{GT: gt, Challenge: challenge})
 	fmt.Println(status, CaptchaType, errorDetail)
 	if status == "success" {
 		color.Infoln("验证码类型：", CaptchaType, "")
@@ -99,7 +99,7 @@ func TestGeetest(userID string) {
 func GetKeyByCid(chapterId string) string {
 	var result structs.KeyStruct
 	response, _ := req.Request("POST", QueryParams(ChapterKeyByCid+chapterId), "")
-	if err := json.Unmarshal(Decode(string(response), ""), &result); err != nil {
+	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
 	return result.Data.Command
@@ -109,10 +109,10 @@ func GetContent(chapterId string) (structs.ContentStruct, bool) {
 	var result structs.ContentStruct
 	chapterKey := GetKeyByCid(chapterId)
 	response, _ := req.Request("POST", QueryParams(fmt.Sprintf(ContentDetailedByCid, chapterId, chapterKey)), "")
-	if err := json.Unmarshal(Decode(string(response), ""), &result); err == nil {
+	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err == nil {
 		for i := 0; i < cfg.Vars.MaxRetry; i++ {
 			if result.Code == "100000" {
-				result.Data.ChapterInfo.TxtContent = string(Decode(result.Data.ChapterInfo.TxtContent, chapterKey))
+				result.Data.ChapterInfo.TxtContent = string(Encrypt.Decode(result.Data.ChapterInfo.TxtContent, chapterKey))
 				return result, true
 			}
 		}

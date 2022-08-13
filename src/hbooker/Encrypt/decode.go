@@ -1,4 +1,4 @@
-package hbooker
+package Encrypt
 
 import (
 	"crypto/aes"
@@ -8,13 +8,13 @@ import (
 	"fmt"
 )
 
-//SHA256 sha256 编码
+// SHA256 sha256 编码
 func SHA256(data []byte) []byte {
 	ret := sha256.Sum256(data)
 	return ret[:]
 }
 
-//AESDecrypt AES 解密
+// AESDecrypt AES 解密
 func AESDecrypt(EncryptKey string, contentText string) ([]byte, error) {
 	if decoded, err := base64.StdEncoding.DecodeString(contentText); err == nil {
 		if block, ok := aes.NewCipher(SHA256([]byte(EncryptKey))[:32]); ok == nil {
@@ -32,7 +32,7 @@ func AESDecrypt(EncryptKey string, contentText string) ([]byte, error) {
 	}
 }
 
-//Decode 入口函数
+// Decode 入口函数
 func Decode(content string, EncryptKey string) []byte {
 	if EncryptKey == "" {
 		EncryptKey = "zG2nSeEfSHfvTCHy5LCcqtBbQehKNLXn"
