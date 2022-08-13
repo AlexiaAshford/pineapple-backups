@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -9,7 +8,6 @@ import (
 	"sf/cfg"
 	"sf/multi"
 	"sf/src"
-	"sf/src/hbooker"
 	"sf/structural"
 	"strings"
 )
@@ -150,9 +148,10 @@ func init() {
 
 func main() {
 	if len(os.Args) <= 1 {
-		x, _ := json.Marshal(hbooker.GetRecommend())
-		fmt.Println(string(x))
-		src.TestAppTypeAndAccount()
+		//for _, v := range hbooker.GetChangeRecommend() {
+		//	fmt.Println(v.BookName)
+		//	fmt.Println(v.BookID)
+		//}
 		for {
 			spaceRe, _ := regexp.Compile(`\s+`)
 			inputs := spaceRe.Split(strings.TrimSpace(cfg.Input(">")), -1)

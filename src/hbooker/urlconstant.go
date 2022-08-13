@@ -13,6 +13,7 @@ const (
 	ChapterKeyByCid               = "chapter/get_chapter_cmd"
 	ContentDetailedByCid          = "chapter/get_cpt_ifm"
 	Recommend                     = "bookcity/get_index_list"
+	ChangeRecommend               = "bookcity/change_recommend_exposure_books"
 	WebSite                       = "https://app.hbooker.com/"
 	UseGeetestSignup              = "signup/use_geetest"
 	GeetestFirstRegister          = "signup/geetest_first_register"

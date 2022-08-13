@@ -4,6 +4,30 @@ type RecommendStruct struct {
 	Code int  `json:"code"`
 	Data Data `json:"data"`
 }
+type ChangeRecommendStruct struct {
+	Code int        `json:"code"`
+	Tip  string     `json:"tip"`
+	Data ChangeData `json:"data"`
+}
+
+type ChangeBookList struct {
+	BookID          string `json:"book_id"`
+	BookName        string `json:"book_name"`
+	CategoryIndex   string `json:"category_index"`
+	Description     string `json:"description"`
+	AuthorName      string `json:"author_name"`
+	Cover           string `json:"cover"`
+	Discount        int    `json:"discount"`
+	DiscountEndTime string `json:"discount_end_time"`
+	UpStatus        string `json:"up_status"`
+	TotalWordCount  string `json:"total_word_count"`
+	IsOriginal      int    `json:"is_original"`
+	Introduce       string `json:"introduce"`
+}
+
+type ChangeData struct {
+	BookList []ChangeBookList `json:"book_list"`
+}
 type CarouselList struct {
 	PageURL       string `json:"page_url,omitempty"`
 	CarouselCover string `json:"carousel_cover"`
