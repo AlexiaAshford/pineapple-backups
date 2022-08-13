@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -149,7 +150,8 @@ func init() {
 
 func main() {
 	if len(os.Args) <= 1 {
-		hbooker.TestGeetest("7987980")
+		x, _ := json.Marshal(hbooker.GetRecommend())
+		fmt.Println(string(x))
 		src.TestAppTypeAndAccount()
 		for {
 			spaceRe, _ := regexp.Compile(`\s+`)

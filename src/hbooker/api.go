@@ -15,7 +15,8 @@ import (
 
 func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
 	var result structs.DivisionStruct
-	response, _ := req.Request("POST", QueryParams(DivisionIdByBookId+BookId), "")
+	params := map[string]string{"book_id": BookId}
+	response, _ := req.Request("POST", QueryParams(DivisionIdByBookId, params), "")
 	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
@@ -24,7 +25,8 @@ func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
 
 func GetCatalogueByDivisionId(DivisionId string) []structs.ChapterList {
 	var result structs.ChapterStruct
-	response, _ := req.Request("POST", QueryParams(CatalogueDetailedByDivisionId+DivisionId), "")
+	params := map[string]string{"division_id": DivisionId}
+	response, _ := req.Request("POST", QueryParams(CatalogueDetailedByDivisionId, params), "")
 	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
@@ -33,7 +35,8 @@ func GetCatalogueByDivisionId(DivisionId string) []structs.ChapterList {
 
 func GetBookDetailById(bid string) structs.DetailStruct {
 	var result structs.DetailStruct
-	response, _ := req.Request("POST", QueryParams(fmt.Sprintf(BookDetailedById, bid)), "")
+	params := map[string]string{"book_id": bid}
+	response, _ := req.Request("POST", QueryParams(BookDetailedById, params), "")
 	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err == nil {
 		return result
 	} else {
@@ -45,8 +48,8 @@ func GetBookDetailById(bid string) structs.DetailStruct {
 
 func Search(bookName string, page int) structs.SearchStruct {
 	var result structs.SearchStruct
-	response, _ := req.Request(
-		"POST", QueryParams(fmt.Sprintf(SearchDetailedByKeyword, page, bookName)), "")
+	params := map[string]string{"count": "10", "page": strconv.Itoa(page), "category_index": "0", "key": bookName}
+	response, _ := req.Request("POST", QueryParams(SearchDetailedByKeyword, params), "")
 	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
@@ -76,8 +79,8 @@ func UseGeetest() {
 
 func GeetestRegister(userID string) (string, string) {
 	var result structs.GeetestChallenge
-	RegisterApi := fmt.Sprintf(GeetestFirstRegister, strconv.FormatInt(time.Now().UnixNano()/1e6, 10), userID)
-	response, _ := req.Request("POST", QueryParams(RegisterApi), "")
+	params := map[string]string{"t": strconv.FormatInt(time.Now().UnixNano()/1e6, 10), "user_id": userID}
+	response, _ := req.Request("POST", QueryParams(GeetestFirstRegister, params), "")
 	if err := json.Unmarshal(response, &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
@@ -96,9 +99,21 @@ func TestGeetest(userID string) {
 	}
 }
 
+func GetRecommend() structs.RecommendStruct {
+	var result structs.RecommendStruct
+	params := map[string]string{"theme_type": "NORMAL", "tab_type": "200"}
+	response, _ := req.Request("POST", QueryParams(Recommend, params), "")
+	fmt.Println(string(Encrypt.Decode(string(response), "")))
+	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err != nil {
+		fmt.Println("json unmarshal error:", err)
+	}
+	return result
+}
+
 func GetKeyByCid(chapterId string) string {
 	var result structs.KeyStruct
-	response, _ := req.Request("POST", QueryParams(ChapterKeyByCid+chapterId), "")
+	params := map[string]string{"chapter_id": chapterId}
+	response, _ := req.Request("POST", QueryParams(ChapterKeyByCid, params), "")
 	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
@@ -107,12 +122,13 @@ func GetKeyByCid(chapterId string) string {
 
 func GetContent(chapterId string) (structs.ContentStruct, bool) {
 	var result structs.ContentStruct
-	chapterKey := GetKeyByCid(chapterId)
-	response, _ := req.Request("POST", QueryParams(fmt.Sprintf(ContentDetailedByCid, chapterId, chapterKey)), "")
+	key := GetKeyByCid(chapterId)
+	params := map[string]string{"chapter_id": chapterId, "chapter_command": key}
+	response, _ := req.Request("POST", QueryParams(ContentDetailedByCid, params), "")
 	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err == nil {
 		for i := 0; i < cfg.Vars.MaxRetry; i++ {
 			if result.Code == "100000" {
-				result.Data.ChapterInfo.TxtContent = string(Encrypt.Decode(result.Data.ChapterInfo.TxtContent, chapterKey))
+				result.Data.ChapterInfo.TxtContent = string(Encrypt.Decode(result.Data.ChapterInfo.TxtContent, key))
 				return result, true
 			}
 		}

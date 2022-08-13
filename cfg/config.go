@@ -30,7 +30,7 @@ func UpdateConfig() bool { // update config.json if necessary
 	}
 	if Apps.Sfacg.UserAgent == "" || Apps.Cat.UserAgent == "" {
 		Apps.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
-		Apps.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.290"
+		Apps.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.291"
 		changeVar = true
 	}
 	if Vars.ConfigFile == "" || Vars.SaveFile == "" {
@@ -38,7 +38,7 @@ func UpdateConfig() bool { // update config.json if necessary
 		changeVar = true
 	}
 	if Apps.Cat.Params.DeviceToken == "" || Apps.Cat.Params.AppVersion == "" {
-		Apps.Cat.Params.DeviceToken, Apps.Cat.Params.AppVersion = "ciweimao_", "2.9.290"
+		Apps.Cat.Params.DeviceToken, Apps.Cat.Params.AppVersion = "ciweimao_", "2.9.291"
 		changeVar = true
 	}
 	Exist([]string{Vars.ConfigFile, Vars.SaveFile})
