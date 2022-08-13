@@ -61,13 +61,9 @@ func Search(bookName string, page int) *structs.SearchStruct {
 //	}
 //}
 
-func UseGeetest() {
-	var GeetestStruct structs.GeetestStruct
+func UseGeetest() *structs.GeetestStruct {
 	response, _ := req.Request("POST", WebSite+UseGeetestSignup, "")
-	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &GeetestStruct); err != nil {
-		fmt.Println("json unmarshal error:", err)
-	}
-	fmt.Println(GeetestStruct.Tip)
+	return JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.GeetestStruct{}).(*structs.GeetestStruct)
 }
 
 func GeetestRegister(userID string) (string, string) {
@@ -89,14 +85,10 @@ func TestGeetest(userID string) {
 	}
 }
 
-func GetRecommend() structs.RecommendStruct {
-	RecommendStruct := structs.RecommendStruct{}
+func GetRecommend() *structs.RecommendStruct {
 	params := map[string]string{"theme_type": "NORMAL", "tab_type": "200"}
 	response, _ := req.Request("POST", QueryParams(Recommend, params), "")
-	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &RecommendStruct); err != nil {
-		fmt.Println("json unmarshal error:", err)
-	}
-	return RecommendStruct
+	return JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.RecommendStruct{}).(*structs.RecommendStruct)
 }
 func GetChangeRecommend() []structs.ChangeBookList {
 	bookIdList := "100250589,100283902,100186621,100287528,100309123,100325245"
