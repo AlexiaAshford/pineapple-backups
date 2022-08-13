@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func JsonUnmarshal(response []byte, Struct interface{}) any {
+func JsonUnmarshal(response []byte, Struct any) any {
 	err := json.Unmarshal(response, Struct)
 	if err != nil {
 		fmt.Println("json unmarshal error:", err)
@@ -92,8 +92,8 @@ func GetRecommend() *structs.RecommendStruct {
 }
 func GetChangeRecommend() []structs.ChangeBookList {
 	bookIdList := "100250589,100283902,100186621,100287528,100309123,100325245"
-	params := map[string]string{"book_id": bookIdList, "from_module_name": "长篇好书"}
-	response, _ := req.Request("POST", QueryParams(ChangeRecommend, params), "")
+	url := QueryParams(ChangeRecommend, map[string]string{"book_id": bookIdList, "from_module_name": "长篇好书"})
+	response, _ := req.Request("POST", url, "")
 	result := JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.ChangeRecommendStruct{})
 	return result.(*structs.ChangeRecommendStruct).Data.BookList
 }
