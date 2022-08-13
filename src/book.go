@@ -32,7 +32,7 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 		}
 	} else if cfg.Vars.AppType == "cat" {
 		response := hbooker.GetBookDetailById(books.BookID)
-		if response.Code == "100000" {
+		if response.BookName != "" {
 			books.BookData = response
 		} else {
 			fmt.Println(books.BookID, "is not a valid book number！")
@@ -65,8 +65,8 @@ func (books *BookInits) InitBookStruct() structural.Books {
 			CharCount:  strconv.Itoa(result.CharCount),
 			SignStatus: result.SignStatus,
 		}
-	case hbooker_structs.DetailStruct:
-		result := books.BookData.(hbooker_structs.DetailStruct).Data.BookInfo
+	case hbooker_structs.BookInfo:
+		result := books.BookData.(hbooker_structs.BookInfo)
 		return structural.Books{
 			NovelName:  cfg.RegexpName(result.BookName),
 			NovelID:    result.BookID,

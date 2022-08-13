@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gookit/color"
-	"os"
 	"sf/cfg"
 	"sf/src/hbooker/Encrypt"
 	req "sf/src/https"
@@ -13,37 +12,34 @@ import (
 	"time"
 )
 
-func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
-	var result structs.DivisionStruct
-	params := map[string]string{"book_id": BookId}
-	response, _ := req.Request("POST", QueryParams(DivisionIdByBookId, params), "")
-	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err != nil {
+func JsonUnmarshal(response []byte, Struct interface{}) any {
+	err := json.Unmarshal(response, Struct)
+	if err != nil {
 		fmt.Println("json unmarshal error:", err)
 	}
-	return result.Data.DivisionList
+	return Struct
+}
+
+func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
+	params := map[string]string{"book_id": BookId}
+	response, _ := req.Request("POST", QueryParams(DivisionIdByBookId, params), "")
+	result := JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.DivisionStruct{})
+	return result.(*structs.DivisionStruct).Data.DivisionList
 }
 
 func GetCatalogueByDivisionId(DivisionId string) []structs.ChapterList {
-	var result structs.ChapterStruct
-	params := map[string]string{"division_id": DivisionId}
-	response, _ := req.Request("POST", QueryParams(CatalogueDetailedByDivisionId, params), "")
-	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err != nil {
-		fmt.Println("json unmarshal error:", err)
-	}
-	return result.Data.ChapterList
+	url := QueryParams(CatalogueDetailedByDivisionId, map[string]string{"division_id": DivisionId})
+	response, _ := req.Request("POST", url, "")
+	result := JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.ChapterStruct{})
+	return result.(*structs.ChapterStruct).Data.ChapterList
 }
 
-func GetBookDetailById(bid string) structs.DetailStruct {
-	var result structs.DetailStruct
-	params := map[string]string{"book_id": bid}
-	response, _ := req.Request("POST", QueryParams(BookDetailedById, params), "")
-	if err := json.Unmarshal(Encrypt.Decode(string(response), ""), &result); err == nil {
-		return result
-	} else {
-		fmt.Println("BookDetailById json unmarshal error:", err)
-		os.Exit(1)
-	}
-	return structs.DetailStruct{}
+func GetBookDetailById(bid string) structs.BookInfo {
+	url := QueryParams(BookDetailedById, map[string]string{"book_id": bid})
+	response, _ := req.Request("POST", url, "")
+	result := JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.DetailStruct{})
+	return result.(*structs.DetailStruct).Data.BookInfo
+
 }
 
 func Search(bookName string, page int) structs.SearchStruct {
@@ -108,15 +104,6 @@ func GetRecommend() structs.RecommendStruct {
 	}
 	return RecommendStruct
 }
-
-func JsonUnmarshal(response []byte, Struct interface{}) any {
-	err := json.Unmarshal(response, Struct)
-	if err != nil {
-		fmt.Println("json unmarshal error:", err)
-	}
-	return Struct
-}
-
 func GetChangeRecommend() []structs.ChangeBookList {
 	bookIdList := "100250589,100283902,100186621,100287528,100309123,100325245"
 	params := map[string]string{"book_id": bookIdList, "from_module_name": "长篇好书"}
