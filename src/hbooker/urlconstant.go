@@ -9,7 +9,7 @@ const (
 	CatalogueDetailedByDivisionId = "chapter/get_updated_chapter_by_division_id"
 	DivisionIdByBookId            = "book/get_division_list"
 	BookDetailedById              = "book/get_info_by_id"
-	SearchDetailedByKeyword       = "bookcity/get_filter_search_book_list"
+	SearchDetailed                = "bookcity/get_filter_search_book_list"
 	ChapterKeyByCid               = "chapter/get_chapter_cmd"
 	ContentDetailedByCid          = "chapter/get_cpt_ifm"
 	Recommend                     = "bookcity/get_index_list"
@@ -17,7 +17,7 @@ const (
 	WebSite                       = "https://app.hbooker.com/"
 	UseGeetestSignup              = "signup/use_geetest"
 	GeetestFirstRegister          = "signup/geetest_first_register"
-	//LoginByAccount                = "signup/login?login_name=%v&password=%v"
+	LoginByAccount                = "signup/login"
 )
 
 // QueryParams Struct to map

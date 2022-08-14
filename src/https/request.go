@@ -58,19 +58,19 @@ func Request(method string, url string) ([]byte, error) {
 	return nil, errors.New("request error:" + method + "url:" + url)
 }
 
-func Get(method string, url string) string {
+func Get(method string, url string) []byte {
 	if cfg.Vars.AppType == "cat" {
 		if result, ok := Request(method, url); ok == nil {
-			return string(Encrypt.Decode(string(result), ""))
+			return Encrypt.Decode(string(result), "")
 		} else {
 			fmt.Println(ok)
 		}
 	} else if cfg.Vars.AppType == "sfacg" {
 		if result, ok := Request(method, url); ok == nil {
-			return string(result)
+			return result
 		} else {
 			fmt.Println(ok)
 		}
 	}
-	return ""
+	return nil
 }

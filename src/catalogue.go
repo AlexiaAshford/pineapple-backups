@@ -112,13 +112,12 @@ func (catalogue *Catalogue) makeContentInformation(response any) {
 		writeContent = fmt.Sprintf("%v:%v\n%v\n\n\n", result.Title, result.AddTime, result.Expand.Content)
 		catalogue.AddChapterConfig(result.ChapID)
 		catalogue.contentList[strconv.Itoa(result.ChapID)] = writeContent
-	case hbooker_structs.ContentStruct:
-		result := response.(hbooker_structs.ContentStruct).Data.ChapterInfo
+	case *hbooker_structs.ContentStruct:
+		result := response.(*hbooker_structs.ContentStruct).Data.ChapterInfo
 		writeContent = fmt.Sprintf("%v:%v\n%v\n\n\n", result.ChapterTitle, result.Uptime, result.TxtContent)
 		catalogue.AddChapterConfig(result.ChapterID)
 		catalogue.contentList[result.ChapterID] = writeContent
 	}
-	//cfg.EncapsulationWrite(catalogue.SaveTextPath, writeContent, 5, "a")
 	catalogue.SpeedProgressAndDelayTime()
 
 }
