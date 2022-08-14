@@ -1,7 +1,5 @@
 package sfacg_structs
 
-import "net/http"
-
 type Login struct {
 	Status struct {
 		HTTPCode  int         `json:"httpCode"`
@@ -9,6 +7,6 @@ type Login struct {
 		MsgType   int         `json:"msgType"`
 		Msg       interface{} `json:"msg"`
 	} `json:"status"`
-	Cookie []*http.Cookie
+	Cookie string
 	Data   interface{} `json:"data"`
 }

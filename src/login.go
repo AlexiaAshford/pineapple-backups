@@ -23,10 +23,7 @@ func LoginAccount(username string, password string, retry int) {
 	LoginData := boluobao.PostLoginByAccount(username, password)
 	cfg.Apps.Sfacg.Cookie = ""
 	if LoginData.Status.HTTPCode == 200 {
-		cfg.Apps.Sfacg.Cookie = ""
-		for _, cookie := range LoginData.Cookie {
-			cfg.Apps.Sfacg.Cookie += cookie.Name + "=" + cookie.Value + ";"
-		}
+		cfg.Apps.Sfacg.Cookie = LoginData.Cookie
 		cfg.Apps.Sfacg.UserName, cfg.Apps.Sfacg.Password = username, password
 		cfg.SaveJson()
 		if AccountDetailed() == "需要登录才能访问该资源" {

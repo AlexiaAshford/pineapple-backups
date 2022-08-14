@@ -1,7 +1,6 @@
 package hbooker
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/gookit/color"
 	"sf/cfg"
@@ -12,32 +11,24 @@ import (
 	"time"
 )
 
-func JsonUnmarshal(response []byte, Struct any) any {
-	err := json.Unmarshal(response, Struct)
-	if err != nil {
-		fmt.Println("json unmarshal error:", err)
-	}
-	return Struct
-}
-
 func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
 	params := map[string]string{"book_id": BookId}
 	response, _ := req.Request("POST", QueryParams(DivisionIdByBookId, params), "")
-	result := JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.DivisionStruct{})
+	result := req.JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.DivisionStruct{})
 	return result.(*structs.DivisionStruct).Data.DivisionList
 }
 
 func GetCatalogueByDivisionId(DivisionId string) []structs.ChapterList {
 	url := QueryParams(CatalogueDetailedByDivisionId, map[string]string{"division_id": DivisionId})
 	response, _ := req.Request("POST", url, "")
-	result := JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.ChapterStruct{})
+	result := req.JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.ChapterStruct{})
 	return result.(*structs.ChapterStruct).Data.ChapterList
 }
 
 func GetBookDetailById(bid string) structs.BookInfo {
 	url := QueryParams(BookDetailedById, map[string]string{"book_id": bid})
 	response, _ := req.Request("POST", url, "")
-	result := JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.DetailStruct{})
+	result := req.JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.DetailStruct{})
 	return result.(*structs.DetailStruct).Data.BookInfo
 
 }
@@ -45,7 +36,7 @@ func GetBookDetailById(bid string) structs.BookInfo {
 func Search(bookName string, page int) *structs.SearchStruct {
 	params := map[string]string{"count": "10", "page": strconv.Itoa(page), "category_index": "0", "key": bookName}
 	response, _ := req.Request("POST", QueryParams(SearchDetailedByKeyword, params), "")
-	result := JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.SearchStruct{})
+	result := req.JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.SearchStruct{})
 	return result.(*structs.SearchStruct)
 }
 
@@ -63,13 +54,13 @@ func Search(bookName string, page int) *structs.SearchStruct {
 
 func UseGeetest() *structs.GeetestStruct {
 	response, _ := req.Request("POST", WebSite+UseGeetestSignup, "")
-	return JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.GeetestStruct{}).(*structs.GeetestStruct)
+	return req.JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.GeetestStruct{}).(*structs.GeetestStruct)
 }
 
 func GeetestRegister(userID string) (string, string) {
 	params := map[string]string{"t": strconv.FormatInt(time.Now().UnixNano()/1e6, 10), "user_id": userID}
 	response, _ := req.Request("POST", QueryParams(GeetestFirstRegister, params), "")
-	result := JsonUnmarshal(response, &structs.GeetestChallenge{}).(*structs.GeetestChallenge)
+	result := req.JsonUnmarshal(response, &structs.GeetestChallenge{}).(*structs.GeetestChallenge)
 	return result.Challenge, result.Gt
 }
 func TestGeetest(userID string) {
@@ -88,20 +79,20 @@ func TestGeetest(userID string) {
 func GetRecommend() *structs.RecommendStruct {
 	params := map[string]string{"theme_type": "NORMAL", "tab_type": "200"}
 	response, _ := req.Request("POST", QueryParams(Recommend, params), "")
-	return JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.RecommendStruct{}).(*structs.RecommendStruct)
+	return req.JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.RecommendStruct{}).(*structs.RecommendStruct)
 }
 func GetChangeRecommend() []structs.ChangeBookList {
 	bookIdList := "100250589,100283902,100186621,100287528,100309123,100325245"
 	url := QueryParams(ChangeRecommend, map[string]string{"book_id": bookIdList, "from_module_name": "长篇好书"})
 	response, _ := req.Request("POST", url, "")
-	result := JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.ChangeRecommendStruct{})
+	result := req.JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.ChangeRecommendStruct{})
 	return result.(*structs.ChangeRecommendStruct).Data.BookList
 }
 
 func GetKeyByCid(chapterId string) string {
 	url := QueryParams(ChapterKeyByCid, map[string]string{"chapter_id": chapterId})
 	response, _ := req.Request("POST", url, "")
-	result := JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.KeyStruct{})
+	result := req.JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.KeyStruct{})
 	return result.(*structs.KeyStruct).Data.Command
 }
 
@@ -109,7 +100,7 @@ func GetContent(chapterId string) (structs.ContentStruct, bool) {
 	key := GetKeyByCid(chapterId)
 	params := map[string]string{"chapter_id": chapterId, "chapter_command": key}
 	response, _ := req.Request("POST", QueryParams(ContentDetailedByCid, params), "")
-	result := JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.ContentStruct{}).(*structs.ContentStruct)
+	result := req.JsonUnmarshal(Encrypt.Decode(string(response), ""), &structs.ContentStruct{}).(*structs.ContentStruct)
 	for i := 0; i < cfg.Vars.MaxRetry; i++ {
 		if result.Code == "100000" {
 			result.Data.ChapterInfo.TxtContent = string(Encrypt.Decode(result.Data.ChapterInfo.TxtContent, key))
