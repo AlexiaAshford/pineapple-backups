@@ -32,8 +32,8 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 		}
 	} else if cfg.Vars.AppType == "cat" {
 		response := hbooker.GetBookDetailById(books.BookID)
-		if response.BookName != "" {
-			books.BookData = response
+		if response.Code == "100000" {
+			books.BookData = response.Data.BookInfo
 		} else {
 			fmt.Println(books.BookID, "is not a valid book number！")
 		}

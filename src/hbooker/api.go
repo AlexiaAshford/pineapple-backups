@@ -21,9 +21,9 @@ func GetCatalogueByDivisionId(DivisionId string) []structs.ChapterList {
 	return req.JsonUnmarshal(req.Get("POST", url), &structs.ChapterStruct{}).(*structs.ChapterStruct).Data.ChapterList
 }
 
-func GetBookDetailById(bid string) structs.BookInfo {
+func GetBookDetailById(bid string) *structs.DetailStruct {
 	url := QueryParams(BookDetailedById, map[string]string{"book_id": bid})
-	return req.JsonUnmarshal(req.Get("POST", url), &structs.DetailStruct{}).(*structs.DetailStruct).Data.BookInfo
+	return req.JsonUnmarshal(req.Get("POST", url), &structs.DetailStruct{}).(*structs.DetailStruct)
 
 }
 
