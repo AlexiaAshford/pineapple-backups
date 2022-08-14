@@ -3,9 +3,12 @@ package https
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"sf/cfg"
+	"sf/src/hbooker/Encrypt"
 )
 
 var client = &http.Client{}
@@ -36,28 +39,38 @@ func LoginSession(url string, dataJson []byte) ([]byte, []*http.Cookie) {
 	return nil, nil
 }
 
-func Request(method string, url string, dataJson string) ([]byte, []*http.Cookie) {
+func Request(method string, url string) ([]byte, error) {
 
 	if method != "GET" && method != "POST" && method != "PUT" {
 		panic("Error: method must be GET or POST or PUT, but now is " + method)
 	}
-	if request, err := http.NewRequest(method, url, bytes.NewBuffer([]byte(dataJson))); err != nil {
+	if request, err := http.NewRequest(method, url, nil); err != nil {
 		fmt.Printf("NewRequest %v error:%v\n", method, err)
 	} else {
-		if url == "https://minipapi.sfacg.com/pas/mpapi/sessions" {
-			// login request no need to test cookie
-			SetHeaders(request, false)
-		} else {
-			SetHeaders(request, true)
-		}
+		SetHeaders(request, true)
 		if response, ok := client.Do(request); ok == nil {
 			// delete ioutil.ReadAll and use io.ReadAll instead
 			if body, bodyError := io.ReadAll(response.Body); bodyError == nil {
-				return body, response.Cookies()
+				return body, nil
 			}
-		} else {
-			fmt.Println(err)
 		}
 	}
-	return nil, nil
+	return nil, errors.New("request error:" + method + "url:" + url)
+}
+
+func Get(method string, url string) string {
+	if cfg.Vars.AppType == "cat" {
+		if result, ok := Request(method, url); ok == nil {
+			return string(Encrypt.Decode(string(result), ""))
+		} else {
+			fmt.Println(ok)
+		}
+	} else if cfg.Vars.AppType == "sfacg" {
+		if result, ok := Request(method, url); ok == nil {
+			return string(result)
+		} else {
+			fmt.Println(ok)
+		}
+	}
+	return ""
 }
