@@ -1,80 +1,51 @@
 package boluobao
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/url"
+	url_ "net/url"
 	"sf/cfg"
-	"sf/src/https"
+	req "sf/src/https"
 	"sf/structural/sfacg_structs"
 )
 
-func GetBookDetailedById(bookId string) sfacg_structs.BookInfo {
-	var BookData sfacg_structs.BookInfo
-	response, _ := https.Request("GET", WebSite+fmt.Sprintf(BookDetailedById, bookId))
-	if err := json.Unmarshal(response, &BookData); err == nil {
-		return BookData
-	} else {
-		fmt.Println("Error:", err)
-		return sfacg_structs.BookInfo{}
-	}
-}
-func GetAccountDetailedByApi() sfacg_structs.Account {
-	var AccountData sfacg_structs.Account
-	response, _ := https.Request("GET", WebSite+AccountDetailedByApi)
-	if err := json.Unmarshal(response, &AccountData); err == nil {
-		return AccountData
-	} else {
-		fmt.Println("Error:", err)
-		return sfacg_structs.Account{}
-	}
+func GetBookDetailedById(bookId string) *sfacg_structs.BookInfo {
+	url := WebSite + fmt.Sprintf(BookDetailedById, bookId)
+	return req.JsonUnmarshal(req.Get("GET", url), &sfacg_structs.BookInfo{}).(*sfacg_structs.BookInfo)
 }
 
-func GetCatalogue(NovelID string) sfacg_structs.Catalogue {
-	var CatalogueData sfacg_structs.Catalogue
-	response, _ := https.Request("GET", fmt.Sprintf(WebSite+CatalogueDetailedById, NovelID))
-	if err := json.Unmarshal(response, &CatalogueData); err == nil {
-		return CatalogueData
-	} else {
-		fmt.Println("Error:", err)
-		return sfacg_structs.Catalogue{}
-	}
+func GetAccountDetailedByApi() *sfacg_structs.Account {
+	url := WebSite + AccountDetailedByApi
+	return req.JsonUnmarshal(req.Get("GET", url), &sfacg_structs.Account{}).(*sfacg_structs.Account)
 }
 
-func GetContentDetailedByCid(cid string) (sfacg_structs.Content, bool) {
-	var ContentData sfacg_structs.Content
-	response, _ := https.Request("GET", fmt.Sprintf(WebSite+ContentDetailedByCid, cid))
-	if err := json.Unmarshal(response, &ContentData); err == nil {
-		for i := 0; i < cfg.Vars.MaxRetry; i++ {
-			if ContentData.Status.HTTPCode == 200 {
-				return ContentData, true
-			} else {
-				fmt.Println("Error:", ContentData.Status.Msg)
-			}
+func GetCatalogue(NovelID string) *sfacg_structs.Catalogue {
+	url := fmt.Sprintf(WebSite+CatalogueDetailedById, NovelID)
+	return req.JsonUnmarshal(req.Get("GET", url), &sfacg_structs.Catalogue{}).(*sfacg_structs.Catalogue)
+}
+
+func GetContentDetailedByCid(cid string) (*sfacg_structs.Content, bool) {
+	url := fmt.Sprintf(WebSite+ContentDetailedByCid, cid)
+	result := req.JsonUnmarshal(req.Get("GET", url), &sfacg_structs.Content{}).(*sfacg_structs.Content)
+	for retry := 0; retry < cfg.Vars.MaxRetry; retry++ {
+		if result.Status.HTTPCode == 200 {
+			return result, true
+		} else {
+			fmt.Println("Error:", result.Status.Msg)
 		}
-	} else {
-		fmt.Println("ContentData Json Error:", err)
 	}
-	return sfacg_structs.Content{}, false
+	return result, false
 }
 
-func GetSearchDetailedByKeyword(keyword string, page int) sfacg_structs.Search {
-	var SearchData sfacg_structs.Search
-	response, _ := https.Request("GET",
-		WebSite+fmt.Sprintf(SearchDetailedByKeyword, url.QueryEscape(keyword), page))
-	if err := json.Unmarshal(response, &SearchData); err == nil {
-		return SearchData // return result of search
-	} else {
-		fmt.Println("Error:", err)
-		return sfacg_structs.Search{} // return empty struct if error
-	}
+func GetSearchDetailedByKeyword(keyword string, page int) *sfacg_structs.Search {
+	url := WebSite + fmt.Sprintf(SearchDetailedByKeyword, url_.QueryEscape(keyword), page)
+	return req.JsonUnmarshal(req.Get("GET", url), &sfacg_structs.Search{}).(*sfacg_structs.Search)
 
 }
 
 func PostLoginByAccount(username, password string) *sfacg_structs.Login {
 	data := fmt.Sprintf(`{"username":"%s", "password": "%s"}`, username, password)
-	response, Cookie := https.LoginSession(WebSite+LoginByAccount, []byte(data))
-	result := https.JsonUnmarshal(response, &sfacg_structs.Login{}).(*sfacg_structs.Login)
+	response, Cookie := req.LoginSession(WebSite+LoginByAccount, []byte(data))
+	result := req.JsonUnmarshal(response, &sfacg_structs.Login{}).(*sfacg_structs.Login)
 	for _, cookie := range Cookie {
 		result.Cookie += cookie.Name + "=" + cookie.Value + ";"
 	}

@@ -53,8 +53,8 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 }
 func (books *BookInits) InitBookStruct() structural.Books {
 	switch books.BookData.(type) {
-	case sfacg_structs.BookInfo:
-		result := books.BookData.(sfacg_structs.BookInfo).Data
+	case *sfacg_structs.BookInfo:
+		result := books.BookData.(*sfacg_structs.BookInfo).Data
 		return structural.Books{
 			NovelName:  cfg.RegexpName(result.NovelName),
 			NovelID:    strconv.Itoa(result.NovelID),

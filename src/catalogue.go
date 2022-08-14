@@ -9,7 +9,6 @@ import (
 	"sf/structural/hbooker_structs"
 	"sf/structural/sfacg_structs"
 	"strconv"
-	"time"
 )
 
 type Catalogue struct {
@@ -107,8 +106,8 @@ func (catalogue *Catalogue) makeContentInformation(response any) {
 	defer cfg.FileLock.Unlock() // unlock file after write
 	var writeContent string
 	switch response.(type) {
-	case sfacg_structs.Content:
-		result := response.(sfacg_structs.Content).Data
+	case *sfacg_structs.Content:
+		result := response.(*sfacg_structs.Content).Data
 		writeContent = fmt.Sprintf("%v:%v\n%v\n\n\n", result.Title, result.AddTime, result.Expand.Content)
 		catalogue.AddChapterConfig(result.ChapID)
 		catalogue.contentList[strconv.Itoa(result.ChapID)] = writeContent
@@ -126,6 +125,6 @@ func (catalogue *Catalogue) SpeedProgressAndDelayTime() {
 	if err := catalogue.ChapterBar.Add(1); err != nil {
 		fmt.Println("bar error:", err)
 	} else {
-		time.Sleep(time.Second * time.Duration(2))
+		//time.Sleep(time.Second * time.Duration(2))
 	}
 }
