@@ -2,10 +2,10 @@ package src
 
 import (
 	"fmt"
-	"github.com/bmaupin/go-epub"
 	"os"
 	"path"
 	"sf/cfg"
+	"sf/epub"
 	"sf/src/boluobao"
 	"sf/src/hbooker"
 	"sf/src/https"

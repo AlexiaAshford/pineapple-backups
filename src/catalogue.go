@@ -2,9 +2,9 @@ package src
 
 import (
 	"fmt"
-	"github.com/bmaupin/go-epub"
 	"path"
 	"sf/cfg"
+	"sf/epub"
 	"sf/src/boluobao"
 	"sf/src/hbooker"
 	"sf/struct/hbooker_structs"
