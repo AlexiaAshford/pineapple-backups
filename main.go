@@ -15,7 +15,6 @@ func shellBookDownload(downloadId any) {
 	switch downloadId.(type) {
 	case string:
 		start := src.BookInits{BookID: downloadId.(string), Index: 0, Locks: nil, ShowBook: true}
-		start.InitEpubFile()
 		catalogues := start.DownloadBookInit() // get book catalogues
 		if catalogues.TestBookResult {
 			catalogues.InitCatalogue()
@@ -26,7 +25,6 @@ func shellBookDownload(downloadId any) {
 			Locks.Add()
 			start := src.BookInits{BookID: BookId, Index: BookIndex, Locks: Locks, ShowBook: true}
 			catalogues := start.DownloadBookInit() // get book catalogues
-			start.InitEpubFile()
 			if catalogues.TestBookResult {
 				catalogues.InitCatalogue()
 			}

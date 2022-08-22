@@ -3,10 +3,12 @@ package src
 import (
 	"fmt"
 	"github.com/bmaupin/go-epub"
+	"os"
 	"path"
 	"sf/cfg"
 	"sf/src/boluobao"
 	"sf/src/hbooker"
+	"sf/src/https"
 	"sf/struct"
 	"sf/struct/hbooker_structs"
 	"sf/struct/sfacg_structs"
@@ -26,7 +28,18 @@ func (books *BookInits) InitEpubFile() {
 	// set epub setting and add section
 	books.EpubSetting = epub.NewEpub(cfg.CurrentBook.BookInfo.NovelName)
 	books.EpubSetting.SetAuthor(cfg.CurrentBook.BookInfo.AuthorName) // set author
-	//books.EpubSetting.SetCover(response.Data.NovelCover)   // set cover image
+	coverPath := path.Join("cover", cfg.CurrentBook.BookInfo.NovelName+".jpg")
+	if cfg.Exist(coverPath) {
+		books.EpubSetting.SetCover("/cover/"+cfg.CurrentBook.BookInfo.NovelName+".jpg", "")
+	} else {
+		reader := https.GetCover(cfg.CurrentBook.BookInfo.NovelCover)
+		if reader == nil {
+			fmt.Println("download cover failed!")
+		} else {
+			_ = os.WriteFile(coverPath, reader, 0666)
+			books.EpubSetting.SetCover(coverPath, "")
+		}
+	}
 }
 
 func (books *BookInits) DownloadBookInit() Catalogue {
@@ -52,6 +65,7 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 
 	}
 	cfg.CurrentBook.BookInfo = books.InitBookStruct()
+	books.InitEpubFile()
 	savePath := path.Join(cfg.Vars.SaveFile, cfg.CurrentBook.BookInfo.NovelName+".txt")
 	if !cfg.Exist(savePath) {
 		cfg.Write(savePath, books.ShowBookDetailed()+"\n\n", "w")

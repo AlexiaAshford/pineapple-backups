@@ -1,7 +1,6 @@
 package https
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"errors"
@@ -75,15 +74,11 @@ func Get(method string, url string) []byte {
 	}
 	return nil
 }
-func GetCover(imgUrl string) *bufio.Reader {
-
-	res, err := http.Get(imgUrl)
-	if err != nil {
-		fmt.Println("A error occurred!")
-		return nil
+func GetCover(imgUrl string) []byte {
+	if res, err := Request("GET", imgUrl); err == nil {
+		return res
+	} else {
+		fmt.Println(err)
 	}
-	defer func(Body io.ReadCloser) {
-		_ = Body.Close()
-	}(res.Body)
-	return bufio.NewReaderSize(res.Body, 32*1024) // 获得get请求响应的reader对象
+	return nil
 }
