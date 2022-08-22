@@ -2,6 +2,7 @@ package src
 
 import (
 	"fmt"
+	"github.com/bmaupin/go-epub"
 	"path"
 	"sf/cfg"
 	"sf/src/boluobao"
@@ -13,17 +14,23 @@ import (
 )
 
 type BookInits struct {
-	BookID   string
-	Index    int
-	ShowBook bool
-	Locks    *cfg.GoLimit
-	BookData any
+	BookID      string
+	Index       int
+	ShowBook    bool
+	Locks       *cfg.GoLimit
+	BookData    any
+	EpubSetting *epub.Epub
 }
 
 func (books *BookInits) DownloadBookInit() Catalogue {
 	if cfg.Vars.AppType == "sfacg" {
 		response := boluobao.GetBookDetailedById(books.BookID)
 		if response.Status.HTTPCode == 200 && response.Data.NovelName != "" {
+
+			// set epub setting and add section
+			books.EpubSetting = epub.NewEpub(response.Data.NovelName)
+			books.EpubSetting.SetAuthor(response.Data.AuthorName) // set author
+			//books.EpubSetting.SetCover(response.Data.NovelCover)   // set cover image
 			books.BookData = response
 		} else {
 			fmt.Println(books.BookID, "is not a valid book number！\nmessage:", response.Status.Msg)
@@ -32,6 +39,10 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 	} else if cfg.Vars.AppType == "cat" {
 		response := hbooker.GetBookDetailById(books.BookID)
 		if response.Code == "100000" {
+			// set epub setting and add section
+			books.EpubSetting = epub.NewEpub(response.Data.BookInfo.BookName)
+			books.EpubSetting.SetAuthor(response.Data.BookInfo.AuthorName)
+
 			books.BookData = response.Data.BookInfo
 		} else {
 			fmt.Println(books.BookID, "is not a valid book number！")
@@ -47,7 +58,7 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 	} else {
 		books.ShowBookDetailed()
 	}
-	return Catalogue{SaveTextPath: savePath, TestBookResult: true}
+	return Catalogue{SaveTextPath: savePath, TestBookResult: true, EpubSetting: books.EpubSetting}
 
 }
 func (books *BookInits) InitBookStruct() _struct.Books {

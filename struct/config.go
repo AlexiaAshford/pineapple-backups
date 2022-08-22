@@ -13,6 +13,7 @@ type Books struct {
 type MyConfigPro struct {
 	ConfigFile      string
 	SaveFile        string
+	CoverFile       string
 	AppType         string
 	MaxThreadNumber int
 	MaxRetry        int

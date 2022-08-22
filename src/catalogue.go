@@ -2,6 +2,7 @@ package src
 
 import (
 	"fmt"
+	"github.com/bmaupin/go-epub"
 	"path"
 	"sf/cfg"
 	"sf/src/boluobao"
@@ -19,6 +20,7 @@ type Catalogue struct {
 	ChapterCfg     string
 	TestBookResult bool
 	contentList    map[string]string
+	EpubSetting    *epub.Epub
 }
 
 func (catalogue *Catalogue) ReadChapterConfig() string {
@@ -98,6 +100,11 @@ func (catalogue *Catalogue) DownloadContent() {
 	for _, ChapterId := range catalogue.ChapterList {
 		cfg.Write(catalogue.SaveTextPath, catalogue.contentList[ChapterId], "a")
 	}
+
+	fmt.Println(catalogue.SaveTextPath + ".epub")
+	if err := catalogue.EpubSetting.Write(catalogue.SaveTextPath + ".epub"); err != nil {
+		fmt.Println("epub error:", err)
+	}
 	catalogue.ChapterList = nil
 }
 
@@ -110,6 +117,8 @@ func (catalogue *Catalogue) makeContentInformation(response any) {
 		result := response.(*sfacg_structs.Content).Data
 		writeContent = fmt.Sprintf("%v:%v\n%v\n\n\n", result.Title, result.AddTime, result.Expand.Content)
 		catalogue.AddChapterConfig(result.ChapID)
+		catalogue.EpubSetting.AddSection(writeContent, result.Title, "", "")
+
 		catalogue.contentList[strconv.Itoa(result.ChapID)] = writeContent
 	case *hbooker_structs.ContentStruct:
 		result := response.(*hbooker_structs.ContentStruct).Data.ChapterInfo
