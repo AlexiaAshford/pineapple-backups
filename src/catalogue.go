@@ -10,6 +10,7 @@ import (
 	"sf/struct/hbooker_structs"
 	"sf/struct/sfacg_structs"
 	"strconv"
+	"strings"
 )
 
 type Catalogue struct {
@@ -102,12 +103,19 @@ func (catalogue *Catalogue) DownloadContent() {
 	}
 
 	fmt.Println(catalogue.SaveTextPath + ".epub")
-	if err := catalogue.EpubSetting.Write(catalogue.SaveTextPath + ".epub"); err != nil {
+
+	if err := catalogue.EpubSetting.Write(strings.Replace(catalogue.SaveTextPath, ".txt", ".epub", -1)); err != nil {
 		fmt.Println("epub error:", err)
 	}
 	catalogue.ChapterList = nil
 }
 
+func (catalogue *Catalogue) AddChapterInEpubFile(title, content string) {
+	xmlContent := "<h1>" + title + "</h1>" + strings.Replace(content, "\n", "</p>\n<p>", -1)
+	if _, err := catalogue.EpubSetting.AddSection(xmlContent, title, "", ""); err != nil {
+		fmt.Printf("epub add chapter:%v\t\terror message:%v", title, err)
+	}
+}
 func (catalogue *Catalogue) makeContentInformation(response any) {
 	cfg.FileLock.Lock()         // lock file to avoid file write conflict
 	defer cfg.FileLock.Unlock() // unlock file after write
@@ -117,13 +125,13 @@ func (catalogue *Catalogue) makeContentInformation(response any) {
 		result := response.(*sfacg_structs.Content).Data
 		writeContent = fmt.Sprintf("%v:%v\n%v\n\n\n", result.Title, result.AddTime, result.Expand.Content)
 		catalogue.AddChapterConfig(result.ChapID)
-		catalogue.EpubSetting.AddSection(writeContent, result.Title, "", "")
-
+		catalogue.AddChapterInEpubFile(result.Title, result.Expand.Content)
 		catalogue.contentList[strconv.Itoa(result.ChapID)] = writeContent
 	case *hbooker_structs.ContentStruct:
 		result := response.(*hbooker_structs.ContentStruct).Data.ChapterInfo
 		writeContent = fmt.Sprintf("%v:%v\n%v\n\n\n", result.ChapterTitle, result.Uptime, result.TxtContent)
 		catalogue.AddChapterConfig(result.ChapterID)
+		catalogue.AddChapterInEpubFile(result.ChapterTitle, result.TxtContent)
 		catalogue.contentList[result.ChapterID] = writeContent
 	}
 	catalogue.SpeedProgressAndDelayTime()

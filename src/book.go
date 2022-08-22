@@ -22,36 +22,36 @@ type BookInits struct {
 	EpubSetting *epub.Epub
 }
 
+func (books *BookInits) InitEpubFile() {
+	// set epub setting and add section
+	books.EpubSetting = epub.NewEpub(cfg.CurrentBook.BookInfo.NovelName)
+	books.EpubSetting.SetAuthor(cfg.CurrentBook.BookInfo.AuthorName) // set author
+	//books.EpubSetting.SetCover(response.Data.NovelCover)   // set cover image
+}
+
 func (books *BookInits) DownloadBookInit() Catalogue {
-	if cfg.Vars.AppType == "sfacg" {
+	switch cfg.Vars.AppType {
+	case "sfacg":
 		response := boluobao.GetBookDetailedById(books.BookID)
 		if response.Status.HTTPCode == 200 && response.Data.NovelName != "" {
-
-			// set epub setting and add section
-			books.EpubSetting = epub.NewEpub(response.Data.NovelName)
-			books.EpubSetting.SetAuthor(response.Data.AuthorName) // set author
-			//books.EpubSetting.SetCover(response.Data.NovelCover)   // set cover image
 			books.BookData = response
 		} else {
 			fmt.Println(books.BookID, "is not a valid book number！\nmessage:", response.Status.Msg)
 			return Catalogue{TestBookResult: false}
 		}
-	} else if cfg.Vars.AppType == "cat" {
+	case "cat":
 		response := hbooker.GetBookDetailById(books.BookID)
 		if response.Code == "100000" {
-			// set epub setting and add section
-			books.EpubSetting = epub.NewEpub(response.Data.BookInfo.BookName)
-			books.EpubSetting.SetAuthor(response.Data.BookInfo.AuthorName)
-
 			books.BookData = response.Data.BookInfo
 		} else {
 			fmt.Println(books.BookID, "is not a valid book number！")
+			return Catalogue{TestBookResult: false}
 		}
-	} else {
+	default:
 		panic("app type" + cfg.Vars.AppType + " is not valid!")
+
 	}
 	cfg.CurrentBook.BookInfo = books.InitBookStruct()
-
 	savePath := path.Join(cfg.Vars.SaveFile, cfg.CurrentBook.BookInfo.NovelName+".txt")
 	if !cfg.Exist(savePath) {
 		cfg.Write(savePath, books.ShowBookDetailed()+"\n\n", "w")
