@@ -102,8 +102,6 @@ func (catalogue *Catalogue) DownloadContent() {
 		cfg.Write(catalogue.SaveTextPath, catalogue.contentList[ChapterId], "a")
 	}
 
-	fmt.Println(catalogue.SaveTextPath + ".epub")
-
 	if err := catalogue.EpubSetting.Write(strings.Replace(catalogue.SaveTextPath, ".txt", ".epub", -1)); err != nil {
 		fmt.Println("epub error:", err)
 	}
@@ -111,7 +109,7 @@ func (catalogue *Catalogue) DownloadContent() {
 }
 
 func (catalogue *Catalogue) AddChapterInEpubFile(title, content string) {
-	xmlContent := "<h1>" + title + "</h1>" + strings.Replace(content, "\n", "</p>\n<p>", -1)
+	xmlContent := "<h1>" + title + "</h1>\n<p>" + strings.Replace(content, "\n", "</p>\n<p>", -1)
 	if _, err := catalogue.EpubSetting.AddSection(xmlContent, title, "", ""); err != nil {
 		fmt.Printf("epub add chapter:%v\t\terror message:%v", title, err)
 	}

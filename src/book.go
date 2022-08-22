@@ -13,6 +13,7 @@ import (
 	"sf/struct/hbooker_structs"
 	"sf/struct/sfacg_structs"
 	"strconv"
+	"strings"
 )
 
 type BookInits struct {
@@ -26,22 +27,23 @@ type BookInits struct {
 
 func (books *BookInits) InitEpubFile() {
 	// set epub setting and add section
+	AddImage := true
 	books.EpubSetting = epub.NewEpub(cfg.CurrentBook.BookInfo.NovelName)
 	books.EpubSetting.SetAuthor(cfg.CurrentBook.BookInfo.AuthorName) // set author
 	coverPath := path.Join("cover", cfg.CurrentBook.BookInfo.NovelName+".jpg")
-	if cfg.Exist(coverPath) {
-		_, _ = books.EpubSetting.AddImage(coverPath, "")
-		books.EpubSetting.SetCover("../images/"+cfg.CurrentBook.BookInfo.NovelName+".jpg", "")
-	} else {
-		reader := https.GetCover(cfg.CurrentBook.BookInfo.NovelCover)
-		if reader == nil {
+	if !cfg.Exist(coverPath) {
+		if reader := https.GetCover(cfg.CurrentBook.BookInfo.NovelCover); reader == nil {
 			fmt.Println("download cover failed!")
+			AddImage = false
 		} else {
 			_ = os.WriteFile(coverPath, reader, 0666)
-			_, _ = books.EpubSetting.AddImage(coverPath, "")
-			books.EpubSetting.SetCover("../images/"+cfg.CurrentBook.BookInfo.NovelName+".jpg", "")
 		}
 	}
+	if AddImage {
+		_, _ = books.EpubSetting.AddImage(coverPath, "")
+		books.EpubSetting.SetCover(strings.Replace(coverPath, "cover", "../images", -1), "")
+	}
+
 }
 
 func (books *BookInits) DownloadBookInit() Catalogue {
