@@ -30,14 +30,16 @@ func (books *BookInits) InitEpubFile() {
 	books.EpubSetting.SetAuthor(cfg.CurrentBook.BookInfo.AuthorName) // set author
 	coverPath := path.Join("cover", cfg.CurrentBook.BookInfo.NovelName+".jpg")
 	if cfg.Exist(coverPath) {
-		books.EpubSetting.SetCover("/cover/"+cfg.CurrentBook.BookInfo.NovelName+".jpg", "")
+		_, _ = books.EpubSetting.AddImage(coverPath, "")
+		books.EpubSetting.SetCover("../images/"+cfg.CurrentBook.BookInfo.NovelName+".jpg", "")
 	} else {
 		reader := https.GetCover(cfg.CurrentBook.BookInfo.NovelCover)
 		if reader == nil {
 			fmt.Println("download cover failed!")
 		} else {
 			_ = os.WriteFile(coverPath, reader, 0666)
-			books.EpubSetting.SetCover(coverPath, "")
+			_, _ = books.EpubSetting.AddImage(coverPath, "")
+			books.EpubSetting.SetCover("../images/"+cfg.CurrentBook.BookInfo.NovelName+".jpg", "")
 		}
 	}
 }
