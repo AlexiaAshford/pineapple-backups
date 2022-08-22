@@ -8,11 +8,13 @@
     
 </h3> 
 
+
 ## **Functions**
  - Download function is implemented for sfacg WeChat Api and hbooker Android API
  - Login your account and save cookies to a ```config.json```
  - Input the book id or url and download the book to the local directory
  - Input url and download book text from the url
+ - Support download epub from sfacg and hbooker
  - Search books by keyword,and download the search result
 
 ## **Example**
