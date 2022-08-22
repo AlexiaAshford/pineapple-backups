@@ -5,7 +5,7 @@ import (
 	url_ "net/url"
 	"sf/cfg"
 	req "sf/src/https"
-	"sf/structural/sfacg_structs"
+	"sf/struct/sfacg_structs"
 )
 
 func GetBookDetailedById(bookId string) *sfacg_structs.BookInfo {

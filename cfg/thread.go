@@ -1,4 +1,4 @@
-package multi
+package cfg
 
 import (
 	"sync"
@@ -33,7 +33,7 @@ func (g *GoLimit) Add() {
 }
 
 // Done then count - 1
-//若计数<max_num, 可以使原阻塞的Add()快速解除阻塞
+// 若计数<max_num, 可以使原阻塞的Add()快速解除阻塞
 func (g *GoLimit) Done() {
 	g.dataLock.Lock()
 

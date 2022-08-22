@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"path"
 	"sf/cfg"
-	"sf/multi"
 	"sf/src/boluobao"
 	"sf/src/hbooker"
-	"sf/structural"
-	"sf/structural/hbooker_structs"
-	"sf/structural/sfacg_structs"
+	"sf/struct"
+	"sf/struct/hbooker_structs"
+	"sf/struct/sfacg_structs"
 	"strconv"
 )
 
@@ -17,7 +16,7 @@ type BookInits struct {
 	BookID   string
 	Index    int
 	ShowBook bool
-	Locks    *multi.GoLimit
+	Locks    *cfg.GoLimit
 	BookData any
 }
 
@@ -51,11 +50,11 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 	return Catalogue{SaveTextPath: savePath, TestBookResult: true}
 
 }
-func (books *BookInits) InitBookStruct() structural.Books {
+func (books *BookInits) InitBookStruct() _struct.Books {
 	switch books.BookData.(type) {
 	case *sfacg_structs.BookInfo:
 		result := books.BookData.(*sfacg_structs.BookInfo).Data
-		return structural.Books{
+		return _struct.Books{
 			NovelName:  cfg.RegexpName(result.NovelName),
 			NovelID:    strconv.Itoa(result.NovelID),
 			IsFinish:   result.IsFinish,
@@ -67,7 +66,7 @@ func (books *BookInits) InitBookStruct() structural.Books {
 		}
 	case hbooker_structs.BookInfo:
 		result := books.BookData.(hbooker_structs.BookInfo)
-		return structural.Books{
+		return _struct.Books{
 			NovelName:  cfg.RegexpName(result.BookName),
 			NovelID:    result.BookID,
 			NovelCover: result.Cover,
@@ -77,7 +76,7 @@ func (books *BookInits) InitBookStruct() structural.Books {
 			//SignStatus: result.SignStatus,
 		}
 	}
-	return structural.Books{}
+	return _struct.Books{}
 }
 
 func (books *BookInits) ShowBookDetailed() string {

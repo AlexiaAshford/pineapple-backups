@@ -1,4 +1,4 @@
-package structural
+package _struct
 
 type Command struct {
 	Download   string

@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"sf/structural"
+	"sf/struct"
 	"sync"
 )
 
 var (
-	Vars        = structural.MyConfigPro{}
-	Apps        = structural.MyAppPro{}
-	CurrentBook = structural.MyBookInfoJsonPro{}
+	Vars        = _struct.MyConfigPro{}
+	Apps        = _struct.MyAppPro{}
+	CurrentBook = _struct.MyBookInfoJsonPro{}
 )
 
 func UpdateConfig() bool { // update config.json if necessary

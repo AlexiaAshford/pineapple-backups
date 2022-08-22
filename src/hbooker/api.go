@@ -6,7 +6,7 @@ import (
 	"sf/cfg"
 	"sf/src/hbooker/Encrypt"
 	req "sf/src/https"
-	structs "sf/structural/hbooker_structs"
+	structs "sf/struct/hbooker_structs"
 	"strconv"
 	"time"
 )

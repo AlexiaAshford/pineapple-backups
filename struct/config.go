@@ -1,4 +1,4 @@
-package structural
+package _struct
 
 type Books struct {
 	NovelName  string

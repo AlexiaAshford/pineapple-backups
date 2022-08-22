@@ -6,9 +6,8 @@ import (
 	"os"
 	"regexp"
 	"sf/cfg"
-	"sf/multi"
 	"sf/src"
-	"sf/structural"
+	"sf/struct"
 	"strings"
 )
 
@@ -21,7 +20,7 @@ func shellBookDownload(downloadId any) {
 			catalogues.InitCatalogue()
 		}
 	case []string:
-		Locks := multi.NewGoLimit(7)
+		Locks := cfg.NewGoLimit(7)
 		for BookIndex, BookId := range downloadId.([]string) {
 			Locks.Add()
 			start := src.BookInits{BookID: BookId, Index: BookIndex, Locks: Locks, ShowBook: true}
@@ -88,7 +87,7 @@ func shellSearchBookMain(inputs []string) {
 	}
 }
 
-func ParseCommandLine() structural.Command {
+func ParseCommandLine() _struct.Command {
 	bookid := flag.String("download", "", "input book id or url")
 	account := flag.String("account", "", "input account")
 	password := flag.String("password", "", "input password")
@@ -108,7 +107,7 @@ func ParseCommandLine() structural.Command {
 		cfg.Vars.AppType = *appType
 		src.TestAppTypeAndAccount()
 	}
-	return structural.Command{Download: *bookid, Search: *search, ShowConfig: *showInfo, Update: *update}
+	return _struct.Command{Download: *bookid, Search: *search, ShowConfig: *showInfo, Update: *update}
 }
 
 func shellConsole(inputs []string) {
@@ -153,6 +152,18 @@ func main() {
 		//	fmt.Println(v.BookID)
 		//}
 		for {
+			fmt.Println("input help to see the command list:")
+			fmt.Println("input quit to quit")
+			fmt.Println("input download <bookid/url> to download book")
+			fmt.Println("input search <keyword> to search book")
+			fmt.Println("input show to show config")
+			fmt.Println("input update config to update config by config.json")
+			fmt.Println("input login <account> <password> to login account")
+			fmt.Println("input app <app app keyword> to change app type")
+			fmt.Println("input max <thread> to change max thread number")
+			fmt.Println("you can input command like this: download <bookid/url>")
+			fmt.Println("you can input non-existent command to exit the program")
+
 			spaceRe, _ := regexp.Compile(`\s+`)
 			inputs := spaceRe.Split(strings.TrimSpace(cfg.Input(">")), -1)
 			if len(inputs) > 1 {
