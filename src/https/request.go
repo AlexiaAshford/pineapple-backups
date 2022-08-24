@@ -70,15 +70,15 @@ func Request(method string, url string) ([]byte, error) {
 	return nil, errors.New("request error:" + method + "url:" + url)
 }
 
-func Get(method string, url string) []byte {
+func Get(url string) []byte {
 	if cfg.Vars.AppType == "cat" {
-		if result, ok := Request(method, url); ok == nil {
+		if result, ok := Request("POST", url); ok == nil {
 			return Encrypt.Decode(string(result), "")
 		} else {
 			fmt.Println(ok)
 		}
 	} else if cfg.Vars.AppType == "sfacg" {
-		if result, ok := Request(method, url); ok == nil {
+		if result, ok := Request("GET", url); ok == nil {
 			return result
 		} else {
 			fmt.Println(ok)
