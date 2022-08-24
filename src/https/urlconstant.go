@@ -39,12 +39,12 @@ func QueryParams(url string, ParamsData map[string]string) string {
 }
 
 const (
-	SFBookDetailedById        = "novels/%v?expand="
-	SFWebSite                 = "https://minipapi.sfacg.com/pas/mpapi/"
-	SFAccountDetailedByApi    = "user"
-	SFCatalogueDetailedById   = "novels/%v/dirs?expand=originNeedFireMoney"
-	SFContentDetailedByCid    = "Chaps/%v?expand=content&autoOrder=true"
-	SFSearchDetailedByKeyword = "search/novels/result?q=%v&size=20&page=%v&expand="
-	SFLoginByAccount          = "sessions"
+	SFBookDetailedById      = "novels/%v?expand="
+	SFWebSite               = "https://minipapi.sfacg.com/pas/mpapi/"
+	SFAccountDetailedByApi  = "user"
+	SFCatalogueDetailedById = "novels/%v/dirs?expand=originNeedFireMoney"
+	SFContentDetailedByCid  = "Chaps/%v?expand=content&autoOrder=true"
+	SFSearch                = "search/novels/result?q=%v&size=20&page=%v&expand="
+	SFLogin                 = "sessions"
 	//SFBookShelfDetailed       = "novels/%v/shelf?expand="
 )

@@ -72,13 +72,13 @@ func Request(method string, url string) ([]byte, error) {
 
 func Get(url string, structural any) any {
 	if cfg.Vars.AppType == "cat" {
-		if result, ok := Request("POST", url); ok == nil {
+		if result, ok := Request("POST", SET_URL(url)); ok == nil {
 			return JsonUnmarshal(Encrypt.Decode(string(result), ""), structural)
 		} else {
 			fmt.Println(ok)
 		}
 	} else if cfg.Vars.AppType == "sfacg" {
-		if result, ok := Request("GET", url); ok == nil {
+		if result, ok := Request("GET", SET_URL(url)); ok == nil {
 			return JsonUnmarshal(result, structural)
 		} else {
 			fmt.Println(ok)
