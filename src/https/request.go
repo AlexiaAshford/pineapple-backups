@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"sf/cfg"
 	"sf/src/hbooker/Encrypt"
+	"strings"
 )
 
 var client = &http.Client{}
@@ -21,6 +22,18 @@ func JsonUnmarshal(response []byte, Struct any) any {
 	return Struct
 }
 
+func SET_URL(url string) string {
+	switch cfg.Vars.AppType {
+	case "cat":
+		return CatWebSite + strings.Replace(url, CatWebSite, "", -1)
+	case "sfacg":
+		return SFWebSite + strings.Replace(url, SFWebSite, "", -1)
+	case "happybooker":
+		return SFWebSite + strings.Replace(url, SFWebSite, "", -1)
+	default:
+		return url
+	}
+}
 func LoginSession(url string, dataJson []byte) ([]byte, []*http.Cookie) {
 	request, err := http.NewRequest("POST", url, bytes.NewBuffer(dataJson))
 	if err != nil {
@@ -40,7 +53,6 @@ func LoginSession(url string, dataJson []byte) ([]byte, []*http.Cookie) {
 }
 
 func Request(method string, url string) ([]byte, error) {
-
 	if method != "GET" && method != "POST" && method != "PUT" {
 		panic("Error: method must be GET or POST or PUT, but now is " + method)
 	}
