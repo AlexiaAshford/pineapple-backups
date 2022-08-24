@@ -69,14 +69,15 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 
 	}
 	cfg.CurrentBook.BookInfo = books.InitBookStruct()
+	cfg.Vars.ConfigPath = path.Join(cfg.Vars.ConfigName, cfg.CurrentBook.BookInfo.NovelName+".conf")
+	cfg.Vars.OutputPath = path.Join(cfg.Vars.OutputName, cfg.CurrentBook.BookInfo.NovelName+".txt")
 	books.InitEpubFile()
-	savePath := path.Join(cfg.Vars.SaveFile, cfg.CurrentBook.BookInfo.NovelName+".txt")
-	if !cfg.Exist(savePath) {
-		cfg.Write(savePath, books.ShowBookDetailed()+"\n\n", "w")
+	if !cfg.Exist(cfg.Vars.OutputPath) {
+		cfg.Write(cfg.Vars.OutputPath, books.ShowBookDetailed()+"\n\n", "w")
 	} else {
 		books.ShowBookDetailed()
 	}
-	return Catalogue{SaveTextPath: savePath, TestBookResult: true, EpubSetting: books.EpubSetting}
+	return Catalogue{TestBookResult: true, EpubSetting: books.EpubSetting}
 
 }
 func (books *BookInits) InitBookStruct() _struct.Books {

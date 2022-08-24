@@ -2,7 +2,6 @@ package src
 
 import (
 	"fmt"
-	"path"
 	"sf/cfg"
 	"sf/epub"
 	"sf/src/boluobao"
@@ -16,8 +15,6 @@ import (
 type Catalogue struct {
 	ChapterBar     *ProgressBar
 	ChapterList    []string
-	ConfigPath     string
-	SaveTextPath   string
 	ChapterCfg     string
 	TestBookResult bool
 	contentList    map[string]string
@@ -25,24 +22,23 @@ type Catalogue struct {
 }
 
 func (catalogue *Catalogue) ReadChapterConfig() string {
-	catalogue.ConfigPath = path.Join(cfg.Vars.ConfigFile, cfg.CurrentBook.BookInfo.NovelName+".conf")
 	catalogue.contentList = make(map[string]string)
-	if !cfg.Exist(catalogue.ConfigPath) {
-		cfg.Write(catalogue.ConfigPath, "", "w")
+	if !cfg.Exist(cfg.Vars.ConfigPath) {
+		cfg.Write(cfg.Vars.ConfigPath, "", "w")
 		catalogue.ChapterCfg = ""
 	} else { // read config file
-		catalogue.ChapterCfg = cfg.Write(catalogue.ConfigPath, "", "r")
+		catalogue.ChapterCfg = cfg.Write(cfg.Vars.ConfigPath, "", "r")
 	}
-	catalogue.contentList["cache"] = cfg.Write(catalogue.SaveTextPath, "", "r")
+	catalogue.contentList["cache"] = cfg.Write(cfg.Vars.OutputPath, "", "r")
 
 	return cfg.Vars.AppType
 }
 func (catalogue *Catalogue) AddChapterConfig(chapId any) {
 	switch chapId.(type) {
 	case string:
-		cfg.Write(catalogue.ConfigPath, chapId.(string)+",", "a")
+		cfg.Write(cfg.Vars.ConfigPath, chapId.(string)+",", "a")
 	case int:
-		cfg.Write(catalogue.ConfigPath, strconv.Itoa(chapId.(int))+",", "a")
+		cfg.Write(cfg.Vars.ConfigPath, strconv.Itoa(chapId.(int))+",", "a")
 	}
 }
 
@@ -73,7 +69,7 @@ func (catalogue *Catalogue) InitCatalogue() {
 		catalogue.ChapterBar.Describe("working...")
 		catalogue.DownloadContent()
 		fmt.Printf("\nNovel:%v download complete!\n", cfg.CurrentBook.BookInfo.NovelName)
-		fmt.Println("The txt file is out put to:", catalogue.SaveTextPath)
+		fmt.Println("The txt file is out put to:", cfg.Vars.OutputPath)
 	} else {
 		fmt.Println("No chapter need to download!")
 	}
@@ -97,12 +93,12 @@ func (catalogue *Catalogue) DownloadContent() {
 		}(ChapterId)
 
 	}
-	cfg.Write(catalogue.SaveTextPath, catalogue.contentList["cache"], "w")
+	cfg.Write(cfg.Vars.OutputPath, catalogue.contentList["cache"], "w")
 	for _, ChapterId := range catalogue.ChapterList {
-		cfg.Write(catalogue.SaveTextPath, catalogue.contentList[ChapterId], "a")
+		cfg.Write(cfg.Vars.OutputPath, catalogue.contentList[ChapterId], "a")
 	}
 
-	if err := catalogue.EpubSetting.Write(strings.Replace(catalogue.SaveTextPath, ".txt", ".epub", -1)); err != nil {
+	if err := catalogue.EpubSetting.Write(strings.Replace(cfg.Vars.OutputPath, ".txt", ".epub", -1)); err != nil {
 		fmt.Println("epub error:", err)
 	}
 	catalogue.ChapterList = nil

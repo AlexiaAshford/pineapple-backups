@@ -33,15 +33,15 @@ func UpdateConfig() bool { // update config.json if necessary
 		Apps.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.291"
 		changeVar = true
 	}
-	if Vars.ConfigFile == "" || Vars.SaveFile == "" || Vars.CoverFile == "" {
-		Vars.ConfigFile, Vars.SaveFile, Vars.CoverFile = "cache", "save", "cover"
+	if Vars.ConfigName == "" || Vars.OutputName == "" || Vars.CoverFile == "" {
+		Vars.ConfigName, Vars.OutputName, Vars.CoverFile = "cache", "save", "cover"
 		changeVar = true
 	}
 	if Apps.Cat.Params.DeviceToken == "" || Apps.Cat.Params.AppVersion == "" {
 		Apps.Cat.Params.DeviceToken, Apps.Cat.Params.AppVersion = "ciweimao_", "2.9.291"
 		changeVar = true
 	}
-	Exist([]string{Vars.ConfigFile, Vars.SaveFile, Vars.CoverFile})
+	Exist([]string{Vars.ConfigName, Vars.OutputName, Vars.CoverFile})
 	return changeVar
 }
 

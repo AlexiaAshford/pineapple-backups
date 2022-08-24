@@ -11,12 +11,14 @@ type Books struct {
 	SignStatus string
 }
 type MyConfigPro struct {
-	ConfigFile      string
-	SaveFile        string
+	ConfigName      string
+	OutputName      string
 	CoverFile       string
 	AppType         string
 	MaxThreadNumber int
 	MaxRetry        int
+	OutputPath      string
+	ConfigPath      string
 }
 
 type MyAppPro struct {
