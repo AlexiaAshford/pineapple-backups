@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"sf/cfg"
 	"sf/src/hbooker/Encrypt"
+	"sf/struct/sfacg_structs"
 	"strings"
 )
 
@@ -53,7 +54,7 @@ func SET_URL(url string, params map[string]string) string {
 		return url
 	}
 }
-func Login(url string, dataJson []byte) ([]byte, []*http.Cookie) {
+func Login(url string, dataJson []byte) (*sfacg_structs.Login, []*http.Cookie) {
 	request, err := http.NewRequest("POST", SET_URL(url, nil), bytes.NewBuffer(dataJson))
 	if err != nil {
 		fmt.Printf("Login session error:%v\n", err)
@@ -65,7 +66,7 @@ func Login(url string, dataJson []byte) ([]byte, []*http.Cookie) {
 		return nil, nil
 	}
 	body, _ := io.ReadAll(response.Body)
-	return body, response.Cookies()
+	return JsonUnmarshal(body, &sfacg_structs.Login{}).(*sfacg_structs.Login), response.Cookies()
 }
 
 func Request(method string, url string) ([]byte, error) {

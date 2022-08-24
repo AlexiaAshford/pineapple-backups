@@ -10,8 +10,6 @@ import (
 	"sf/src/hbooker"
 	"sf/src/https"
 	"sf/struct"
-	"sf/struct/hbooker_structs"
-	"sf/struct/sfacg_structs"
 	"strconv"
 	"strings"
 )
@@ -21,7 +19,6 @@ type BookInits struct {
 	Index       int
 	ShowBook    bool
 	Locks       *cfg.GoLimit
-	BookData    any
 	EpubSetting *epub.Epub
 }
 
@@ -49,7 +46,15 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 	case "sfacg":
 		response := boluobao.GET_BOOK_INFORMATION(books.BookID)
 		if response.Status.HTTPCode == 200 && response.Data.NovelName != "" {
-			books.BookData = response
+			cfg.Current.Book = _struct.Books{
+				NovelName:  cfg.RegexpName(response.Data.NovelName),
+				NovelID:    strconv.Itoa(response.Data.NovelID),
+				NovelCover: response.Data.NovelCover,
+				AuthorName: response.Data.AuthorName,
+				CharCount:  strconv.Itoa(response.Data.CharCount),
+				MarkCount:  strconv.Itoa(response.Data.MarkCount),
+				SignStatus: response.Data.SignStatus,
+			}
 		} else {
 			fmt.Println(books.BookID, "is not a valid book number！\nmessage:", response.Status.Msg)
 			return Catalogue{TestBookResult: false}
@@ -57,7 +62,15 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 	case "cat":
 		response := hbooker.GET_BOOK_INFORMATION(books.BookID)
 		if response.Code == "100000" {
-			books.BookData = response.Data.BookInfo
+			cfg.Current.Book = _struct.Books{
+				NovelName:  cfg.RegexpName(response.Data.BookInfo.BookName),
+				NovelID:    response.Data.BookInfo.BookID,
+				NovelCover: response.Data.BookInfo.Cover,
+				AuthorName: response.Data.BookInfo.AuthorName,
+				CharCount:  response.Data.BookInfo.TotalWordCount,
+				MarkCount:  response.Data.BookInfo.UpdateStatus,
+				//SignStatus: result.SignStatus,
+			}
 		} else {
 			fmt.Println(books.BookID, "is not a valid book number！")
 			return Catalogue{TestBookResult: false}
@@ -66,7 +79,6 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 		panic("app type" + cfg.Vars.AppType + " is not valid!")
 
 	}
-	cfg.Current.Book = books.InitBookStruct()
 	cfg.Current.ConfigPath = path.Join(cfg.Vars.ConfigName, cfg.Current.Book.NovelName+".conf")
 	cfg.Current.OutputPath = path.Join(cfg.Vars.OutputName, cfg.Current.Book.NovelName+".txt")
 	cfg.Current.CoverPath = path.Join("cover", cfg.Current.Book.NovelName+".jpg")
@@ -78,34 +90,6 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 	}
 	return Catalogue{TestBookResult: true, EpubSetting: books.EpubSetting}
 
-}
-func (books *BookInits) InitBookStruct() _struct.Books {
-	switch books.BookData.(type) {
-	case *sfacg_structs.BookInfo:
-		result := books.BookData.(*sfacg_structs.BookInfo).Data
-		return _struct.Books{
-			NovelName:  cfg.RegexpName(result.NovelName),
-			NovelID:    strconv.Itoa(result.NovelID),
-			IsFinish:   result.IsFinish,
-			MarkCount:  strconv.Itoa(result.MarkCount),
-			NovelCover: result.NovelCover,
-			AuthorName: result.AuthorName,
-			CharCount:  strconv.Itoa(result.CharCount),
-			SignStatus: result.SignStatus,
-		}
-	case hbooker_structs.BookInfo:
-		result := books.BookData.(hbooker_structs.BookInfo)
-		return _struct.Books{
-			NovelName:  cfg.RegexpName(result.BookName),
-			NovelID:    result.BookID,
-			NovelCover: result.Cover,
-			AuthorName: result.AuthorName,
-			CharCount:  result.TotalWordCount,
-			MarkCount:  result.UpdateStatus,
-			//SignStatus: result.SignStatus,
-		}
-	}
-	return _struct.Books{}
 }
 
 func (books *BookInits) ShowBookDetailed() string {

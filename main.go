@@ -151,19 +151,19 @@ func main() {
 		//	fmt.Println(v.BookName)
 		//	fmt.Println(v.BookID)
 		//}
+		fmt.Println("input help to see the command list:")
+		fmt.Println("input quit to quit")
+		fmt.Println("input download <bookid/url> to download book")
+		fmt.Println("input search <keyword> to search book")
+		fmt.Println("input show to show config")
+		fmt.Println("input update config to update config by config.json")
+		fmt.Println("input login <account> <password> to login account")
+		fmt.Println("input app <app app keyword> to change app type")
+		fmt.Println("input max <thread> to change max thread number")
+		fmt.Println("you can input command like this: download <bookid/url>")
+		fmt.Println("you can input non-existent command to exit the program")
+		src.TestAppTypeAndAccount()
 		for {
-			fmt.Println("input help to see the command list:")
-			fmt.Println("input quit to quit")
-			fmt.Println("input download <bookid/url> to download book")
-			fmt.Println("input search <keyword> to search book")
-			fmt.Println("input show to show config")
-			fmt.Println("input update config to update config by config.json")
-			fmt.Println("input login <account> <password> to login account")
-			fmt.Println("input app <app app keyword> to change app type")
-			fmt.Println("input max <thread> to change max thread number")
-			fmt.Println("you can input command like this: download <bookid/url>")
-			fmt.Println("you can input non-existent command to exit the program")
-
 			spaceRe, _ := regexp.Compile(`\s+`)
 			inputs := spaceRe.Split(strings.TrimSpace(cfg.Input(">")), -1)
 			if len(inputs) > 1 {
@@ -171,7 +171,6 @@ func main() {
 			} else if inputs[0] != "" {
 				fmt.Println("you must input command, like: sf command")
 			}
-			os.Exit(1)
 		}
 	} else {
 		var CommandLine []string

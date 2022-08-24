@@ -36,9 +36,8 @@ func GET_SEARCH(keyword string, page int) *sfacg_structs.Search {
 func LOGIN_ACCOUNT(username, password string) *sfacg_structs.Login {
 	params := fmt.Sprintf(`{"username":"%s", "password": "%s"}`, username, password)
 	response, Cookie := req.Login(req.SET_URL("sessions", nil), []byte(params))
-	result := req.JsonUnmarshal(response, &sfacg_structs.Login{}).(*sfacg_structs.Login)
 	for _, cookie := range Cookie {
-		result.Cookie += cookie.Name + "=" + cookie.Value + ";"
+		response.Cookie += cookie.Name + "=" + cookie.Value + ";"
 	}
-	return result
+	return response
 }
