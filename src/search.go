@@ -10,7 +10,7 @@ import (
 
 func CatSearchDetailed(searchName string, page int) []string {
 	var searchResult []string
-	response := hbooker.Search(searchName, page)
+	response := hbooker.GET_SEARCH(searchName, page)
 	if response.Code != "100000" || len(response.Data.BookList) == 0 {
 		fmt.Println("search failed, code:", response.Code)
 		return nil

@@ -11,22 +11,22 @@ import (
 	"time"
 )
 
-func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
+func GET_DIVISION(BookId string) []structs.DivisionList {
 	response := req.Get("book/get_division_list", &structs.DivisionStruct{}, map[string]string{"book_id": BookId})
 	return response.(*structs.DivisionStruct).Data.DivisionList
 }
 
-func GetCatalogueByDivisionId(DivisionId string) []structs.ChapterList {
+func GET_CATALOGUE(DivisionId string) []structs.ChapterList {
 	params := map[string]string{"division_id": DivisionId}
 	return req.Get("chapter/get_updated_chapter_by_division_id", &structs.ChapterStruct{}, params).(*structs.ChapterStruct).Data.ChapterList
 }
 
-func GetBookDetailById(bid string) *structs.DetailStruct {
+func GET_BOOK_INFORMATION(bid string) *structs.DetailStruct {
 	return req.Get("book/get_info_by_id", &structs.DetailStruct{}, map[string]string{"book_id": bid}).(*structs.DetailStruct)
 
 }
 
-func Search(KeyWord string, page int) *structs.SearchStruct {
+func GET_SEARCH(KeyWord string, page int) *structs.SearchStruct {
 	params := map[string]string{"count": "10", "page": strconv.Itoa(page), "category_index": "0", "key": KeyWord}
 	return req.Get("bookcity/get_filter_search_book_list", &structs.SearchStruct{}, params).(*structs.SearchStruct)
 }

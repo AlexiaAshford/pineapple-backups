@@ -26,7 +26,6 @@ type BookInits struct {
 }
 
 func (books *BookInits) InitEpubFile() {
-
 	AddImage := true                                             // add image to epub file
 	books.EpubSetting = epub.NewEpub(cfg.Current.Book.NovelName) // set epub setting and add section
 	books.EpubSetting.SetAuthor(cfg.Current.Book.AuthorName)     // set author
@@ -56,7 +55,7 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 			return Catalogue{TestBookResult: false}
 		}
 	case "cat":
-		response := hbooker.GetBookDetailById(books.BookID)
+		response := hbooker.GET_BOOK_INFORMATION(books.BookID)
 		if response.Code == "100000" {
 			books.BookData = response.Data.BookInfo
 		} else {

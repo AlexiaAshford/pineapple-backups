@@ -54,9 +54,9 @@ func (catalogue *Catalogue) InitCatalogue() {
 			}
 		}
 	case "cat":
-		for index, division := range hbooker.GetDivisionIdByBookId(cfg.Current.Book.NovelID) {
+		for index, division := range hbooker.GET_DIVISION(cfg.Current.Book.NovelID) {
 			fmt.Printf("第%v卷\t\t%v\n", index+1, division.DivisionName)
-			for _, chapter := range hbooker.GetCatalogueByDivisionId(division.DivisionID) {
+			for _, chapter := range hbooker.GET_CATALOGUE(division.DivisionID) {
 				if chapter.IsValid == "1" && !cfg.TestKeyword(catalogue.ChapterCfg, chapter.ChapterID) {
 					catalogue.ChapterList = append(catalogue.ChapterList, chapter.ChapterID)
 				}
@@ -64,6 +64,7 @@ func (catalogue *Catalogue) InitCatalogue() {
 		}
 
 	}
+
 	if len(catalogue.ChapterList) > 0 {
 		catalogue.ChapterBar = New(len(catalogue.ChapterList))
 		catalogue.ChapterBar.Describe("working...")
