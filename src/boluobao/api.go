@@ -2,14 +2,13 @@ package boluobao
 
 import (
 	"fmt"
-	url_ "net/url"
 	"sf/cfg"
 	req "sf/src/https"
 	"sf/struct/sfacg_structs"
 )
 
-func GetBookDetailedById(bookId string) *sfacg_structs.BookInfo {
-	return req.Get(fmt.Sprintf(req.SFBookDetailedById, bookId), &sfacg_structs.BookInfo{}, nil).(*sfacg_structs.BookInfo)
+func GetBookDetailedById(NovelId string) *sfacg_structs.BookInfo {
+	return req.Get(req.BookInfoAPI(NovelId), &sfacg_structs.BookInfo{}, nil).(*sfacg_structs.BookInfo)
 }
 
 func GetAccountDetailedByApi() *sfacg_structs.Account {
@@ -17,7 +16,7 @@ func GetAccountDetailedByApi() *sfacg_structs.Account {
 }
 
 func GetCatalogue(NovelID string) *sfacg_structs.Catalogue {
-	return req.Get(fmt.Sprintf(req.SFCatalogueDetailedById, NovelID), &sfacg_structs.Catalogue{}, nil).(*sfacg_structs.Catalogue)
+	return req.Get(req.CatalogueAPI(NovelID), &sfacg_structs.Catalogue{}, nil).(*sfacg_structs.Catalogue)
 }
 
 func GetContentDetailedByCid(cid string) (*sfacg_structs.Content, bool) {
@@ -33,7 +32,7 @@ func GetContentDetailedByCid(cid string) (*sfacg_structs.Content, bool) {
 }
 
 func GetSearchDetailedByKeyword(keyword string, page int) *sfacg_structs.Search {
-	return req.Get(fmt.Sprintf(req.SFSearch, url_.QueryEscape(keyword), page), &sfacg_structs.Search{}, nil).(*sfacg_structs.Search)
+	return req.Get(req.SearchAPI(keyword, page), &sfacg_structs.Search{}, nil).(*sfacg_structs.Search)
 
 }
 

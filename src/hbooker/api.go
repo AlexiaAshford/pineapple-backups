@@ -17,18 +17,18 @@ func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
 }
 
 func GetCatalogueByDivisionId(DivisionId string) []structs.ChapterList {
-	response := req.Get(req.CatalogueDetailedByDivisionId, &structs.ChapterStruct{}, map[string]string{"division_id": DivisionId})
+	response := req.Get(req.CatalogueAPI(""), &structs.ChapterStruct{}, map[string]string{"division_id": DivisionId})
 	return response.(*structs.ChapterStruct).Data.ChapterList
 }
 
 func GetBookDetailById(bid string) *structs.DetailStruct {
-	return req.Get(req.CatBookDetailedById, &structs.DetailStruct{}, map[string]string{"book_id": bid}).(*structs.DetailStruct)
+	return req.Get(req.BookInfoAPI(""), &structs.DetailStruct{}, map[string]string{"book_id": bid}).(*structs.DetailStruct)
 
 }
 
 func Search(KeyWord string, page int) *structs.SearchStruct {
 	params := map[string]string{"count": "10", "page": strconv.Itoa(page), "category_index": "0", "key": KeyWord}
-	return req.Get(req.CatSearchDetailed, &structs.SearchStruct{}, params).(*structs.SearchStruct)
+	return req.Get(req.SearchAPI("", 0), &structs.SearchStruct{}, params).(*structs.SearchStruct)
 }
 
 func Login(account, password string) {

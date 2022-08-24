@@ -26,10 +26,10 @@ type BookInits struct {
 }
 
 func (books *BookInits) InitEpubFile() {
-	// set epub setting and add section
-	AddImage := true
-	books.EpubSetting = epub.NewEpub(cfg.Current.Book.NovelName)
-	books.EpubSetting.SetAuthor(cfg.Current.Book.AuthorName) // set author
+
+	AddImage := true                                             // add image to epub file
+	books.EpubSetting = epub.NewEpub(cfg.Current.Book.NovelName) // set epub setting and add section
+	books.EpubSetting.SetAuthor(cfg.Current.Book.AuthorName)     // set author
 	if !cfg.Exist(cfg.Current.CoverPath) {
 		if reader := https.GetCover(cfg.Current.Book.NovelCover); reader == nil {
 			fmt.Println("download cover failed!")
