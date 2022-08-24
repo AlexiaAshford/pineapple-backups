@@ -41,8 +41,9 @@ type CatApp struct {
 	UserAgent string `json:"user-agent"`
 }
 type MyBookInfoJsonPro struct {
-	BookInfo     Books
+	Book         Books
 	OutputPath   string
 	ConfigPath   string
+	CoverPath    string
 	BookInfoList []Books
 }

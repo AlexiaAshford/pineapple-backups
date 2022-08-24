@@ -45,7 +45,7 @@ func (catalogue *Catalogue) AddChapterConfig(chapId any) {
 func (catalogue *Catalogue) InitCatalogue() {
 	switch catalogue.ReadChapterConfig() {
 	case "sfacg":
-		for divisionIndex, division := range boluobao.GetCatalogue(cfg.Current.BookInfo.NovelID).Data.VolumeList {
+		for divisionIndex, division := range boluobao.GetCatalogue(cfg.Current.Book.NovelID).Data.VolumeList {
 			fmt.Printf("第%v卷\t\t%v\n", divisionIndex+1, division.Title)
 			for _, chapter := range division.ChapterList {
 				if chapter.OriginNeedFireMoney == 0 && !cfg.TestKeyword(catalogue.ChapterCfg, chapter.ChapID) {
@@ -54,7 +54,7 @@ func (catalogue *Catalogue) InitCatalogue() {
 			}
 		}
 	case "cat":
-		for index, division := range hbooker.GetDivisionIdByBookId(cfg.Current.BookInfo.NovelID) {
+		for index, division := range hbooker.GetDivisionIdByBookId(cfg.Current.Book.NovelID) {
 			fmt.Printf("第%v卷\t\t%v\n", index+1, division.DivisionName)
 			for _, chapter := range hbooker.GetCatalogueByDivisionId(division.DivisionID) {
 				if chapter.IsValid == "1" && !cfg.TestKeyword(catalogue.ChapterCfg, chapter.ChapterID) {
@@ -68,7 +68,7 @@ func (catalogue *Catalogue) InitCatalogue() {
 		catalogue.ChapterBar = New(len(catalogue.ChapterList))
 		catalogue.ChapterBar.Describe("working...")
 		catalogue.DownloadContent()
-		fmt.Printf("\nNovel:%v download complete!\n", cfg.Current.BookInfo.NovelName)
+		fmt.Printf("\nNovel:%v download complete!\n", cfg.Current.Book.NovelName)
 		fmt.Println("The txt file is out put to:", cfg.Current.OutputPath)
 	} else {
 		fmt.Println("No chapter need to download!")

@@ -28,20 +28,19 @@ type BookInits struct {
 func (books *BookInits) InitEpubFile() {
 	// set epub setting and add section
 	AddImage := true
-	books.EpubSetting = epub.NewEpub(cfg.Current.BookInfo.NovelName)
-	books.EpubSetting.SetAuthor(cfg.Current.BookInfo.AuthorName) // set author
-	coverPath := path.Join("cover", cfg.Current.BookInfo.NovelName+".jpg")
-	if !cfg.Exist(coverPath) {
-		if reader := https.GetCover(cfg.Current.BookInfo.NovelCover); reader == nil {
+	books.EpubSetting = epub.NewEpub(cfg.Current.Book.NovelName)
+	books.EpubSetting.SetAuthor(cfg.Current.Book.AuthorName) // set author
+	if !cfg.Exist(cfg.Current.CoverPath) {
+		if reader := https.GetCover(cfg.Current.Book.NovelCover); reader == nil {
 			fmt.Println("download cover failed!")
 			AddImage = false
 		} else {
-			_ = os.WriteFile(coverPath, reader, 0666)
+			_ = os.WriteFile(cfg.Current.CoverPath, reader, 0666)
 		}
 	}
 	if AddImage {
-		_, _ = books.EpubSetting.AddImage(coverPath, "")
-		books.EpubSetting.SetCover(strings.Replace(coverPath, "cover", "../images", -1), "")
+		_, _ = books.EpubSetting.AddImage(cfg.Current.CoverPath, "")
+		books.EpubSetting.SetCover(strings.Replace(cfg.Current.CoverPath, "cover", "../images", -1), "")
 	}
 
 }
@@ -68,9 +67,10 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 		panic("app type" + cfg.Vars.AppType + " is not valid!")
 
 	}
-	cfg.Current.BookInfo = books.InitBookStruct()
-	cfg.Current.ConfigPath = path.Join(cfg.Vars.ConfigName, cfg.Current.BookInfo.NovelName+".conf")
-	cfg.Current.OutputPath = path.Join(cfg.Vars.OutputName, cfg.Current.BookInfo.NovelName+".txt")
+	cfg.Current.Book = books.InitBookStruct()
+	cfg.Current.ConfigPath = path.Join(cfg.Vars.ConfigName, cfg.Current.Book.NovelName+".conf")
+	cfg.Current.OutputPath = path.Join(cfg.Vars.OutputName, cfg.Current.Book.NovelName+".txt")
+	cfg.Current.CoverPath = path.Join("cover", cfg.Current.Book.NovelName+".jpg")
 	books.InitEpubFile()
 	if !cfg.Exist(cfg.Current.OutputPath) {
 		cfg.Write(cfg.Current.OutputPath, books.ShowBookDetailed()+"\n\n", "w")
@@ -112,9 +112,9 @@ func (books *BookInits) InitBookStruct() _struct.Books {
 func (books *BookInits) ShowBookDetailed() string {
 	briefIntroduction := fmt.Sprintf(
 		"Name: %v\nBookID: %v\nAuthor: %v\nCount: %v\nMark: %v\n",
-		cfg.Current.BookInfo.NovelName, cfg.Current.BookInfo.NovelID,
-		cfg.Current.BookInfo.AuthorName, cfg.Current.BookInfo.CharCount,
-		cfg.Current.BookInfo.MarkCount,
+		cfg.Current.Book.NovelName, cfg.Current.Book.NovelID,
+		cfg.Current.Book.AuthorName, cfg.Current.Book.CharCount,
+		cfg.Current.Book.MarkCount,
 	)
 	if books.ShowBook {
 		fmt.Println(briefIntroduction)
