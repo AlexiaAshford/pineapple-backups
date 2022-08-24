@@ -48,7 +48,7 @@ func (books *BookInits) InitEpubFile() {
 func (books *BookInits) DownloadBookInit() Catalogue {
 	switch cfg.Vars.AppType {
 	case "sfacg":
-		response := boluobao.GetBookDetailedById(books.BookID)
+		response := boluobao.GET_BOOK_INFORMATION(books.BookID)
 		if response.Status.HTTPCode == 200 && response.Data.NovelName != "" {
 			books.BookData = response
 		} else {

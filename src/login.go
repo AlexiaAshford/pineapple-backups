@@ -8,7 +8,7 @@ import (
 )
 
 func AccountDetailed() string {
-	response := boluobao.GetAccountDetailedByApi()
+	response := boluobao.GET_ACCOUNT_INFORMATION()
 	if response.Status.HTTPCode == 200 {
 		return fmt.Sprintf("account name:%v\taccount id:%v",
 			response.Data.NickName, response.Data.AccountID,

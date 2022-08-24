@@ -26,7 +26,7 @@ func CatSearchDetailed(searchName string, page int) []string {
 
 func SfacgSearchDetailed(keyword string, page int) []string {
 	var searchResult []string
-	response := boluobao.GetSearchDetailedByKeyword(keyword, page)
+	response := boluobao.GET_SEARCH(keyword, page)
 	if response.Status.HTTPCode != 200 || len(response.Data.Novels) == 0 {
 		return nil // if the search result is empty
 	} else {

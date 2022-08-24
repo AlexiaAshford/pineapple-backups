@@ -28,7 +28,7 @@ func GetBookDetailById(bid string) *structs.DetailStruct {
 
 func Search(KeyWord string, page int) *structs.SearchStruct {
 	params := map[string]string{"count": "10", "page": strconv.Itoa(page), "category_index": "0", "key": KeyWord}
-	return req.Get("search/novels/result", &structs.SearchStruct{}, params).(*structs.SearchStruct)
+	return req.Get("bookcity/get_filter_search_book_list", &structs.SearchStruct{}, params).(*structs.SearchStruct)
 }
 
 func Login(account, password string) {

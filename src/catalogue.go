@@ -45,7 +45,7 @@ func (catalogue *Catalogue) AddChapterConfig(chapId any) {
 func (catalogue *Catalogue) InitCatalogue() {
 	switch catalogue.ReadChapterConfig() {
 	case "sfacg":
-		for divisionIndex, division := range boluobao.GetCatalogue(cfg.Current.Book.NovelID).Data.VolumeList {
+		for divisionIndex, division := range boluobao.GET_CATALOGUE(cfg.Current.Book.NovelID).Data.VolumeList {
 			fmt.Printf("第%v卷\t\t%v\n", divisionIndex+1, division.Title)
 			for _, chapter := range division.ChapterList {
 				if chapter.OriginNeedFireMoney == 0 && !cfg.TestKeyword(catalogue.ChapterCfg, chapter.ChapID) {
@@ -80,13 +80,18 @@ func (catalogue *Catalogue) DownloadContent() {
 
 		func(ChapterId string) {
 			if cfg.Vars.AppType == "sfacg" {
-				if response, ok := boluobao.GetContentDetailedByCid(ChapterId); ok {
-					catalogue.makeContentInformation(response)
+				for retry := 0; retry < cfg.Vars.MaxRetry; retry++ {
+					response := boluobao.GET_CONTENT(ChapterId)
+					if response.Status.HTTPCode == 200 {
+						catalogue.makeContentInformation(response)
+					} else {
+						fmt.Println("Error:", response.Status.Msg)
+					}
 				}
-			} else if cfg.Vars.AppType == "cat" {
 
-				ChapterKey := hbooker.GetKeyByCid(ChapterId)
-				if response, ok := hbooker.GetContent(ChapterId, ChapterKey); ok {
+			} else if cfg.Vars.AppType == "cat" {
+				chapter_key := hbooker.GetKeyByCid(ChapterId)
+				if response, ok := hbooker.GetContent(ChapterId, chapter_key); ok {
 					catalogue.makeContentInformation(response)
 				}
 			} else {
