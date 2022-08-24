@@ -32,9 +32,7 @@ func GetSC(g *Geetest) int64 {
 	w := g.CalW(text, false)
 	res, err := client.R().
 		SetHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64").
-		SetQueryParam("gt", g.GT).
-		SetQueryParam("challenge", g.Challenge).
-		SetQueryParam("w", w).
+		SetQueryParam("gt", g.GT).SetQueryParam("challenge", g.Challenge).SetQueryParam("w", w).
 		Get(url)
 	if err != nil {
 		color.Errorln("StepOne Error: ", err)
