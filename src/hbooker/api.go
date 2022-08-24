@@ -12,29 +12,28 @@ import (
 )
 
 func GetDivisionIdByBookId(BookId string) []structs.DivisionList {
-	url := req.QueryParams(req.CatDivisionIdByBookId, map[string]string{"book_id": BookId})
-	return req.Get(url, &structs.DivisionStruct{}).(*structs.DivisionStruct).Data.DivisionList
+	response := req.Get(req.CatDivisionIdByBookId, &structs.DivisionStruct{}, map[string]string{"book_id": BookId})
+	return response.(*structs.DivisionStruct).Data.DivisionList
 }
 
 func GetCatalogueByDivisionId(DivisionId string) []structs.ChapterList {
-	url := req.QueryParams(req.CatalogueDetailedByDivisionId, map[string]string{"division_id": DivisionId})
-	return req.Get(url, &structs.ChapterStruct{}).(*structs.ChapterStruct).Data.ChapterList
+	response := req.Get(req.CatalogueDetailedByDivisionId, &structs.ChapterStruct{}, map[string]string{"division_id": DivisionId})
+	return response.(*structs.ChapterStruct).Data.ChapterList
 }
 
 func GetBookDetailById(bid string) *structs.DetailStruct {
-	url := req.QueryParams(req.CatBookDetailedById, map[string]string{"book_id": bid})
-	return req.Get(url, &structs.DetailStruct{}).(*structs.DetailStruct)
+	return req.Get(req.CatBookDetailedById, &structs.DetailStruct{}, map[string]string{"book_id": bid}).(*structs.DetailStruct)
 
 }
 
 func Search(KeyWord string, page int) *structs.SearchStruct {
 	params := map[string]string{"count": "10", "page": strconv.Itoa(page), "category_index": "0", "key": KeyWord}
-	return req.Get(req.QueryParams(req.CatSearchDetailed, params), &structs.SearchStruct{}).(*structs.SearchStruct)
+	return req.Get(req.CatSearchDetailed, &structs.SearchStruct{}, params).(*structs.SearchStruct)
 }
 
 func Login(account, password string) {
-	url := req.QueryParams(req.CatLoginByAccount, map[string]string{"login_name": account, "password": password})
-	result := req.Get(url, &structs.LoginStruct{}).(*structs.LoginStruct)
+	response := req.Get(req.CatLoginByAccount, &structs.LoginStruct{}, map[string]string{"login_name": account, "password": password})
+	result := response.(*structs.LoginStruct)
 	if result.Code == "100000" {
 		cfg.Apps.Cat.Params.LoginToken = result.Data.LoginToken
 		cfg.Apps.Cat.Params.Account = result.Data.ReaderInfo.Account
@@ -45,7 +44,7 @@ func Login(account, password string) {
 }
 
 func UseGeetest() *structs.GeetestStruct {
-	return req.Get(req.CatWebSite+req.CatUseGeetestSignup, &structs.GeetestStruct{}).(*structs.GeetestStruct)
+	return req.Get(req.CatUseGeetestSignup, &structs.GeetestStruct{}, nil).(*structs.GeetestStruct)
 }
 
 func GeetestRegister(userID string) (string, string) {
@@ -68,24 +67,23 @@ func TestGeetest(userID string) {
 }
 
 func GetRecommend() *structs.RecommendStruct {
-	url := req.QueryParams(req.CatRecommend, map[string]string{"theme_type": "NORMAL", "tab_type": "200"})
-	return req.Get(url, &structs.RecommendStruct{}).(*structs.RecommendStruct)
+	response := req.Get(req.CatRecommend, &structs.RecommendStruct{}, map[string]string{"theme_type": "NORMAL", "tab_type": "200"})
+	return response.(*structs.RecommendStruct)
 }
 func GetChangeRecommend() []structs.ChangeBookList {
 	bookIdList := "100250589,100283902,100186621,100287528,100309123,100325245"
-	url := req.QueryParams(req.CatChangeRecommend, map[string]string{"book_id": bookIdList, "from_module_name": "长篇好书"})
-	return req.Get(url, &structs.ChangeRecommendStruct{}).(*structs.ChangeRecommendStruct).Data.BookList
+	response := req.Get(req.CatChangeRecommend, &structs.ChangeRecommendStruct{}, map[string]string{"book_id": bookIdList, "from_module_name": "长篇好书"})
+	return response.(*structs.ChangeRecommendStruct).Data.BookList
 }
 
 func GetKeyByCid(chapterId string) string {
-	url := req.QueryParams(req.CatChapterKeyByCid, map[string]string{"chapter_id": chapterId})
-	return req.Get(url, &structs.KeyStruct{}).(*structs.KeyStruct).Data.Command
+	return req.Get(req.CatChapterKeyByCid, &structs.KeyStruct{}, map[string]string{"chapter_id": chapterId}).(*structs.KeyStruct).Data.Command
 }
 
 func GetContent(chapterId string) (*structs.ContentStruct, bool) {
 	key := GetKeyByCid(chapterId)
-	url := req.QueryParams(req.CatContentDetailedByCid, map[string]string{"chapter_id": chapterId, "chapter_command": key})
-	result := req.Get(url, &structs.ContentStruct{}).(*structs.ContentStruct)
+	params := map[string]string{"chapter_id": chapterId, "chapter_command": key}
+	result := req.Get(req.CatContentDetailedByCid, &structs.ContentStruct{}, params).(*structs.ContentStruct)
 	for retry := 0; retry < cfg.Vars.MaxRetry; retry++ {
 		if result.Code == "100000" {
 			TxtContent := Encrypt.Decode(result.Data.ChapterInfo.TxtContent, key)

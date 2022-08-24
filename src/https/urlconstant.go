@@ -1,10 +1,5 @@
 package https
 
-import (
-	"fmt"
-	"sf/cfg"
-)
-
 const (
 	CatalogueDetailedByDivisionId = "chapter/get_updated_chapter_by_division_id"
 	CatDivisionIdByBookId         = "book/get_division_list"
@@ -19,24 +14,6 @@ const (
 	CatGeetestFirstRegister       = "signup/geetest_first_register"
 	CatLoginByAccount             = "signup/login"
 )
-
-// QueryParams Struct to map
-func QueryParams(url string, ParamsData map[string]string) string {
-	var Params string
-	queryRequisite := map[string]interface{}{
-		"login_token":  cfg.Apps.Cat.Params.LoginToken,
-		"account":      cfg.Apps.Cat.Params.Account,
-		"app_version":  cfg.Apps.Cat.Params.AppVersion,
-		"device_token": cfg.Apps.Cat.Params.DeviceToken,
-	}
-	for k, v := range ParamsData {
-		Params += fmt.Sprintf("&%s=%s", k, v)
-	}
-	for k, v := range queryRequisite {
-		Params += fmt.Sprintf("&%s=%s", k, v)
-	}
-	return CatWebSite + url + "?" + Params
-}
 
 const (
 	SFBookDetailedById      = "novels/%v?expand="

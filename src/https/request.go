@@ -22,14 +22,31 @@ func JsonUnmarshal(response []byte, Struct any) any {
 	return Struct
 }
 
-func SET_URL(url string) string {
+func QueryParams(url string, ParamsData map[string]string) string {
+	var Params string
+	queryRequisite := map[string]interface{}{
+		"login_token":  cfg.Apps.Cat.Params.LoginToken,
+		"account":      cfg.Apps.Cat.Params.Account,
+		"app_version":  cfg.Apps.Cat.Params.AppVersion,
+		"device_token": cfg.Apps.Cat.Params.DeviceToken,
+	}
+	for k, v := range ParamsData {
+		Params += fmt.Sprintf("&%s=%s", k, v)
+	}
+	for k, v := range queryRequisite {
+		Params += fmt.Sprintf("&%s=%s", k, v)
+	}
+	return url + "?" + Params
+}
+
+func SET_URL(url string, params map[string]string) string {
 	switch cfg.Vars.AppType {
 	case "cat":
-		return CatWebSite + strings.Replace(url, CatWebSite, "", -1)
+		return CatWebSite + strings.Replace(QueryParams(url, params), CatWebSite, "", -1)
 	case "sfacg":
 		return SFWebSite + strings.Replace(url, SFWebSite, "", -1)
 	case "happybooker":
-		return SFWebSite + strings.Replace(url, SFWebSite, "", -1)
+		return CatWebSite + strings.Replace(QueryParams(url, params), CatWebSite, "", -1)
 	default:
 		return url
 	}
@@ -70,15 +87,15 @@ func Request(method string, url string) ([]byte, error) {
 	return nil, errors.New("request error:" + method + "url:" + url)
 }
 
-func Get(url string, structural any) any {
+func Get(url string, structural any, params map[string]string) any {
 	if cfg.Vars.AppType == "cat" {
-		if result, ok := Request("POST", SET_URL(url)); ok == nil {
+		if result, ok := Request("POST", SET_URL(url, params)); ok == nil {
 			return JsonUnmarshal(Encrypt.Decode(string(result), ""), structural)
 		} else {
 			fmt.Println(ok)
 		}
 	} else if cfg.Vars.AppType == "sfacg" {
-		if result, ok := Request("GET", SET_URL(url)); ok == nil {
+		if result, ok := Request("GET", SET_URL(url, params)); ok == nil {
 			return JsonUnmarshal(result, structural)
 		} else {
 			fmt.Println(ok)
