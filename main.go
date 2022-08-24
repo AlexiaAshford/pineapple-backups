@@ -9,29 +9,46 @@ import (
 	"sf/src"
 	"sf/struct"
 	"strings"
+	"time"
 )
 
-func shellBookDownload(downloadId any) {
-	switch downloadId.(type) {
-	case string:
-		start := src.BookInits{BookID: downloadId.(string), Index: 0, Locks: nil, ShowBook: true}
-		catalogues := start.DownloadBookInit() // get book catalogues
-		if catalogues.TestBookResult {
-			catalogues.InitCatalogue()
-		}
-	case []string:
-		Locks := cfg.NewGoLimit(7)
-		for BookIndex, BookId := range downloadId.([]string) {
-			Locks.Add()
-			start := src.BookInits{BookID: BookId, Index: BookIndex, Locks: Locks, ShowBook: true}
-			catalogues := start.DownloadBookInit() // get book catalogues
-			if catalogues.TestBookResult {
-				catalogues.InitCatalogue()
-			}
-		}
-		Locks.WaitZero() // wait for all goroutines to finish
+func shellBookDownload(book_id any) bool {
+	if book_id == "" {
+		fmt.Println("input book id or url is empty, please input again:")
+		return false
 	}
-	os.Exit(0) // exit the program if no error
+	start := src.BookInits{BookID: book_id.(string), Index: 0, Locks: nil, ShowBook: true}
+	catalogue := start.SetBookInfo() // get book catalogues
+	if !catalogue.TestBookResult {
+		return false
+	}
+	catalogue.GetDownloadsList()
+	if len(cfg.Current.DownloadList) > 0 {
+		fmt.Println(len(cfg.Current.DownloadList), " chapters will be downloaded.")
+		catalogue.ChapterBar = src.New(len(cfg.Current.DownloadList))
+		working_now := time.Now() // 开始时间
+		catalogue.ChapterBar.Describe("working...")
+
+		for _, chapter_id := range cfg.Current.DownloadList {
+			catalogue.DownloadContent(chapter_id)
+		}
+		fmt.Println(" download content:", time.Since(working_now)) // 从开始到当前所消耗的时间
+		bT := time.Now()                                           // 开始时间
+		fmt.Printf("\nNovel:%v download complete!\n", cfg.Current.Book.NovelName)
+
+		catalogue.MergeFiles()
+		fmt.Println("write cache: ", time.Since(bT)) // 从开始到当前所消耗的时间
+		bT = time.Now()                              // 开始时间
+		if err := catalogue.EpubSetting.Write(strings.Replace(cfg.Current.OutputPath, ".txt", ".epub", -1)); err != nil {
+			fmt.Println("epub error:", err)
+		}
+		fmt.Println("write epub: ", time.Since(bT)) // 从开始到当前所消耗的时间
+		cfg.Current.DownloadList = nil
+	} else {
+		catalogue.MergeFiles()
+		fmt.Println("No chapter need to download!")
+	}
+	return true
 }
 
 func shellLoginAccount(inputs []string) bool {
