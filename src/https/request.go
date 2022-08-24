@@ -24,16 +24,18 @@ func JsonUnmarshal(response []byte, Struct any) any {
 
 func QueryParams(url string, ParamsData map[string]string) string {
 	var Params string
-	queryRequisite := map[string]interface{}{
-		"login_token":  cfg.Apps.Cat.Params.LoginToken,
-		"account":      cfg.Apps.Cat.Params.Account,
-		"app_version":  cfg.Apps.Cat.Params.AppVersion,
-		"device_token": cfg.Apps.Cat.Params.DeviceToken,
+	if cfg.Vars.AppType == "cat" {
+		queryRequisite := map[string]interface{}{
+			"login_token":  cfg.Apps.Cat.Params.LoginToken,
+			"account":      cfg.Apps.Cat.Params.Account,
+			"app_version":  cfg.Apps.Cat.Params.AppVersion,
+			"device_token": cfg.Apps.Cat.Params.DeviceToken,
+		}
+		for k, v := range queryRequisite {
+			Params += fmt.Sprintf("&%s=%s", k, v)
+		}
 	}
 	for k, v := range ParamsData {
-		Params += fmt.Sprintf("&%s=%s", k, v)
-	}
-	for k, v := range queryRequisite {
 		Params += fmt.Sprintf("&%s=%s", k, v)
 	}
 	return url + "?" + Params
@@ -44,7 +46,7 @@ func SET_URL(url string, params map[string]string) string {
 	case "cat":
 		return CatWebSite + strings.Replace(QueryParams(url, params), CatWebSite, "", -1)
 	case "sfacg":
-		return SFWebSite + strings.Replace(url, SFWebSite, "", -1)
+		return SFWebSite + strings.Replace(QueryParams(url, params), SFWebSite, "", -1)
 	case "happybooker":
 		return CatWebSite + strings.Replace(QueryParams(url, params), CatWebSite, "", -1)
 	default:

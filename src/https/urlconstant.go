@@ -2,7 +2,6 @@ package https
 
 import (
 	"fmt"
-	url_ "net/url"
 	"sf/cfg"
 )
 
@@ -26,13 +25,12 @@ const (
 	//SFBookShelfDetailed       = "novels/%v/shelf?expand="
 )
 
-func SearchAPI(keyWord string, page int) string {
-	//params := map[string]string{"q": url_.QueryEscape(keyWord), "size": "20", "page": strconv.Itoa(page)}
+func SearchAPI() string {
 	switch cfg.Vars.AppType {
 	case "cat":
 		return "bookcity/get_filter_search_book_list"
 	case "sfacg":
-		return fmt.Sprintf("search/novels/result?q=%v&size=20&page=%v&expand=", url_.QueryEscape(keyWord), page)
+		return "search/novels/result"
 	}
 	return ""
 }

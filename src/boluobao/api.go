@@ -2,9 +2,11 @@ package boluobao
 
 import (
 	"fmt"
+	url_ "net/url"
 	"sf/cfg"
 	req "sf/src/https"
 	"sf/struct/sfacg_structs"
+	"strconv"
 )
 
 func GetBookDetailedById(NovelId string) *sfacg_structs.BookInfo {
@@ -32,7 +34,8 @@ func GetContentDetailedByCid(cid string) (*sfacg_structs.Content, bool) {
 }
 
 func GetSearchDetailedByKeyword(keyword string, page int) *sfacg_structs.Search {
-	return req.Get(req.SearchAPI(keyword, page), &sfacg_structs.Search{}, nil).(*sfacg_structs.Search)
+	params := map[string]string{"q": url_.QueryEscape(keyword), "size": "20", "page": strconv.Itoa(page)}
+	return req.Get(req.SearchAPI(), &sfacg_structs.Search{}, params).(*sfacg_structs.Search)
 
 }
 

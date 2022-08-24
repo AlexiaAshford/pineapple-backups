@@ -56,7 +56,7 @@ func SearchBook(searchName string) string {
 		keyword := cfg.InputStr("Please input search keyword:")
 		if keyword == "next" || keyword == "n" {
 			page += 1 // next page
-			searchResult = TestApp(searchName, page+1)
+			searchResult = TestApp(searchName, page)
 		} else if keyword == "previous" || keyword == "p" {
 			if page > 0 {
 				page -= 1 // previous page
