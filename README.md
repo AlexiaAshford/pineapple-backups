@@ -17,6 +17,28 @@
  - Support download epub from sfacg and hbooker
  - Search books by keyword,and download the search result
 
+## **File tree**
+``` 
+├─cache
+├─cfg
+├─cover
+├─docs
+├─epub
+│  └─internal
+│      └─storage
+│          ├─memory
+│          └─osfs
+├─save
+├─src
+│  ├─boluobao
+│  ├─hbooker
+│  │  └─Encrypt
+│  └─https
+└─struct
+    ├─book_info
+    ├─hbooker_structs
+    └─sfacg_structs
+```
 ## **Example**
 
 - --app=```<type[sfacg / cat]>```
