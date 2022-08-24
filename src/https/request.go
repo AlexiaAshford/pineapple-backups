@@ -53,21 +53,19 @@ func SET_URL(url string, params map[string]string) string {
 		return url
 	}
 }
-func LoginSession(url string, dataJson []byte) ([]byte, []*http.Cookie) {
+func Login(url string, dataJson []byte) ([]byte, []*http.Cookie) {
 	request, err := http.NewRequest("POST", SET_URL(url, nil), bytes.NewBuffer(dataJson))
 	if err != nil {
 		fmt.Printf("Login session error:%v\n", err)
-	} else {
-		SetHeaders(request, false)
-		if response, ok := client.Do(request); ok == nil {
-			if body, err := io.ReadAll(response.Body); err == nil {
-				return body, response.Cookies()
-			}
-		} else {
-			fmt.Println("client.Do error:", err)
-		}
+		return nil, nil
 	}
-	return nil, nil
+	SET_THE_HEADERS(request, false)
+	response, ok := client.Do(request)
+	if ok != nil {
+		return nil, nil
+	}
+	body, _ := io.ReadAll(response.Body)
+	return body, response.Cookies()
 }
 
 func Request(method string, url string) ([]byte, error) {
@@ -77,7 +75,7 @@ func Request(method string, url string) ([]byte, error) {
 	if request, err := http.NewRequest(method, url, nil); err != nil {
 		fmt.Printf("NewRequest %v error:%v\n", method, err)
 	} else {
-		SetHeaders(request, true)
+		SET_THE_HEADERS(request, true)
 		if response, ok := client.Do(request); ok == nil {
 			// delete ioutil.ReadAll and use io.ReadAll instead
 			if body, bodyError := io.ReadAll(response.Body); bodyError == nil {

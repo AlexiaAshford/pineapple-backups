@@ -26,13 +26,14 @@ func (catalogue *Catalogue) ReadChapterConfig() string {
 	if !cfg.Exist(cfg.Current.ConfigPath) {
 		cfg.Write(cfg.Current.ConfigPath, "", "w")
 		catalogue.ChapterCfg = ""
-	} else { // read config file
-		catalogue.ChapterCfg = cfg.Write(cfg.Current.ConfigPath, "", "r")
+	} else {
+		catalogue.ChapterCfg = cfg.Write(cfg.Current.ConfigPath, "", "r") // read config file
 	}
 	catalogue.contentList["cache"] = cfg.Write(cfg.Current.OutputPath, "", "r")
 
 	return cfg.Vars.AppType
 }
+
 func (catalogue *Catalogue) AddChapterConfig(chapId any) {
 	switch chapId.(type) {
 	case string:

@@ -20,11 +20,9 @@ func AccountDetailed() string {
 }
 
 func LoginAccount(username string, password string, retry int) {
-	LoginData := boluobao.PostLoginByAccount(username, password)
-	cfg.Apps.Sfacg.Cookie = ""
+	LoginData := boluobao.LOGIN_ACCOUNT(username, password)
 	if LoginData.Status.HTTPCode == 200 {
-		cfg.Apps.Sfacg.Cookie = LoginData.Cookie
-		cfg.Apps.Sfacg.UserName, cfg.Apps.Sfacg.Password = username, password
+		cfg.Apps.Sfacg.Cookie, cfg.Apps.Sfacg.UserName, cfg.Apps.Sfacg.Password = LoginData.Cookie, username, password
 		cfg.SaveJson()
 		if AccountDetailed() == "需要登录才能访问该资源" {
 			fmt.Println("Your login attempt was not successful, try again retry:", retry+1)

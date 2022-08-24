@@ -21,7 +21,7 @@ func Base64Bytes(UserName, Password string) string {
 
 }
 
-func SetHeaders(req *http.Request, TestCookie bool) {
+func SET_THE_HEADERS(req *http.Request, TestCookie bool) {
 	HeaderCollection := make(map[string]string)
 	HeaderCollection["Content-Type"] = "application/json"
 	switch cfg.Vars.AppType {
