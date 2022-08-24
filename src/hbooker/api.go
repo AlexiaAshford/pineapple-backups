@@ -32,7 +32,8 @@ func Search(KeyWord string, page int) *structs.SearchStruct {
 }
 
 func Login(account, password string) {
-	response := req.Get(req.CatLoginByAccount, &structs.LoginStruct{}, map[string]string{"login_name": account, "password": password})
+	params := map[string]string{"login_name": account, "password": password}
+	response := req.Get(req.CatLoginByAccount, &structs.LoginStruct{}, params)
 	result := response.(*structs.LoginStruct)
 	if result.Code == "100000" {
 		cfg.Apps.Cat.Params.LoginToken = result.Data.LoginToken
@@ -80,13 +81,12 @@ func GetKeyByCid(chapterId string) string {
 	return req.Get(req.CatChapterKeyByCid, &structs.KeyStruct{}, map[string]string{"chapter_id": chapterId}).(*structs.KeyStruct).Data.Command
 }
 
-func GetContent(chapterId string) (*structs.ContentStruct, bool) {
-	key := GetKeyByCid(chapterId)
-	params := map[string]string{"chapter_id": chapterId, "chapter_command": key}
+func GetContent(chapterId string, ChapterKey string) (*structs.ContentStruct, bool) {
+	params := map[string]string{"chapter_id": chapterId, "chapter_command": ChapterKey}
 	result := req.Get(req.CatContentDetailedByCid, &structs.ContentStruct{}, params).(*structs.ContentStruct)
 	for retry := 0; retry < cfg.Vars.MaxRetry; retry++ {
 		if result.Code == "100000" {
-			TxtContent := Encrypt.Decode(result.Data.ChapterInfo.TxtContent, key)
+			TxtContent := Encrypt.Decode(result.Data.ChapterInfo.TxtContent, ChapterKey)
 			result.Data.ChapterInfo.TxtContent = string(TxtContent)
 			return result, true
 		}

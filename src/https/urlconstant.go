@@ -27,6 +27,7 @@ const (
 )
 
 func SearchAPI(keyWord string, page int) string {
+	//params := map[string]string{"q": url_.QueryEscape(keyWord), "size": "20", "page": strconv.Itoa(page)}
 	switch cfg.Vars.AppType {
 	case "cat":
 		return "bookcity/get_filter_search_book_list"

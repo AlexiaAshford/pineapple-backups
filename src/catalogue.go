@@ -84,7 +84,9 @@ func (catalogue *Catalogue) DownloadContent() {
 					catalogue.makeContentInformation(response)
 				}
 			} else if cfg.Vars.AppType == "cat" {
-				if response, ok := hbooker.GetContent(ChapterId); ok {
+
+				ChapterKey := hbooker.GetKeyByCid(ChapterId)
+				if response, ok := hbooker.GetContent(ChapterId, ChapterKey); ok {
 					catalogue.makeContentInformation(response)
 				}
 			} else {
