@@ -54,9 +54,9 @@ func SET_URL(url string, params map[string]string) string {
 	}
 }
 func LoginSession(url string, dataJson []byte) ([]byte, []*http.Cookie) {
-	request, err := http.NewRequest("POST", url, bytes.NewBuffer(dataJson))
+	request, err := http.NewRequest("POST", SET_URL(url, nil), bytes.NewBuffer(dataJson))
 	if err != nil {
-		fmt.Printf("LoginSession error:%v\n", err)
+		fmt.Printf("Login session error:%v\n", err)
 	} else {
 		SetHeaders(request, false)
 		if response, ok := client.Do(request); ok == nil {
@@ -67,7 +67,6 @@ func LoginSession(url string, dataJson []byte) ([]byte, []*http.Cookie) {
 			fmt.Println("client.Do error:", err)
 		}
 	}
-
 	return nil, nil
 }
 
@@ -102,6 +101,8 @@ func Get(url string, structural any, params map[string]string) any {
 		} else {
 			fmt.Println(ok)
 		}
+	} else {
+		fmt.Println("not support, please use cat or sfacg, now is " + cfg.Vars.AppType)
 	}
 	return nil
 }

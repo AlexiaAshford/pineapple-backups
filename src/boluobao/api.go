@@ -43,8 +43,8 @@ func GetSearchDetailedByKeyword(keyword string, page int) *sfacg_structs.Search 
 }
 
 func PostLoginByAccount(username, password string) *sfacg_structs.Login {
-	data := []byte(fmt.Sprintf(`{"username":"%s", "password": "%s"}`, username, password))
-	response, Cookie := req.LoginSession(req.SET_URL("sessions", nil), data)
+	data := fmt.Sprintf(`{"username":"%s", "password": "%s"}`, username, password)
+	response, Cookie := req.LoginSession(req.SET_URL("sessions", nil), []byte(data))
 	result := req.JsonUnmarshal(response, &sfacg_structs.Login{}).(*sfacg_structs.Login)
 	for _, cookie := range Cookie {
 		result.Cookie += cookie.Name + "=" + cookie.Value + ";"
