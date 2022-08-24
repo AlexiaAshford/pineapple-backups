@@ -41,7 +41,7 @@ func (books *BookInits) InitEpubFile() {
 
 }
 
-func (books *BookInits) DownloadBookInit() Catalogue {
+func (books *BookInits) SetBookInfo() Catalogue {
 	switch cfg.Vars.AppType {
 	case "sfacg":
 		response := boluobao.GET_BOOK_INFORMATION(books.BookID)
@@ -77,11 +77,11 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 		}
 	default:
 		panic("app type" + cfg.Vars.AppType + " is not valid!")
-
 	}
-	cfg.Current.ConfigPath = path.Join(cfg.Vars.ConfigName, cfg.Current.Book.NovelName+".conf")
+	cfg.Current.ConfigPath = path.Join(cfg.Vars.ConfigName, cfg.Current.Book.NovelName)
 	cfg.Current.OutputPath = path.Join(cfg.Vars.OutputName, cfg.Current.Book.NovelName+".txt")
 	cfg.Current.CoverPath = path.Join("cover", cfg.Current.Book.NovelName+".jpg")
+
 	books.InitEpubFile()
 	if !cfg.Exist(cfg.Current.OutputPath) {
 		cfg.Write(cfg.Current.OutputPath, books.ShowBookDetailed()+"\n\n", "w")
@@ -94,10 +94,9 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 
 func (books *BookInits) ShowBookDetailed() string {
 	briefIntroduction := fmt.Sprintf(
-		"Name: %v\nBookID: %v\nAuthor: %v\nCount: %v\nMark: %v\n",
+		"Name: %v\nBookID: %v\nAuthor: %v\nCount: %v\n",
 		cfg.Current.Book.NovelName, cfg.Current.Book.NovelID,
 		cfg.Current.Book.AuthorName, cfg.Current.Book.CharCount,
-		cfg.Current.Book.MarkCount,
 	)
 	if books.ShowBook {
 		fmt.Println(briefIntroduction)

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gookit/color"
 	"sf/cfg"
-	"sf/src/hbooker/Encrypt"
 	req "sf/src/https"
 	structs "sf/struct/hbooker_structs"
 	"strconv"
@@ -81,15 +80,7 @@ func GetKeyByCid(chapterId string) string {
 	return req.Get("chapter/get_chapter_cmd", &structs.KeyStruct{}, params).(*structs.KeyStruct).Data.Command
 }
 
-func GetContent(chapterId string, ChapterKey string) (*structs.ContentStruct, bool) {
+func GetContent(chapterId string, ChapterKey string) *structs.ContentStruct {
 	params := map[string]string{"chapter_id": chapterId, "chapter_command": ChapterKey}
-	result := req.Get("chapter/get_cpt_ifm", &structs.ContentStruct{}, params).(*structs.ContentStruct)
-	for retry := 0; retry < cfg.Vars.MaxRetry; retry++ {
-		if result.Code == "100000" {
-			TxtContent := Encrypt.Decode(result.Data.ChapterInfo.TxtContent, ChapterKey)
-			result.Data.ChapterInfo.TxtContent = string(TxtContent)
-			return result, true
-		}
-	}
-	return &structs.ContentStruct{}, false
+	return req.Get("chapter/get_cpt_ifm", &structs.ContentStruct{}, params).(*structs.ContentStruct)
 }
