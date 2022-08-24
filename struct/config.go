@@ -17,8 +17,6 @@ type MyConfigPro struct {
 	AppType         string
 	MaxThreadNumber int
 	MaxRetry        int
-	OutputPath      string
-	ConfigPath      string
 }
 
 type MyAppPro struct {
@@ -44,5 +42,7 @@ type CatApp struct {
 }
 type MyBookInfoJsonPro struct {
 	BookInfo     Books
+	OutputPath   string
+	ConfigPath   string
 	BookInfoList []Books
 }

@@ -28,11 +28,11 @@ type BookInits struct {
 func (books *BookInits) InitEpubFile() {
 	// set epub setting and add section
 	AddImage := true
-	books.EpubSetting = epub.NewEpub(cfg.CurrentBook.BookInfo.NovelName)
-	books.EpubSetting.SetAuthor(cfg.CurrentBook.BookInfo.AuthorName) // set author
-	coverPath := path.Join("cover", cfg.CurrentBook.BookInfo.NovelName+".jpg")
+	books.EpubSetting = epub.NewEpub(cfg.Current.BookInfo.NovelName)
+	books.EpubSetting.SetAuthor(cfg.Current.BookInfo.AuthorName) // set author
+	coverPath := path.Join("cover", cfg.Current.BookInfo.NovelName+".jpg")
 	if !cfg.Exist(coverPath) {
-		if reader := https.GetCover(cfg.CurrentBook.BookInfo.NovelCover); reader == nil {
+		if reader := https.GetCover(cfg.Current.BookInfo.NovelCover); reader == nil {
 			fmt.Println("download cover failed!")
 			AddImage = false
 		} else {
@@ -68,12 +68,12 @@ func (books *BookInits) DownloadBookInit() Catalogue {
 		panic("app type" + cfg.Vars.AppType + " is not valid!")
 
 	}
-	cfg.CurrentBook.BookInfo = books.InitBookStruct()
-	cfg.Vars.ConfigPath = path.Join(cfg.Vars.ConfigName, cfg.CurrentBook.BookInfo.NovelName+".conf")
-	cfg.Vars.OutputPath = path.Join(cfg.Vars.OutputName, cfg.CurrentBook.BookInfo.NovelName+".txt")
+	cfg.Current.BookInfo = books.InitBookStruct()
+	cfg.Current.ConfigPath = path.Join(cfg.Vars.ConfigName, cfg.Current.BookInfo.NovelName+".conf")
+	cfg.Current.OutputPath = path.Join(cfg.Vars.OutputName, cfg.Current.BookInfo.NovelName+".txt")
 	books.InitEpubFile()
-	if !cfg.Exist(cfg.Vars.OutputPath) {
-		cfg.Write(cfg.Vars.OutputPath, books.ShowBookDetailed()+"\n\n", "w")
+	if !cfg.Exist(cfg.Current.OutputPath) {
+		cfg.Write(cfg.Current.OutputPath, books.ShowBookDetailed()+"\n\n", "w")
 	} else {
 		books.ShowBookDetailed()
 	}
@@ -112,9 +112,9 @@ func (books *BookInits) InitBookStruct() _struct.Books {
 func (books *BookInits) ShowBookDetailed() string {
 	briefIntroduction := fmt.Sprintf(
 		"Name: %v\nBookID: %v\nAuthor: %v\nCount: %v\nMark: %v\n",
-		cfg.CurrentBook.BookInfo.NovelName, cfg.CurrentBook.BookInfo.NovelID,
-		cfg.CurrentBook.BookInfo.AuthorName, cfg.CurrentBook.BookInfo.CharCount,
-		cfg.CurrentBook.BookInfo.MarkCount,
+		cfg.Current.BookInfo.NovelName, cfg.Current.BookInfo.NovelID,
+		cfg.Current.BookInfo.AuthorName, cfg.Current.BookInfo.CharCount,
+		cfg.Current.BookInfo.MarkCount,
 	)
 	if books.ShowBook {
 		fmt.Println(briefIntroduction)

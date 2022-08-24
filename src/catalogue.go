@@ -23,29 +23,29 @@ type Catalogue struct {
 
 func (catalogue *Catalogue) ReadChapterConfig() string {
 	catalogue.contentList = make(map[string]string)
-	if !cfg.Exist(cfg.Vars.ConfigPath) {
-		cfg.Write(cfg.Vars.ConfigPath, "", "w")
+	if !cfg.Exist(cfg.Current.ConfigPath) {
+		cfg.Write(cfg.Current.ConfigPath, "", "w")
 		catalogue.ChapterCfg = ""
 	} else { // read config file
-		catalogue.ChapterCfg = cfg.Write(cfg.Vars.ConfigPath, "", "r")
+		catalogue.ChapterCfg = cfg.Write(cfg.Current.ConfigPath, "", "r")
 	}
-	catalogue.contentList["cache"] = cfg.Write(cfg.Vars.OutputPath, "", "r")
+	catalogue.contentList["cache"] = cfg.Write(cfg.Current.OutputPath, "", "r")
 
 	return cfg.Vars.AppType
 }
 func (catalogue *Catalogue) AddChapterConfig(chapId any) {
 	switch chapId.(type) {
 	case string:
-		cfg.Write(cfg.Vars.ConfigPath, chapId.(string)+",", "a")
+		cfg.Write(cfg.Current.ConfigPath, chapId.(string)+",", "a")
 	case int:
-		cfg.Write(cfg.Vars.ConfigPath, strconv.Itoa(chapId.(int))+",", "a")
+		cfg.Write(cfg.Current.ConfigPath, strconv.Itoa(chapId.(int))+",", "a")
 	}
 }
 
 func (catalogue *Catalogue) InitCatalogue() {
 	switch catalogue.ReadChapterConfig() {
 	case "sfacg":
-		for divisionIndex, division := range boluobao.GetCatalogue(cfg.CurrentBook.BookInfo.NovelID).Data.VolumeList {
+		for divisionIndex, division := range boluobao.GetCatalogue(cfg.Current.BookInfo.NovelID).Data.VolumeList {
 			fmt.Printf("第%v卷\t\t%v\n", divisionIndex+1, division.Title)
 			for _, chapter := range division.ChapterList {
 				if chapter.OriginNeedFireMoney == 0 && !cfg.TestKeyword(catalogue.ChapterCfg, chapter.ChapID) {
@@ -54,7 +54,7 @@ func (catalogue *Catalogue) InitCatalogue() {
 			}
 		}
 	case "cat":
-		for index, division := range hbooker.GetDivisionIdByBookId(cfg.CurrentBook.BookInfo.NovelID) {
+		for index, division := range hbooker.GetDivisionIdByBookId(cfg.Current.BookInfo.NovelID) {
 			fmt.Printf("第%v卷\t\t%v\n", index+1, division.DivisionName)
 			for _, chapter := range hbooker.GetCatalogueByDivisionId(division.DivisionID) {
 				if chapter.IsValid == "1" && !cfg.TestKeyword(catalogue.ChapterCfg, chapter.ChapterID) {
@@ -68,8 +68,8 @@ func (catalogue *Catalogue) InitCatalogue() {
 		catalogue.ChapterBar = New(len(catalogue.ChapterList))
 		catalogue.ChapterBar.Describe("working...")
 		catalogue.DownloadContent()
-		fmt.Printf("\nNovel:%v download complete!\n", cfg.CurrentBook.BookInfo.NovelName)
-		fmt.Println("The txt file is out put to:", cfg.Vars.OutputPath)
+		fmt.Printf("\nNovel:%v download complete!\n", cfg.Current.BookInfo.NovelName)
+		fmt.Println("The txt file is out put to:", cfg.Current.OutputPath)
 	} else {
 		fmt.Println("No chapter need to download!")
 	}
@@ -93,12 +93,12 @@ func (catalogue *Catalogue) DownloadContent() {
 		}(ChapterId)
 
 	}
-	cfg.Write(cfg.Vars.OutputPath, catalogue.contentList["cache"], "w")
+	cfg.Write(cfg.Current.OutputPath, catalogue.contentList["cache"], "w")
 	for _, ChapterId := range catalogue.ChapterList {
-		cfg.Write(cfg.Vars.OutputPath, catalogue.contentList[ChapterId], "a")
+		cfg.Write(cfg.Current.OutputPath, catalogue.contentList[ChapterId], "a")
 	}
 
-	if err := catalogue.EpubSetting.Write(strings.Replace(cfg.Vars.OutputPath, ".txt", ".epub", -1)); err != nil {
+	if err := catalogue.EpubSetting.Write(strings.Replace(cfg.Current.OutputPath, ".txt", ".epub", -1)); err != nil {
 		fmt.Println("epub error:", err)
 	}
 	catalogue.ChapterList = nil

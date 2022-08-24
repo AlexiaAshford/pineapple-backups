@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	Vars        = _struct.MyConfigPro{}
-	Apps        = _struct.MyAppPro{}
-	CurrentBook = _struct.MyBookInfoJsonPro{}
+	Vars    = _struct.MyConfigPro{}
+	Apps    = _struct.MyAppPro{}
+	Current = _struct.MyBookInfoJsonPro{}
 )
 
 func UpdateConfig() bool { // update config.json if necessary
