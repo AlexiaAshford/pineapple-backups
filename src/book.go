@@ -81,13 +81,8 @@ func (books *BookInits) SetBookInfo() Catalogue {
 	cfg.Current.ConfigPath = path.Join(cfg.Vars.ConfigName, cfg.Current.Book.NovelName)
 	cfg.Current.OutputPath = path.Join(cfg.Vars.OutputName, cfg.Current.Book.NovelName+".txt")
 	cfg.Current.CoverPath = path.Join("cover", cfg.Current.Book.NovelName+".jpg")
-
 	books.InitEpubFile()
-	if !cfg.Exist(cfg.Current.OutputPath) {
-		cfg.Write(cfg.Current.OutputPath, books.ShowBookDetailed()+"\n\n", "w")
-	} else {
-		books.ShowBookDetailed()
-	}
+	cfg.Write(cfg.Current.OutputPath, books.ShowBookDetailed()+"\n\n", "w")
 	return Catalogue{TestBookResult: true, EpubSetting: books.EpubSetting}
 
 }

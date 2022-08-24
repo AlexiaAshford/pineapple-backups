@@ -16,6 +16,7 @@
  - Input url and download book text from the url
  - Support download epub from sfacg and hbooker
  - Search books by keyword,and download the search result
+ - [ **warning** ] New version book cache is incompatible with older book cache.
 
 ## **File tree**
 ``` 

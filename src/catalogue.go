@@ -11,6 +11,7 @@ import (
 	"sf/src/hbooker/Encrypt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Catalogue struct {
@@ -29,15 +30,6 @@ func (catalogue *Catalogue) ReadChapterConfig() {
 		for _, v := range FileInfo {
 			catalogue.ChapterCfg += v.Name() + ","
 		}
-	}
-}
-
-func (catalogue *Catalogue) AddChapterConfig(chapId any) {
-	switch chapId.(type) {
-	case string:
-		cfg.Write(cfg.Current.ConfigPath, chapId.(string)+",", "a")
-	case int:
-		cfg.Write(cfg.Current.ConfigPath, strconv.Itoa(chapId.(int))+",", "a")
 	}
 }
 
@@ -75,18 +67,6 @@ func config_file_name(index, VolumeID, ChapID any) string {
 	return fmt.Sprintf("%05d", index) + "-" + fmt.Sprintf("%v", VolumeID) + "-" + fmt.Sprintf("%v", ChapID) + ".txt"
 }
 
-func (catalogue *Catalogue) MergeFiles() {
-	//cfg.Write(cfg.Current.OutputPath, catalogue.ContentList["cache"], "w")
-	//for _, ChapterId := range cfg.Current.DownloadList {
-	//	cfg.Write(cfg.Current.OutputPath, catalogue.ContentList[ChapterId], "a")
-	//}
-	FileInfo, _ := ioutil.ReadDir(path.Join(cfg.Vars.ConfigName, cfg.Current.Book.NovelName))
-	for _, v := range FileInfo {
-		content := cfg.Write(cfg.Current.ConfigPath+"/"+v.Name(), "", "r")
-		cfg.Write(cfg.Current.OutputPath, content, "a")
-	}
-}
-
 func (catalogue *Catalogue) DownloadContent(chapter_id string) {
 	catalogue.SpeedProgressAndDelayTime()
 	if cfg.Vars.AppType == "sfacg" {
@@ -117,10 +97,37 @@ func (catalogue *Catalogue) DownloadContent(chapter_id string) {
 
 }
 
+func (catalogue *Catalogue) MergeFiles() {
+	//cfg.Write(cfg.Current.OutputPath, catalogue.ContentList["cache"], "w")
+	//for _, ChapterId := range cfg.Current.DownloadList {
+	//	cfg.Write(cfg.Current.OutputPath, catalogue.ContentList[ChapterId], "a")
+	//}
+	FileInfo, _ := ioutil.ReadDir(path.Join(cfg.Vars.ConfigName, cfg.Current.Book.NovelName))
+	for _, v := range FileInfo {
+		content := cfg.Write(cfg.Current.ConfigPath+"/"+v.Name(), "", "r")
+		catalogue.AddChapterInEpubFile(strings.Split(content, "\n")[0], content)
+		cfg.Write(cfg.Current.OutputPath, content, "a")
+	}
+	bT := time.Now() // 开始时间
+	// save epub file
+	epub_file_name := strings.Replace(cfg.Current.OutputPath, ".txt", ".epub", -1)
+	if err := catalogue.EpubSetting.Write(epub_file_name); err != nil {
+		fmt.Println(epub_file_name, " epub error:", err)
+	}
+	fmt.Println("write epub: ", time.Since(bT)) // 从开始到当前所消耗的时间
+}
+
 func (catalogue *Catalogue) AddChapterInEpubFile(title, content string) {
 	xmlContent := "<h1>" + title + "</h1>\n<p>" + strings.Replace(content, "\n", "</p>\n<p>", -1)
 	if _, err := catalogue.EpubSetting.AddSection(xmlContent, title, "", ""); err != nil {
 		fmt.Printf("epub add chapter:%v\t\terror message:%v", title, err)
+	}
+}
+func (catalogue *Catalogue) SpeedProgressAndDelayTime() {
+	if err := catalogue.ChapterBar.Add(1); err != nil {
+		fmt.Println("bar error:", err)
+	} else {
+		//time.Sleep(time.Second * time.Duration(2))
 	}
 }
 
@@ -146,10 +153,11 @@ func (catalogue *Catalogue) AddChapterInEpubFile(title, content string) {
 //
 //}
 
-func (catalogue *Catalogue) SpeedProgressAndDelayTime() {
-	if err := catalogue.ChapterBar.Add(1); err != nil {
-		fmt.Println("bar error:", err)
-	} else {
-		//time.Sleep(time.Second * time.Duration(2))
-	}
-}
+//func (catalogue *Catalogue) AddChapterConfig(chapId any) {
+//	switch chapId.(type) {
+//	case string:
+//		cfg.Write(cfg.Current.ConfigPath, chapId.(string)+",", "a")
+//	case int:
+//		cfg.Write(cfg.Current.ConfigPath, strconv.Itoa(chapId.(int))+",", "a")
+//	}
+//}
