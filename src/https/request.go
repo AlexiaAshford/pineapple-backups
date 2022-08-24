@@ -48,7 +48,7 @@ func SET_URL(url string, params map[string]string) string {
 	case "sfacg":
 		return SFWebSite + strings.Replace(QueryParams(url, params), SFWebSite, "", -1)
 	case "happybooker":
-		return CatWebSite + strings.Replace(QueryParams(url, params), CatWebSite, "", -1)
+		return HappyWebSite + strings.Replace(QueryParams(url, params), HappyWebSite, "", -1)
 	default:
 		return url
 	}
