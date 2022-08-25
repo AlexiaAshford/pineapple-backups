@@ -2,7 +2,6 @@ package src
 
 import (
 	"fmt"
-	"io/ioutil"
 	"path"
 	"sf/cfg"
 	"sf/epub"
@@ -96,10 +95,8 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	//cfg.Write(cfg.Current.OutputPath, catalogue.ContentList["cache"], "w")
 	//for _, ChapterId := range cfg.Current.DownloadList {
 	//	cfg.Write(cfg.Current.OutputPath, catalogue.ContentList[ChapterId], "a")
-	//}
-	FileInfo, _ := ioutil.ReadDir(path.Join(cfg.Vars.ConfigName, cfg.Current.Book.NovelName))
-	for _, v := range FileInfo {
-		content := cfg.Write(cfg.Current.ConfigPath+"/"+v.Name(), "", "r")
+	for _, local_file_name := range cfg.GetFileName(cfg.Current.ConfigPath) {
+		content := cfg.Write(cfg.Current.ConfigPath+"/"+local_file_name, "", "r")
 		catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content)
 		cfg.Write(cfg.Current.OutputPath, content, "a")
 	}
