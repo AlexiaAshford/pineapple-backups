@@ -12,11 +12,12 @@ import (
 )
 
 func shellBookDownload(book_id any) {
-	if book_id == "" {
+	current_book_id := cfg.ExtractBookID(book_id.(string))
+	if current_book_id == "" {
 		fmt.Println("input book id or url is empty, please input again:")
 		return
 	}
-	start := src.BookInits{BookID: book_id.(string), Index: 0, Locks: nil, ShowBook: true}
+	start := src.BookInits{BookID: current_book_id, Index: 0, Locks: nil, ShowBook: true}
 	catalogue := start.SetBookInfo() // get book catalogues
 	if !catalogue.TestBookResult {
 		return
