@@ -32,11 +32,11 @@ func shellBookDownload(book_id any) {
 			catalogue.DownloadContent(chapter_id)
 		}
 		fmt.Printf("\nNovel:%v download complete!\n", cfg.Current.Book.NovelName)
-		catalogue.MergeFiles()
-		cfg.Current.DownloadList = nil
+		catalogue.MergeTextAndEpubFiles()
 	} else {
-		catalogue.MergeFiles()
-		fmt.Println("No chapter need to download!")
+		catalogue.MergeTextAndEpubFiles()
+
+		cfg.ColorPrint(cfg.Current.Book.NovelName+" No chapter need to download!", 2|8)
 	}
 	os.Exit(1)
 }

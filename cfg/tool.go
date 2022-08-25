@@ -9,8 +9,10 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
+	"syscall"
 )
 
 func RegexpName(Name string) string {
@@ -24,6 +26,35 @@ func TestList(List []string, testString string) bool {
 		}
 	}
 	return false
+}
+func GetFileName(dirname string) []string {
+	var file_list []string
+	f, err := os.Open(dirname)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if list, ok := f.Readdir(-1); ok == nil {
+		_ = f.Close()
+		sort.Slice(list, func(i, j int) bool { return list[i].Name() < list[j].Name() })
+		for _, v := range list {
+			file_list = append(file_list, v.Name())
+		}
+		return file_list
+	} else {
+		log.Fatal(ok)
+	}
+	return nil
+}
+
+func ColorPrint(s string, i int) {
+	//set color and print
+	kernel32 := syscall.NewLazyDLL("kernel32.dll")
+	proc := kernel32.NewProc("SetConsoleTextAttribute")
+	handle, _, _ := proc.Call(uintptr(syscall.Stdout), uintptr(i))
+	fmt.Print(s)
+	handle, _, _ = proc.Call(uintptr(syscall.Stdout), uintptr(7))
+	CloseHandle := kernel32.NewProc("CloseHandle")
+	_, _, _ = CloseHandle.Call(handle)
 }
 
 func ExtractBookID(url string) string {

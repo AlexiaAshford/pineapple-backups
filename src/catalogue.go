@@ -16,7 +16,7 @@ import (
 
 type Catalogue struct {
 	ChapterBar     *ProgressBar
-	ChapterCfg     string
+	ChapterCfg     []string
 	TestBookResult bool
 	EpubSetting    *epub.Epub
 }
@@ -24,15 +24,16 @@ type Catalogue struct {
 func (catalogue *Catalogue) ReadChapterConfig() {
 	if !cfg.Exist(cfg.Current.ConfigPath) {
 		cfg.Mkdir(cfg.Current.ConfigPath)
-		catalogue.ChapterCfg = ""
+		catalogue.ChapterCfg = []string{}
 	} else {
-		FileInfo, _ := ioutil.ReadDir(path.Join(cfg.Vars.ConfigName, cfg.Current.Book.NovelName))
-		for _, v := range FileInfo {
-			catalogue.ChapterCfg += v.Name() + ","
-		}
+		catalogue.ChapterCfg = cfg.GetFileName(cfg.Current.ConfigPath)
 	}
 }
 
+func config_file_name(index, VolumeID, ChapID any) string {
+	index = cfg.StrToInt(fmt.Sprintf("%d", index))
+	return fmt.Sprintf("%05d", index) + "-" + fmt.Sprintf("%v", VolumeID) + "-" + fmt.Sprintf("%v", ChapID) + ".txt"
+}
 func (catalogue *Catalogue) GetDownloadsList() {
 	catalogue.ReadChapterConfig()
 	switch cfg.Vars.AppType {
@@ -40,10 +41,8 @@ func (catalogue *Catalogue) GetDownloadsList() {
 		for divisionIndex, division := range boluobao.GET_CATALOGUE(cfg.Current.Book.NovelID).Data.VolumeList {
 			fmt.Printf("第%v卷\t\t%v\n", divisionIndex+1, division.Title)
 			for _, chapter := range division.ChapterList {
-				//if cfg.TestKeyword(catalogue.ChapterCfg, chapter.ChapID) {
-				//	fmt.Println("已下载：", chapter.Title)
-				//}
-				if chapter.OriginNeedFireMoney == 0 && !cfg.TestKeyword(catalogue.ChapterCfg, chapter.ChapID) {
+				file_name := config_file_name(chapter.ChapOrder, chapter.VolumeID, chapter.ChapID)
+				if chapter.OriginNeedFireMoney == 0 && !cfg.TestList(catalogue.ChapterCfg, file_name) {
 					cfg.Current.DownloadList = append(cfg.Current.DownloadList, strconv.Itoa(chapter.ChapID))
 				}
 			}
@@ -52,7 +51,8 @@ func (catalogue *Catalogue) GetDownloadsList() {
 		for index, division := range hbooker.GET_DIVISION(cfg.Current.Book.NovelID) {
 			fmt.Printf("第%v卷\t\t%v\n", index+1, division.DivisionName)
 			for _, chapter := range hbooker.GET_CATALOGUE(division.DivisionID) {
-				if chapter.IsValid == "1" && !cfg.TestKeyword(catalogue.ChapterCfg, chapter.ChapterID) {
+				file_name := config_file_name(chapter.ChapterIndex, division.DivisionID, chapter.ChapterID)
+				if chapter.IsValid == "1" && !cfg.TestList(catalogue.ChapterCfg, file_name) {
 					cfg.Current.DownloadList = append(cfg.Current.DownloadList, chapter.ChapterID)
 				}
 			}
@@ -60,11 +60,6 @@ func (catalogue *Catalogue) GetDownloadsList() {
 
 	}
 
-}
-
-func config_file_name(index, VolumeID, ChapID any) string {
-	index = cfg.StrToInt(fmt.Sprintf("%d", index))
-	return fmt.Sprintf("%05d", index) + "-" + fmt.Sprintf("%v", VolumeID) + "-" + fmt.Sprintf("%v", ChapID) + ".txt"
 }
 
 func (catalogue *Catalogue) DownloadContent(chapter_id string) {
@@ -97,7 +92,7 @@ func (catalogue *Catalogue) DownloadContent(chapter_id string) {
 
 }
 
-func (catalogue *Catalogue) MergeFiles() {
+func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	//cfg.Write(cfg.Current.OutputPath, catalogue.ContentList["cache"], "w")
 	//for _, ChapterId := range cfg.Current.DownloadList {
 	//	cfg.Write(cfg.Current.OutputPath, catalogue.ContentList[ChapterId], "a")
@@ -105,19 +100,20 @@ func (catalogue *Catalogue) MergeFiles() {
 	FileInfo, _ := ioutil.ReadDir(path.Join(cfg.Vars.ConfigName, cfg.Current.Book.NovelName))
 	for _, v := range FileInfo {
 		content := cfg.Write(cfg.Current.ConfigPath+"/"+v.Name(), "", "r")
-		catalogue.AddChapterInEpubFile(strings.Split(content, "\n")[0], content)
+		catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content)
 		cfg.Write(cfg.Current.OutputPath, content, "a")
 	}
-	bT := time.Now() // 开始时间
+	out_put_epub_now := time.Now() // 开始时间
 	// save epub file
 	epub_file_name := strings.Replace(cfg.Current.OutputPath, ".txt", ".epub", -1)
 	if err := catalogue.EpubSetting.Write(epub_file_name); err != nil {
 		fmt.Println(epub_file_name, " epub error:", err)
 	}
-	fmt.Println("write epub: ", time.Since(bT)) // 从开始到当前所消耗的时间
+	fmt.Println("out put epub file success, time:", time.Since(out_put_epub_now))
+	cfg.Current.DownloadList = nil
 }
 
-func (catalogue *Catalogue) AddChapterInEpubFile(title, content string) {
+func (catalogue *Catalogue) add_chapter_in_epub_file(title, content string) {
 	xmlContent := "<h1>" + title + "</h1>\n<p>" + strings.Replace(content, "\n", "</p>\n<p>", -1)
 	if _, err := catalogue.EpubSetting.AddSection(xmlContent, title, "", ""); err != nil {
 		fmt.Printf("epub add chapter:%v\t\terror message:%v", title, err)
