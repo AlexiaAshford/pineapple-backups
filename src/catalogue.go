@@ -100,7 +100,7 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	for _, local_file_name := range cfg.GetFileName(cfg.Current.ConfigPath) {
 		content := cfg.Write(cfg.Current.ConfigPath+"/"+local_file_name, "", "r")
 		catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content)
-		cfg.Write(cfg.Current.OutputPath, content, "a")
+		cfg.Write(cfg.Current.OutputPath, "\n\n\n"+content, "a")
 	}
 	out_put_epub_now := time.Now() // 开始时间
 	// save epub file

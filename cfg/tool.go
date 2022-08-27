@@ -23,7 +23,7 @@ func StandardContent(content string) string {
 	content = "" // clear content string
 	for _, s := range content_list {
 		if s != "" {
-			content += "\n    " + strings.ReplaceAll(s, " ", "")
+			content += "\n" + strings.ReplaceAll(s, " ", "")
 		}
 	}
 	return content
