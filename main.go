@@ -1,17 +1,14 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
-	"regexp"
 	"sf/cfg"
 	"sf/src"
-	"sf/struct"
 	"strings"
 )
 
-func shellBookDownload(book_id any) {
+func current_download_book(book_id any) {
 	current_book_id := cfg.ExtractBookID(book_id.(string))
 	if current_book_id == "" {
 		fmt.Println("input book id or url is empty, please input again:")
@@ -27,9 +24,8 @@ func shellBookDownload(book_id any) {
 		fmt.Println(len(cfg.Current.DownloadList), " chapters will be downloaded.")
 		catalogue.ChapterBar = src.New(len(cfg.Current.DownloadList))
 		catalogue.ChapterBar.Describe("working...")
-
-		for _, chapter_id := range cfg.Current.DownloadList {
-			catalogue.DownloadContent(chapter_id)
+		for _, file_name := range cfg.Current.DownloadList {
+			catalogue.DownloadContent(file_name)
 		}
 		fmt.Printf("\nNovel:%v download complete!\n", cfg.Current.Book.NovelName)
 		catalogue.MergeTextAndEpubFiles()
@@ -41,150 +37,105 @@ func shellBookDownload(book_id any) {
 	os.Exit(1)
 }
 
-func shellLoginAccount(inputs []string) bool {
-	if cfg.Vars.AppType == "sfacg" {
-		if len(inputs) >= 3 {
-			src.LoginAccount(inputs[1], inputs[2], 0)
-		} else {
-			fmt.Println("you must input account and password, like: sf account password")
-		}
-	} else if cfg.Vars.AppType == "cat" {
-		if ok := src.InputAccountToken(); !ok {
-			fmt.Println("you must input account and token.")
-		}
-	}
-	return true
-}
-
 func shellUpdateLocalBook() {
 	if cfg.Exist("./bookList.txt") && cfg.FileSize("./config.json") > 0 {
 		LocalBookList := cfg.Write("./bookList.json", "", "r")
 		LocalBookList = strings.Replace(LocalBookList, "\n", "", -1)
-		shellBookDownload(LocalBookList)
+		current_download_book(LocalBookList)
 	} else {
 		fmt.Println("bookList.txt not exist, create a new one!")
 	}
 }
 
 func shellBookMain(inputs []string) {
-	if len(inputs) == 2 {
-		if cfg.Vars.AppType == "cat" {
-			if len(inputs[1]) == 9 { // test if the input is hbooker book id
-				shellBookDownload(inputs[1])
-			} else {
-				fmt.Println("hbooker bookid is 9 characters, please input again:")
-			}
+	if cfg.Vars.AppType == "cat" {
+		if len(inputs[1]) == 9 { // test if the input is hbooker book id
+			current_download_book(inputs[1])
 		} else {
-			shellBookDownload(inputs[1])
+			fmt.Println("hbooker bookid is 9 characters, please input again:")
 		}
 	} else {
-		fmt.Println("input book id or url, like:download <bookid/url>")
+		current_download_book(inputs[1])
 	}
 }
 
-func shellSearchBookMain(inputs []string) {
-	if len(inputs) == 2 {
-		if NovelId := src.SearchBook(inputs[1]); NovelId != "" {
-			shellBookDownload(NovelId)
-		} else {
-			fmt.Println("No found search book, please input again:")
-		}
-	} else {
-		fmt.Println("input book id or url, like:download <bookid/url>")
-	}
-}
-
-func ParseCommandLine() _struct.Command {
-	bookid := flag.String("download", "", "input book id or url")
-	account := flag.String("account", "", "input account")
-	password := flag.String("password", "", "input password")
-	appType := flag.String("app", "sfacg", "input app type, like: app sfacg")
-	search := flag.String("search", "", "input search keyword, like: search keyword")
-	thread := flag.Int("max", 0, "input thread number, like: thread 1")
-	showInfo := flag.Bool("show", false, "show config, like: show config")
-	update := flag.Bool("update", false, "update config, like: update config")
-
-	flag.Parse()
-	if *thread > 0 && *thread < 64 {
-		cfg.Vars.MaxThreadNumber = *thread
-	}
-	if *account != "" && *password != "" {
-		shellConsole([]string{"login", *account, *password})
-	} else {
-		cfg.Vars.AppType = *appType
-		src.TestAppTypeAndAccount()
-	}
-	return _struct.Command{Download: *bookid, Search: *search, ShowConfig: *showInfo, Update: *update}
-}
-
-func shellConsole(inputs []string) {
-	switch inputs[0] {
-	case "a", "app":
-		cfg.Vars.AppType = inputs[1]
-		src.TestAppTypeAndAccount()
-	case "q", "quit":
-		os.Exit(0)
-	case "uo", "update":
-		shellUpdateLocalBook()
-	case "h", "help":
-		fmt.Println("help:")
-	case "show", "test":
-		cfg.FormatJson(cfg.ReadConfig(""))
-	case "book", "download":
-		shellBookMain(inputs)
-	case "s", "search":
-		shellSearchBookMain(inputs)
-	case "l", "login":
-		shellLoginAccount(inputs)
-	default:
-		fmt.Println("command not found,please input help to see the command list:", inputs[0])
-	}
-
-}
 func init() {
 	if !cfg.Exist("./config.json") || cfg.FileSize("./config.json") == 0 {
 		fmt.Println("config.json not exist, create a new one!")
 	} else {
+		fmt.Println("config.json exist, load config.json!")
 		cfg.LoadJson()
 	}
 	if cfg.UpdateConfig() {
 		cfg.SaveJson()
 	}
+	fmt.Println("you can input -h and --help to see the command list.")
+}
+
+func shell(inputs []string) {
+	switch inputs[0] {
+	case "q", "quit":
+		fmt.Println("exit the program!")
+		os.Exit(0)
+	case "up", "update":
+		shellUpdateLocalBook()
+	case "a", "app":
+		if cfg.TestList([]string{"sfacg", "cat"}, inputs[1]) {
+			cfg.Vars.AppType = inputs[1]
+		} else {
+			fmt.Println("app type error, please input again.")
+		}
+	case "book", "download":
+		if len(inputs) == 2 {
+			shellBookMain(inputs)
+		} else {
+			fmt.Println("input book id or url, like:download <bookid/url>")
+		}
+	case "s", "search":
+		if len(inputs) == 2 && inputs[1] != "" {
+			current_download_book(src.SearchBook(inputs[1]))
+		} else {
+			fmt.Println("input book id or url, like:download <bookid/url>")
+		}
+	case "t", "token":
+
+		if ok := src.InputAccountToken(); !ok {
+			fmt.Println("you must input account and token.")
+		}
+
+	case "l", "login":
+
+		if len(inputs) >= 3 {
+			src.LoginAccount(inputs[1], inputs[2], 0)
+		} else {
+			fmt.Println("you must input account and password, like: sf account password")
+		}
+	default:
+		fmt.Println("command not found,please input help to see the command list:", inputs[0])
+	}
+
 }
 
 func main() {
-	if len(os.Args) <= 1 {
-		//for _, v := range hbooker.GetChangeRecommend() {
-		//	fmt.Println(v.BookName)
-		//	fmt.Println(v.BookID)
-		//}
+	commentLine := cfg.CommandInit()
+	if len(os.Args) > 1 {
+		if cfg.Account != "" && cfg.Password != "" {
+			shell([]string{"login", cfg.Account, cfg.Password})
+		} else {
+			cfg.Vars.AppType = cfg.App_type
+			src.TestAppTypeAndAccount()
+		}
+		if len(commentLine) > 0 {
+			shell(commentLine)
+		}
+	} else {
 		for _, s := range cfg.HelpMessage {
 			fmt.Println("[info]", s)
 		}
-		src.TestAppTypeAndAccount()
 		for {
-			spaceRe, _ := regexp.Compile(`\s+`)
-			inputs := spaceRe.Split(strings.TrimSpace(cfg.Input(">")), -1)
-			if len(inputs) > 1 {
-				shellConsole(inputs)
-			} else if inputs[0] != "" {
-				fmt.Println("you must input command, like: sf command")
+			if comment, err := cfg.Console(); err {
+				shell(comment)
 			}
-		}
-	} else {
-		var CommandLine []string
-		ArgsCommandLine := ParseCommandLine()
-		if ArgsCommandLine.ShowConfig {
-			CommandLine = []string{"show", "config"}
-		}
-		if ArgsCommandLine.Download != "" {
-			CommandLine = []string{"download", ArgsCommandLine.Download}
-		}
-		if ArgsCommandLine.Search != "" {
-			CommandLine = []string{"search", ArgsCommandLine.Search}
-		}
-		if len(CommandLine) > 0 {
-			shellConsole(CommandLine)
 		}
 	}
 }
