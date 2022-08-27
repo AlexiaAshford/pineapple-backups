@@ -63,7 +63,6 @@ func (catalogue *Catalogue) GetDownloadsList() {
 		}
 
 	}
-
 }
 
 func (catalogue *Catalogue) DownloadContent(file_name string) {
@@ -73,8 +72,8 @@ func (catalogue *Catalogue) DownloadContent(file_name string) {
 		response := boluobao.GET_CONTENT(chapter_id)
 		if response.Status.HTTPCode == 200 {
 			result := response.Data // get content data
-			//file_name := config_file_name(result.ChapOrder, result.VolumeID, result.ChapID)
-			content_text := fmt.Sprintf("%v:%v\n%v", result.Title, result.AddTime, result.Expand.Content)
+			content_title := fmt.Sprintf("%v: %v", result.Title, result.AddTime)
+			content_text := content_title + "\n" + cfg.StandardContent(result.Expand.Content)
 			cfg.Write(path.Join(cfg.Current.ConfigPath, file_name), content_text, "w")
 		} else {
 			fmt.Println("Error:", response.Status.Msg)
@@ -84,10 +83,10 @@ func (catalogue *Catalogue) DownloadContent(file_name string) {
 		chapter_key := hbooker.GetKeyByCid(chapter_id)
 		response := hbooker.GetContent(chapter_id, chapter_key)
 		if response.Code == "100000" {
-			TxtContent := Encrypt.Decode(response.Data.ChapterInfo.TxtContent, chapter_key)
 			result := response.Data.ChapterInfo
-			//file_name := config_file_name(result.ChapterIndex, result.DivisionID, result.ChapterID)
-			content_text := fmt.Sprintf("%v:%v\n%v\n\n\n", result.ChapterTitle, result.Uptime, string(TxtContent))
+			TxtContent := Encrypt.Decode(result.TxtContent, chapter_key)
+			content_title := fmt.Sprintf("%v: %v", result.ChapterTitle, result.Uptime)
+			content_text := content_title + "\n" + cfg.StandardContent(string(TxtContent))
 			cfg.Write(path.Join(cfg.Current.ConfigPath, file_name), content_text, "w")
 		}
 

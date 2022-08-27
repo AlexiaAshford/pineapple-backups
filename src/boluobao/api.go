@@ -23,8 +23,12 @@ func GET_CATALOGUE(NovelID string) *sfacg_structs.Catalogue {
 }
 
 func GET_CONTENT(cid string) *sfacg_structs.Content {
-	params := map[string]string{"expand": "content&autoOrder=true"}
-	return req.Get("Chaps/"+cid, &sfacg_structs.Content{}, params).(*sfacg_structs.Content)
+	params := map[string]string{"expand": "content"}
+	if result := req.Get("Chaps/"+cid, &sfacg_structs.Content{}, params); result != nil {
+		return result.(*sfacg_structs.Content)
+	} else {
+		return GET_CONTENT(cid) // retry once if failed to get content
+	}
 }
 
 func GET_SEARCH(keyword string, page int) *sfacg_structs.Search {

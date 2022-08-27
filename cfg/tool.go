@@ -18,6 +18,16 @@ import (
 func RegexpName(Name string) string {
 	return regexp.MustCompile(`[\\/:*?"<>|]`).ReplaceAllString(Name, "")
 }
+func StandardContent(content string) string {
+	content_list := strings.Split(content, "\n")
+	content = "" // clear content string
+	for _, s := range content_list {
+		if s != "" {
+			content += "\n    " + strings.ReplaceAll(s, " ", "")
+		}
+	}
+	return content
+}
 
 func TestList(List []string, testString string) bool {
 	for _, s := range List {
