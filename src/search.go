@@ -68,6 +68,8 @@ func SearchBook(searchName string) string {
 		} else {
 			if BookID := ReturnBookID(keyword, searchResult); BookID != "" {
 				return BookID // if the input is a number (book id)
+			} else {
+				fmt.Println("No found search book, please input again:")
 			}
 		}
 	}

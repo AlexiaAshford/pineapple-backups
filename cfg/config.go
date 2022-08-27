@@ -16,8 +16,8 @@ var (
 
 func UpdateConfig() bool { // update config.json if necessary
 	changeVar := false
-	if Vars.MaxThreadNumber == 0 || Vars.MaxThreadNumber >= 64 {
-		Vars.MaxThreadNumber = 32 // default value is 32 thread
+	if Vars.ThreadNum == 0 || Vars.ThreadNum >= 64 {
+		Vars.ThreadNum = 32 // default value is 32 thread
 		changeVar = true
 	}
 	if Vars.MaxRetry == 0 || Vars.MaxRetry >= 10 {
