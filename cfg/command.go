@@ -3,6 +3,7 @@ package cfg
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"os"
 	"regexp"
 	"strings"
 )
@@ -34,6 +35,13 @@ func CommandInit() []string {
 		Use:   "https://github.com/VeronicaAlexia/pineapple-backups",
 		Short: "you can use this command tools to backup your data",
 		Long:  "[warning] you login required to use this command tools",
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) > 0 {
+				if os.Args[1] == "-h" || os.Args[1] == "--help" {
+					_ = cmd.Help()
+				}
+			}
+		},
 	}
 	AddFlags := ruleCmd.Flags()
 	AddFlags.StringVarP(&Book_id, "download", "d", "", "")
