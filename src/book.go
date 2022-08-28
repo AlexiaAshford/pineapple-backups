@@ -9,6 +9,7 @@ import (
 	"sf/src/boluobao"
 	"sf/src/hbooker"
 	"sf/src/https"
+	_struct "sf/struct"
 	"strings"
 )
 
@@ -40,26 +41,22 @@ func (books *BookInits) InitEpubFile() {
 }
 
 func (books *BookInits) SetBookInfo() Catalogue {
+	var err error
+	var result _struct.Books
 	switch cfg.Vars.AppType {
 	case "sfacg":
-		if result, err := boluobao.GET_BOOK_INFORMATION(books.BookID); err == nil {
-			cfg.Current.Book = result
-		} else {
-			fmt.Println(books.BookID, "is not a valid book number！\nmessage:", err)
-			return Catalogue{TestBookResult: false}
-		}
+		result, err = boluobao.GET_BOOK_INFORMATION(books.BookID)
 	case "cat":
-		if result, err := hbooker.GET_BOOK_INFORMATION(books.BookID); err == nil {
-			cfg.Current.Book = result
-		} else {
-			fmt.Println(books.BookID, "is not a valid book number！\nmessage:", err)
-			return Catalogue{TestBookResult: false}
-		}
-	default:
-		panic("app type" + cfg.Vars.AppType + " is not valid!")
+		result, err = hbooker.GET_BOOK_INFORMATION(books.BookID)
 	}
-	return books.BookDetailed()
 
+	if err == nil {
+		cfg.Current.Book = result
+		return books.BookDetailed()
+	} else {
+		fmt.Println(books.BookID, "is not a valid book number！\nmessage:", err)
+		return Catalogue{TestBookResult: false}
+	}
 }
 
 func (books *BookInits) BookDetailed() Catalogue {
