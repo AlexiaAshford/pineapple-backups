@@ -10,7 +10,6 @@ import (
 	"sf/src/hbooker"
 	"sf/src/https"
 	"sf/struct"
-	"strconv"
 	"strings"
 )
 
@@ -44,19 +43,11 @@ func (books *BookInits) InitEpubFile() {
 func (books *BookInits) SetBookInfo() Catalogue {
 	switch cfg.Vars.AppType {
 	case "sfacg":
-		response := boluobao.GET_BOOK_INFORMATION(books.BookID)
-		if response.Status.HTTPCode == 200 && response.Data.NovelName != "" {
-			cfg.Current.Book = _struct.Books{
-				NovelName:  cfg.RegexpName(response.Data.NovelName),
-				NovelID:    strconv.Itoa(response.Data.NovelID),
-				NovelCover: response.Data.NovelCover,
-				AuthorName: response.Data.AuthorName,
-				CharCount:  strconv.Itoa(response.Data.CharCount),
-				MarkCount:  strconv.Itoa(response.Data.MarkCount),
-				SignStatus: response.Data.SignStatus,
-			}
+		result, err := boluobao.GET_BOOK_INFORMATION(books.BookID)
+		if err == nil {
+			cfg.Current.Book = result
 		} else {
-			fmt.Println(books.BookID, "is not a valid book number！\nmessage:", response.Status.Msg)
+			fmt.Println(books.BookID, "is not a valid book number！\nmessage:", err)
 			return Catalogue{TestBookResult: false}
 		}
 	case "cat":

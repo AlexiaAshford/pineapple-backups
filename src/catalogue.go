@@ -28,40 +28,22 @@ func (catalogue *Catalogue) ReadChapterConfig() {
 	}
 }
 
-func config_file_name(index, chapter_index, ChapID any) string {
-	index = cfg.StrToInt(fmt.Sprintf("%d", index))
-	return fmt.Sprintf("%05d", index) + "-" + fmt.Sprintf("%05d", chapter_index) + "-" +
-		fmt.Sprintf("%v", ChapID) + ".txt"
-}
 func (catalogue *Catalogue) GetDownloadsList() {
 	catalogue.ReadChapterConfig()
-	switch cfg.Vars.AppType {
-	case "sfacg":
-		chapter_index := 0
-		catalogue_response := boluobao.GET_CATALOGUE(cfg.Current.Book.NovelID).Data.VolumeList
-		for divisionIndex, division := range catalogue_response {
-			fmt.Printf("第%v卷\t\t%v\n", divisionIndex+1, division.Title)
-			for _, chapter := range division.ChapterList {
-				chapter_index += 1
-				file_name := config_file_name(divisionIndex, chapter_index, chapter.ChapID)
-				//fmt.Println(file_name)
-				//fmt.Println("第", chapter.ChapOrder, "章\t\t", chapter.Title, chapter.OriginNeedFireMoney)
-				if chapter.OriginNeedFireMoney == 0 && !cfg.TestList(catalogue.ChapterCfg, file_name) {
-					cfg.Current.DownloadList = append(cfg.Current.DownloadList, file_name)
-				}
+	var chapter_info_list []map[string]string
+	if cfg.Vars.AppType == "sfacg" {
+		chapter_info_list = boluobao.GET_CATALOGUE(cfg.Current.Book.NovelID)
+	} else if cfg.Vars.AppType == "cat" {
+		chapter_info_list = hbooker.GET_DIVISION(cfg.Current.Book.NovelID)
+	}
+	for _, chapter_info := range chapter_info_list {
+		if !cfg.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {
+			if chapter_info["money"] == "0" || chapter_info["money"] == "1" {
+				cfg.Current.DownloadList = append(cfg.Current.DownloadList, chapter_info["file_name"])
+			} else {
+				fmt.Println(chapter_info["chapter_name"], " is vip chapter, You need to subscribe it")
 			}
 		}
-	case "cat":
-		for index, division := range hbooker.GET_DIVISION(cfg.Current.Book.NovelID) {
-			fmt.Printf("第%v卷\t\t%v\n", index+1, division.DivisionName)
-			for _, chapter := range hbooker.GET_CATALOGUE(division.DivisionID) {
-				file_name := config_file_name(chapter.ChapterIndex, division.DivisionID, chapter.ChapterID)
-				if chapter.IsValid == "1" && !cfg.TestList(catalogue.ChapterCfg, file_name) {
-					cfg.Current.DownloadList = append(cfg.Current.DownloadList, file_name)
-				}
-			}
-		}
-
 	}
 }
 

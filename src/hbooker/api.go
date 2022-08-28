@@ -10,9 +10,28 @@ import (
 	"time"
 )
 
-func GET_DIVISION(BookId string) []structs.DivisionList {
+func GET_DIVISION(BookId string) []map[string]string {
+	var division_info []map[string]string
+	var chapter_index int
 	response := req.Get("book/get_division_list", &structs.DivisionStruct{}, map[string]string{"book_id": BookId})
-	return response.(*structs.DivisionStruct).Data.DivisionList
+	for division_index, division := range response.(*structs.DivisionStruct).Data.DivisionList {
+		fmt.Printf("第%v卷\t\t%v\n", division_index+1, division.DivisionName)
+		for _, chapter := range GET_CATALOGUE(division.DivisionID) {
+			chapter_index += 1
+			division_info = append(division_info, map[string]string{
+				"division_name":  division.DivisionName,
+				"division_id":    division.DivisionID,
+				"division_index": strconv.Itoa(division_index),
+				"chapter_name":   chapter.ChapterTitle,
+				"chapter_id":     chapter.ChapterID,
+				"is_valid":       chapter.IsValid,
+				"money":          chapter.AuthAccess,
+				"chapter_index":  strconv.Itoa(chapter_index),
+				"file_name":      cfg.Config_file_name(division_index, chapter_index, chapter.ChapterID),
+			})
+		}
+	}
+	return division_info
 }
 
 func GET_CATALOGUE(DivisionId string) []structs.ChapterList {
