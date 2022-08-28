@@ -58,24 +58,21 @@ func (books *BookInits) SetBookInfo() Catalogue {
 	default:
 		panic("app type" + cfg.Vars.AppType + " is not valid!")
 	}
+	return books.BookDetailed()
 
+}
+
+func (books *BookInits) BookDetailed() Catalogue {
 	cfg.Current.ConfigPath = path.Join(cfg.Vars.ConfigName, cfg.Current.Book.NovelName)
 	cfg.Current.OutputPath = path.Join(cfg.Vars.OutputName, cfg.Current.Book.NovelName+".txt")
 	cfg.Current.CoverPath = path.Join("cover", cfg.Current.Book.NovelName+".jpg")
 	books.InitEpubFile()
-	cfg.Write(cfg.Current.OutputPath, books.ShowBookDetailed()+"\n\n", "w")
-	return Catalogue{TestBookResult: true, EpubSetting: books.EpubSetting}
-
-}
-
-func (books *BookInits) ShowBookDetailed() string {
-	briefIntroduction := fmt.Sprintf(
-		"Name: %v\nBookID: %v\nAuthor: %v\nCount: %v\n",
-		cfg.Current.Book.NovelName, cfg.Current.Book.NovelID,
-		cfg.Current.Book.AuthorName, cfg.Current.Book.CharCount,
+	briefIntroduction := fmt.Sprintf("Name: %v\nBookID: %v\nAuthor: %v\nCount: %v\n\n\n",
+		cfg.Current.Book.NovelName, cfg.Current.Book.NovelID, cfg.Current.Book.AuthorName, cfg.Current.Book.CharCount,
 	)
 	if books.ShowBook {
 		fmt.Println(briefIntroduction)
 	}
-	return briefIntroduction
+	cfg.Write(cfg.Current.OutputPath, briefIntroduction, "w")
+	return Catalogue{TestBookResult: true, EpubSetting: books.EpubSetting}
 }
