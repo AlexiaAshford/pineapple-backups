@@ -28,7 +28,17 @@ func StandardContent(content string) string {
 	}
 	return content
 }
-
+func FormatBool(b bool) string {
+	if b {
+		return "true"
+	}
+	return "false"
+}
+func Config_file_name(index, chapter_index, ChapID any) string {
+	index = StrToInt(fmt.Sprintf("%d", index))
+	return fmt.Sprintf("%05d", index) + "-" + fmt.Sprintf("%05d", chapter_index) + "-" +
+		fmt.Sprintf("%v", ChapID) + ".txt"
+}
 func TestList(List []string, testString string) bool {
 	for _, s := range List {
 		if s == testString {
