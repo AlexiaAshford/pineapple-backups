@@ -9,7 +9,6 @@ import (
 	"sf/src/boluobao"
 	"sf/src/hbooker"
 	"sf/src/https"
-	"sf/struct"
 	"strings"
 )
 
@@ -43,32 +42,23 @@ func (books *BookInits) InitEpubFile() {
 func (books *BookInits) SetBookInfo() Catalogue {
 	switch cfg.Vars.AppType {
 	case "sfacg":
-		result, err := boluobao.GET_BOOK_INFORMATION(books.BookID)
-		if err == nil {
+		if result, err := boluobao.GET_BOOK_INFORMATION(books.BookID); err == nil {
 			cfg.Current.Book = result
 		} else {
 			fmt.Println(books.BookID, "is not a valid book number！\nmessage:", err)
 			return Catalogue{TestBookResult: false}
 		}
 	case "cat":
-		response := hbooker.GET_BOOK_INFORMATION(books.BookID)
-		if response.Code == "100000" {
-			cfg.Current.Book = _struct.Books{
-				NovelName:  cfg.RegexpName(response.Data.BookInfo.BookName),
-				NovelID:    response.Data.BookInfo.BookID,
-				NovelCover: response.Data.BookInfo.Cover,
-				AuthorName: response.Data.BookInfo.AuthorName,
-				CharCount:  response.Data.BookInfo.TotalWordCount,
-				MarkCount:  response.Data.BookInfo.UpdateStatus,
-				//SignStatus: result.SignStatus,
-			}
+		if result, err := hbooker.GET_BOOK_INFORMATION(books.BookID); err == nil {
+			cfg.Current.Book = result
 		} else {
-			fmt.Println(books.BookID, "is not a valid book number！")
+			fmt.Println(books.BookID, "is not a valid book number！\nmessage:", err)
 			return Catalogue{TestBookResult: false}
 		}
 	default:
 		panic("app type" + cfg.Vars.AppType + " is not valid!")
 	}
+
 	cfg.Current.ConfigPath = path.Join(cfg.Vars.ConfigName, cfg.Current.Book.NovelName)
 	cfg.Current.OutputPath = path.Join(cfg.Vars.OutputName, cfg.Current.Book.NovelName+".txt")
 	cfg.Current.CoverPath = path.Join("cover", cfg.Current.Book.NovelName+".jpg")

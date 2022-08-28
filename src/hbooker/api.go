@@ -5,6 +5,7 @@ import (
 	"github.com/gookit/color"
 	"sf/cfg"
 	req "sf/src/https"
+	_struct "sf/struct"
 	structs "sf/struct/hbooker_structs"
 	"strconv"
 	"time"
@@ -39,9 +40,22 @@ func GET_CATALOGUE(DivisionId string) []structs.ChapterList {
 	return req.Get("chapter/get_updated_chapter_by_division_id", &structs.ChapterStruct{}, params).(*structs.ChapterStruct).Data.ChapterList
 }
 
-func GET_BOOK_INFORMATION(bid string) *structs.DetailStruct {
-	return req.Get("book/get_info_by_id", &structs.DetailStruct{}, map[string]string{"book_id": bid}).(*structs.DetailStruct)
-
+func GET_BOOK_INFORMATION(bid string) (_struct.Books, error) {
+	params := map[string]string{"book_id": bid}
+	response := req.Get("book/get_info_by_id", &structs.DetailStruct{}, params).(*structs.DetailStruct)
+	if response.Code == "100000" {
+		return _struct.Books{
+			NovelName:  cfg.RegexpName(response.Data.BookInfo.BookName),
+			NovelID:    response.Data.BookInfo.BookID,
+			NovelCover: response.Data.BookInfo.Cover,
+			AuthorName: response.Data.BookInfo.AuthorName,
+			CharCount:  response.Data.BookInfo.TotalWordCount,
+			MarkCount:  response.Data.BookInfo.UpdateStatus,
+			SignStatus: response.Data.BookInfo.IsPaid,
+		}, nil
+	} else {
+		return _struct.Books{}, fmt.Errorf(response.Tip.(string))
+	}
 }
 
 func GET_SEARCH(KeyWord string, page int) *structs.SearchStruct {

@@ -2,6 +2,7 @@ package hbooker_structs
 
 type DetailStruct struct {
 	Code         string        `json:"code"`
+	Tip          any           `json:"tip"`
 	Data         DetailData    `json:"data"`
 	ScrollChests []ScrollChest `json:"scroll_chests"`
 }
