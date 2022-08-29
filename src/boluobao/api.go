@@ -41,9 +41,7 @@ func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 		return nil, fmt.Errorf(response.Status.Msg.(string))
 	}
 	for index, value := range response.Data {
-		fmt.Println("bookshelf index:", index+1, "\t\t\tbookshelf name:", value.Name)
-	}
-	for index, value := range response.Data {
+		fmt.Println("bookshelf index:", index, "\t\t\tbookshelf name:", value.Name)
 		var bookshelf_info_list []map[string]string
 		for _, book := range value.Expand.Novels {
 			bookshelf_info_list = append(bookshelf_info_list,

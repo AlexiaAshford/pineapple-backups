@@ -87,7 +87,6 @@ func InitBookShelf() {
 	} else {
 		fmt.Println("\nyou account is valid, start loading bookshelf information.")
 	}
-	fmt.Println("kehcjdcgshj", len(response))
 	if len(response) == 1 {
 		fmt.Println("you only have one bookshelf, default loading bookshelf index:1")
 		bookshelf_index = 1
