@@ -159,13 +159,20 @@ func TestKeyword(Text string, keyword any) bool {
 }
 
 // input int
-func InputInt(introduction string) int {
+func InputInt(introduction string, max_indexes int) int {
 	var input int
 	// if search keyword is not empty, search book and download
 	fmt.Printf(introduction)
 	if _, err := fmt.Scanln(&input); err == nil {
-		return input
+		for {
+			if input >= max_indexes {
+				fmt.Println("you input index is out of range, please input again:")
+				return InputInt(">", max_indexes)
+			} else {
+				return input
+			}
+		}
 	} else {
-		return InputInt(">")
+		return InputInt(">", max_indexes)
 	}
 }

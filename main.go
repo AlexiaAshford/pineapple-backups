@@ -92,14 +92,7 @@ func InitBookShelf() {
 		bookshelf_index = 1
 	} else {
 		fmt.Println("please input bookshelf index:")
-		for {
-			bookshelf_index = cfg.InputInt(">")
-			if bookshelf_index >= len(response) {
-				fmt.Println("you input index is out of range, please input again:")
-			} else {
-				break
-			}
-		}
+		bookshelf_index = cfg.InputInt(">", len(response))
 	}
 	for book_index, book := range response[bookshelf_index] {
 		fmt.Println("book-index", book_index, "book-name:", book["novel_name"], "\t\tbook-id:", book["novel_id"])
