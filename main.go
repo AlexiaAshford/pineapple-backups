@@ -6,7 +6,6 @@ import (
 	"sf/cfg"
 	"sf/src"
 	"sf/src/boluobao"
-	"strconv"
 	"strings"
 )
 
@@ -75,47 +74,46 @@ func init() {
 }
 
 func InitBookShelf() {
-	response := boluobao.GET_BOOK_SHELF_INFORMATION()
-	if response.Status.HTTPCode == 200 {
-		var bookshelf_index int
-		fmt.Println("\nyou account is valid, start loading bookshelf information.")
-		for index, value := range response.Data {
-			fmt.Println("bookshelf index:", index+1, "\t\t\tbookshelf name:", value.Name)
-		}
-		if len(response.Data) == 1 {
-			fmt.Println("you only have one bookshelf, default loading bookshelf index:1")
-			bookshelf_index = 1
-		} else {
-			bookshelf_index = cfg.InputInt("please input bookshelf index:")
-			if bookshelf_index > len(response.Data) {
-				// if the index is valid (less than the length of the search result)
-				bookshelf_index = cfg.InputInt("you input index is out of range, please input again:")
-			}
-		}
-		var bookshelf_book_id []string
-		var bookshelf_book_index []string
-		for book_index, book := range response.Data[bookshelf_index].Expand.Novels {
-			fmt.Println("book-index", book_index, "book-name:", book.NovelName, "\t\tbook-id:", book.NovelID)
-			bookshelf_book_index = append(bookshelf_book_index, strconv.Itoa(book_index))
-			bookshelf_book_id = append(bookshelf_book_id, strconv.Itoa(book.NovelID))
-		}
-		for {
-			if comment, err := cfg.Console(); err {
-				if cfg.TestList(bookshelf_book_index, comment[0]) {
-					shell([]string{"book", bookshelf_book_id[cfg.StrToInt(comment[0])]})
-				} else {
-					shell(comment)
-				}
-			}
-		}
-
-	} else {
+	var bookshelf_index int
+	var bookshelf_book_index []int
+	response, err := boluobao.GET_BOOK_SHELF_INFORMATION()
+	if err != nil {
+		fmt.Println("BookShelf Error:", err)
 		if !src.AutoAccount() {
 			fmt.Println("please login your account and password, like: sf account password")
 		} else {
 			InitBookShelf()
 		}
-
+	} else {
+		fmt.Println("\nyou account is valid, start loading bookshelf information.")
+	}
+	fmt.Println("kehcjdcgshj", len(response))
+	if len(response) == 1 {
+		fmt.Println("you only have one bookshelf, default loading bookshelf index:1")
+		bookshelf_index = 1
+	} else {
+		fmt.Println("please input bookshelf index:")
+		for {
+			bookshelf_index = cfg.InputInt(">")
+			if bookshelf_index >= len(response) {
+				fmt.Println("you input index is out of range, please input again:")
+			} else {
+				break
+			}
+		}
+	}
+	for book_index, book := range response[bookshelf_index] {
+		fmt.Println("book-index", book_index, "book-name:", book["novel_name"], "\t\tbook-id:", book["novel_id"])
+		bookshelf_book_index = append(bookshelf_book_index, book_index)
+	}
+	for {
+		if comment, ok := cfg.Console(); ok {
+			if cfg.TestIntList(bookshelf_book_index, comment[0]) {
+				shell([]string{"book", response[bookshelf_index][cfg.StrToInt(comment[0])]["novel_id"]})
+			} else {
+				shell(comment)
+			}
+		}
 	}
 }
 
