@@ -47,6 +47,14 @@ func TestList(List []string, testString string) bool {
 	}
 	return false
 }
+func TestIntList(List []int, testString string) bool {
+	for _, s := range List {
+		if strconv.Itoa(s) == testString {
+			return true
+		}
+	}
+	return false
+}
 func GetFileName(dirname string) []string {
 	var file_list []string
 	f, err := os.Open(dirname)
@@ -158,8 +166,6 @@ func InputInt(introduction string) int {
 	if _, err := fmt.Scanln(&input); err == nil {
 		return input
 	} else {
-		InputInt(">")
+		return InputInt(">")
 	}
-	fmt.Println("something wrong, return 0")
-	return 0
 }

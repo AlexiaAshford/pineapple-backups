@@ -34,9 +34,25 @@ func GET_ACCOUNT_INFORMATION() *sfacg_structs.Account {
 	return req.Get("user", &sfacg_structs.Account{}, nil).(*sfacg_structs.Account)
 }
 
-func GET_BOOK_SHELF_INFORMATION() *bookshelf.InfoData {
-	params := map[string]string{"expand": "novels,albums,comics,discount"}
-	return req.Get("user/Pockets", &bookshelf.InfoData{}, params).(*bookshelf.InfoData)
+func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
+	params, bookshelf_info := map[string]string{"expand": "novels"}, make(map[int][]map[string]string)
+	response := req.Get("user/Pockets", &bookshelf.InfoData{}, params).(*bookshelf.InfoData)
+	if response.Status.HTTPCode != 200 {
+		return nil, fmt.Errorf(response.Status.Msg.(string))
+	}
+	for index, value := range response.Data {
+		fmt.Println("bookshelf index:", index+1, "\t\t\tbookshelf name:", value.Name)
+	}
+	for index, value := range response.Data {
+		var bookshelf_info_list []map[string]string
+		for _, book := range value.Expand.Novels {
+			bookshelf_info_list = append(bookshelf_info_list,
+				map[string]string{"novel_name": book.NovelName, "novel_id": strconv.Itoa(book.NovelID)},
+			)
+		}
+		bookshelf_info[index] = bookshelf_info_list
+	}
+	return bookshelf_info, nil
 }
 
 func GET_CATALOGUE(NovelID string) []map[string]string {
