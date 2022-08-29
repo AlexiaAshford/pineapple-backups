@@ -7,6 +7,7 @@ import (
 	req "sf/src/https"
 	_struct "sf/struct"
 	structs "sf/struct/hbooker_structs"
+	"sf/struct/hbooker_structs/bookshelf"
 	"strconv"
 	"time"
 )
@@ -40,22 +41,23 @@ func GET_CATALOGUE(DivisionId string) []structs.ChapterList {
 	return req.Get("chapter/get_updated_chapter_by_division_id", &structs.ChapterStruct{}, params).(*structs.ChapterStruct).Data.ChapterList
 }
 
-func GET_BOOK_SHELF_INDEXES_INFORMATION(shelf_id, last_mod_time, direction string) (map[string]string, error) {
-	params := map[string]string{"shelf_id": shelf_id, "last_mod_time": last_mod_time, "direction": direction}
+func GET_BOOK_SHELF_INDEXES_INFORMATION(shelf_id string) (map[string]string, error) {
+	params := map[string]string{"shelf_id": shelf_id, "last_mod_time": "0", "direction": "prev"}
 	response := req.Get("bookshelf/get_shelf_book_list", &structs.DetailStruct{}, params).(*structs.DetailStruct)
 	fmt.Println(response)
 	return nil, nil
 }
 
 func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
-	params, bookshelf_info := map[string]string{"expand": "novels"}, make(map[int][]map[string]string)
-	fmt.Println(params)
-	response := req.Get("bookshelf/get_shelf_list", &structs.DetailStruct{}, nil).(*structs.DetailStruct)
-	fmt.Println(response)
-	//if response.Status.HTTPCode != 200 {
-	//	return nil, fmt.Errorf(response.Status.Msg.(string))
-	//}
-	//for index, value := range response.Data {
+	bookshelf_info := make(map[int][]map[string]string)
+	response := req.Get("bookshelf/get_shelf_list", &bookshelf.GetShelfList{}, nil).(*bookshelf.GetShelfList)
+	if response.Code != "100000" {
+		return nil, fmt.Errorf(response.Tip.(string))
+	}
+	for index, value := range response.Data.ShelfList {
+		fmt.Println("bookshelf index:", index, "\t\t\tbookshelf name:", value.ShelfName)
+		GET_BOOK_SHELF_INDEXES_INFORMATION(value.ShelfID)
+	}
 	//	fmt.Println("bookshelf index:", index, "\t\t\tbookshelf name:", value.Name)
 	//	var bookshelf_info_list []map[string]string
 	//	for _, book := range value.Expand.Novels {
