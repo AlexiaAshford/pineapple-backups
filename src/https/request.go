@@ -90,6 +90,7 @@ func Request(method string, url string) ([]byte, error) {
 func Get(url string, structural any, params map[string]string) any {
 	if cfg.Vars.AppType == "cat" {
 		if result, ok := Request("POST", SET_URL(url, params)); ok == nil {
+			//fmt.Println(string(Encrypt.Decode(string(result), "")))
 			return JsonUnmarshal(Encrypt.Decode(string(result), ""), structural)
 		} else {
 			fmt.Println(ok)
