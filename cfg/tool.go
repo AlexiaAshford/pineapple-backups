@@ -151,16 +151,16 @@ func TestKeyword(Text string, keyword any) bool {
 }
 
 // input int
-//func InputInt(introduction string) int {
-//	var input int
-//	// if search keyword is not empty, search book and download
-//	fmt.Printf(introduction)
-//	if _, err := fmt.Scanln(&input); err == nil {
-//		return input
-//	} else {
-//		fmt.Println(err)
-//		InputInt(introduction)
-//	}
-//	fmt.Println("something wrong, return 0")
-//	return 0
-//}
+func InputInt(introduction string) int {
+	var input int
+	// if search keyword is not empty, search book and download
+	fmt.Printf(introduction)
+	if _, err := fmt.Scanln(&input); err == nil {
+		return input
+	} else {
+		fmt.Println(err)
+		InputInt(introduction)
+	}
+	fmt.Println("something wrong, return 0")
+	return 0
+}

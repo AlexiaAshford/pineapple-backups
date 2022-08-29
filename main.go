@@ -5,6 +5,7 @@ import (
 	"os"
 	"sf/cfg"
 	"sf/src"
+	"sf/src/boluobao"
 	"strings"
 )
 
@@ -72,6 +73,29 @@ func init() {
 	fmt.Println("you can input -h and --help to see the command list.")
 }
 
+func InitBookShelf() {
+	response := boluobao.GET_BOOK_SHELF_INFORMATION()
+	if response.Status.HTTPCode == 200 {
+		fmt.Println("\nyou account is valid, start loading bookshelf information.")
+		for index, value := range response.Data {
+			fmt.Println("bookshelf index:", index+1, "bookshelf name:", value.Name)
+		}
+		inputInt := cfg.InputInt("please input bookshelf index:")
+		if inputInt < len(response.Data) { // if the index is valid (less than the length of the search result)
+			for _, book := range response.Data[inputInt].Expand.Novels {
+				fmt.Println("book-name:", book.NovelName, "\t\tbook-id:", book.NovelID)
+			}
+
+		} else {
+			fmt.Println("index out of range, please input again")
+		}
+	} else {
+		if !src.AutoAccount() {
+			fmt.Println("please login your account and password, like: sf account password")
+		}
+	}
+}
+
 func shell(inputs []string) {
 	switch inputs[0] {
 	case "q", "quit":
@@ -129,6 +153,7 @@ func main() {
 			shell(commentLine)
 		}
 	} else {
+		//InitBookShelf()
 		for _, s := range cfg.HelpMessage {
 			fmt.Println("[info]", s)
 		}
