@@ -6,6 +6,7 @@ import (
 	"sf/cfg"
 	"sf/src"
 	"sf/src/boluobao"
+	"strconv"
 	"strings"
 )
 
@@ -76,29 +77,42 @@ func init() {
 func InitBookShelf() {
 	response := boluobao.GET_BOOK_SHELF_INFORMATION()
 	if response.Status.HTTPCode == 200 {
-		var bookshel_index int
+		var bookshelf_index int
 		fmt.Println("\nyou account is valid, start loading bookshelf information.")
 		for index, value := range response.Data {
 			fmt.Println("bookshelf index:", index+1, "bookshelf name:", value.Name)
 		}
 		if len(response.Data) == 1 {
 			fmt.Println("you only have one bookshelf, default loading bookshelf index:1")
-			bookshel_index = 1
+			bookshelf_index = 1
 		} else {
-			bookshel_index = cfg.InputInt("please input bookshelf index:")
-			if bookshel_index > len(response.Data) {
+			bookshelf_index = cfg.InputInt("please input bookshelf index:")
+			if bookshelf_index > len(response.Data) {
 				// if the index is valid (less than the length of the search result)
-				bookshel_index = cfg.InputInt("you input index is out of range, please input again:")
+				bookshelf_index = cfg.InputInt("you input index is out of range, please input again:")
 			}
 		}
-		for _, book := range response.Data[bookshel_index].Expand.Novels {
-			fmt.Println("book-name:", book.NovelName, "\t\tbook-id:", book.NovelID)
+		var bookshelf_book_id []string
+		var bookshelf_book_index []string
+		for book_index, book := range response.Data[bookshelf_index].Expand.Novels {
+			fmt.Println("book-index", book_index, "book-name:", book.NovelName, "\t\tbook-id:", book.NovelID)
+			bookshelf_book_index = append(bookshelf_book_index, strconv.Itoa(book_index))
+			bookshelf_book_id = append(bookshelf_book_id, strconv.Itoa(book.NovelID))
 		}
-
+		for {
+			if comment, err := cfg.Console(); err {
+				if cfg.TestList(bookshelf_book_index, comment[0]) {
+					shell([]string{"book", bookshelf_book_id[cfg.StrToInt(comment[0])]})
+				} else {
+					shell(comment)
+				}
+			}
+		}
 	} else {
 		if !src.AutoAccount() {
 			fmt.Println("please login your account and password, like: sf account password")
 		}
+
 	}
 }
 
@@ -159,14 +173,10 @@ func main() {
 			shell(commentLine)
 		}
 	} else {
-		//InitBookShelf()
 		for _, s := range cfg.HelpMessage {
 			fmt.Println("[info]", s)
 		}
-		for {
-			if comment, err := cfg.Console(); err {
-				shell(comment)
-			}
-		}
+		InitBookShelf()
+
 	}
 }
