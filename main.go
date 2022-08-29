@@ -80,7 +80,7 @@ func InitBookShelf() {
 		var bookshelf_index int
 		fmt.Println("\nyou account is valid, start loading bookshelf information.")
 		for index, value := range response.Data {
-			fmt.Println("bookshelf index:", index+1, "bookshelf name:", value.Name)
+			fmt.Println("bookshelf index:", index+1, "\t\t\tbookshelf name:", value.Name)
 		}
 		if len(response.Data) == 1 {
 			fmt.Println("you only have one bookshelf, default loading bookshelf index:1")
@@ -108,9 +108,12 @@ func InitBookShelf() {
 				}
 			}
 		}
+
 	} else {
 		if !src.AutoAccount() {
 			fmt.Println("please login your account and password, like: sf account password")
+		} else {
+			InitBookShelf()
 		}
 
 	}

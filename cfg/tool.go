@@ -158,8 +158,7 @@ func InputInt(introduction string) int {
 	if _, err := fmt.Scanln(&input); err == nil {
 		return input
 	} else {
-		fmt.Println(err)
-		InputInt(introduction)
+		InputInt(">")
 	}
 	fmt.Println("something wrong, return 0")
 	return 0
