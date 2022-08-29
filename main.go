@@ -76,19 +76,25 @@ func init() {
 func InitBookShelf() {
 	response := boluobao.GET_BOOK_SHELF_INFORMATION()
 	if response.Status.HTTPCode == 200 {
+		var bookshel_index int
 		fmt.Println("\nyou account is valid, start loading bookshelf information.")
 		for index, value := range response.Data {
 			fmt.Println("bookshelf index:", index+1, "bookshelf name:", value.Name)
 		}
-		inputInt := cfg.InputInt("please input bookshelf index:")
-		if inputInt < len(response.Data) { // if the index is valid (less than the length of the search result)
-			for _, book := range response.Data[inputInt].Expand.Novels {
-				fmt.Println("book-name:", book.NovelName, "\t\tbook-id:", book.NovelID)
-			}
-
+		if len(response.Data) == 1 {
+			fmt.Println("you only have one bookshelf, default loading bookshelf index:1")
+			bookshel_index = 1
 		} else {
-			fmt.Println("index out of range, please input again")
+			bookshel_index = cfg.InputInt("please input bookshelf index:")
+			if bookshel_index > len(response.Data) {
+				// if the index is valid (less than the length of the search result)
+				bookshel_index = cfg.InputInt("you input index is out of range, please input again:")
+			}
 		}
+		for _, book := range response.Data[bookshel_index].Expand.Novels {
+			fmt.Println("book-name:", book.NovelName, "\t\tbook-id:", book.NovelID)
+		}
+
 	} else {
 		if !src.AutoAccount() {
 			fmt.Println("please login your account and password, like: sf account password")
