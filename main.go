@@ -74,11 +74,19 @@ func init() {
 }
 
 func InitBookShelf() {
-	var bookshelf_index int
-	var bookshelf_book_index []int
-	response, err := boluobao.GET_BOOK_SHELF_INFORMATION()
-	if err != nil {
-		fmt.Println("BookShelf Error:", err)
+	var (
+		bookshelf_index      int
+		response_err         error
+		bookshelf_book_index []int
+		bookshelf_book_list  map[int][]map[string]string
+	)
+	if cfg.Vars.AppType == "sfacg" {
+		bookshelf_book_list, response_err = boluobao.GET_BOOK_SHELF_INFORMATION()
+	} else {
+		bookshelf_book_list, response_err = boluobao.GET_BOOK_SHELF_INFORMATION()
+	}
+	if response_err != nil {
+		fmt.Println("BookShelf Error:", response_err)
 		if !src.AutoAccount() {
 			fmt.Println("please login your account and password, like: sf account password")
 		} else {
@@ -87,21 +95,21 @@ func InitBookShelf() {
 	} else {
 		fmt.Println("\nyou account is valid, start loading bookshelf information.")
 	}
-	if len(response) == 1 {
+	if len(bookshelf_book_list) == 1 {
 		fmt.Println("you only have one bookshelf, default loading bookshelf index:1")
 		bookshelf_index = 1
 	} else {
 		fmt.Println("please input bookshelf index:")
-		bookshelf_index = cfg.InputInt(">", len(response))
+		bookshelf_index = cfg.InputInt(">", len(bookshelf_book_list))
 	}
-	for book_index, book := range response[bookshelf_index] {
+	for book_index, book := range bookshelf_book_list[bookshelf_index] {
 		fmt.Println("book-index", book_index, "book-name:", book["novel_name"], "\t\tbook-id:", book["novel_id"])
 		bookshelf_book_index = append(bookshelf_book_index, book_index)
 	}
 	for {
 		if comment, ok := cfg.Console(); ok {
 			if cfg.TestIntList(bookshelf_book_index, comment[0]) {
-				shell([]string{"book", response[bookshelf_index][cfg.StrToInt(comment[0])]["novel_id"]})
+				shell([]string{"book", bookshelf_book_list[bookshelf_index][cfg.StrToInt(comment[0])]["novel_id"]})
 			} else {
 				shell(comment)
 			}
