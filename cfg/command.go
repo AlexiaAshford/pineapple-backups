@@ -30,8 +30,9 @@ func Console() ([]string, bool) {
 		return nil, false
 	}
 }
-func CommandInit() []string {
-	var ruleCmd = &cobra.Command{
+
+func ruleCmd() *cobra.Command {
+	return &cobra.Command{
 		Use:   "https://github.com/VeronicaAlexia/pineapple-backups",
 		Short: "you can use this command tools to backup your data",
 		Long:  "[warning] you login required to use this command tools",
@@ -39,11 +40,15 @@ func CommandInit() []string {
 			if len(args) > 0 {
 				if os.Args[1] == "-h" || os.Args[1] == "--help" {
 					_ = cmd.Help()
+					os.Exit(0)
 				}
 			}
 		},
 	}
-	AddFlags := ruleCmd.Flags()
+}
+func CommandInit() []string {
+	rule_cmd := ruleCmd()
+	AddFlags := rule_cmd.Flags()
 	AddFlags.StringVarP(&Book_id, "download", "d", "", "")
 	AddFlags.StringVar(&Account, "account", "", "input account")
 	AddFlags.StringVar(&Password, "password", "", "input password")
@@ -53,7 +58,7 @@ func CommandInit() []string {
 	AddFlags.IntVarP(&max_thread, "max", "m", 32, "change max thread number")
 	AddFlags.BoolVar(&show_info, "show", false, "show config")
 	AddFlags.BoolVar(&up_date, "update", false, "update config")
-	if err := ruleCmd.Execute(); err != nil {
+	if err := rule_cmd.Execute(); err != nil {
 		fmt.Println("ruleCmd error:", err)
 	} else {
 		Vars.ThreadNum = max_thread

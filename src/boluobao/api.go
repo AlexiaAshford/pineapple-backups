@@ -7,6 +7,7 @@ import (
 	req "sf/src/https"
 	_struct "sf/struct"
 	"sf/struct/sfacg_structs"
+	"sf/struct/sfacg_structs/bookshelf"
 	"strconv"
 )
 
@@ -31,6 +32,11 @@ func GET_BOOK_INFORMATION(NovelId string) (_struct.Books, error) {
 
 func GET_ACCOUNT_INFORMATION() *sfacg_structs.Account {
 	return req.Get("user", &sfacg_structs.Account{}, nil).(*sfacg_structs.Account)
+}
+
+func GET_BOOK_SHELF_INFORMATION() *bookshelf.InfoData {
+	params := map[string]string{"expand": "novels,albums,comics,discount"}
+	return req.Get("user/Pockets", &bookshelf.InfoData{}, params).(*bookshelf.InfoData)
 }
 
 func GET_CATALOGUE(NovelID string) []map[string]string {
