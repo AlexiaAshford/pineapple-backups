@@ -8,45 +8,45 @@ import (
 	_struct "sf/struct"
 	structs "sf/struct/hbooker_structs"
 	"sf/struct/hbooker_structs/bookshelf"
+	"sf/struct/hbooker_structs/division"
 	"strconv"
 	"time"
 )
 
 func GET_DIVISION(BookId string) []map[string]string {
-	var division_info []map[string]string
-	var chapter_index int
-	params := map[string]string{"book_id": BookId, "recommend": "module_list",
-		"module_id": "20005", "use_daguan": "0", "carousel_position": "", "tab_type": "200",
-	}
-	response := req.Get("book/get_division_list", &structs.DivisionStruct{}, params)
-	for division_index, division := range response.(*structs.DivisionStruct).Data.DivisionList {
-		fmt.Printf("第%v卷\t\t%v\n", division_index+1, division.DivisionName)
-		for _, chapter := range GET_CATALOGUE(division.DivisionID) {
+	var (
+		division_info_list []map[string]string
+		chapter_index      int
+	)
+	response := req.Get(GET_DIVISION_LIST, &division.DivisionList{}, map[string]string{"book_id": BookId})
+	for division_index, division_info := range response.(*division.DivisionList).Data.DivisionList {
+		fmt.Printf("第%v卷\t\t%v\n", division_index+1, division_info.DivisionName)
+		for _, chapter := range GET_CATALOGUE(division_info.DivisionID) {
 			chapter_index += 1
-			division_info = append(division_info, map[string]string{
-				"division_name":  division.DivisionName,
-				"division_id":    division.DivisionID,
-				"division_index": strconv.Itoa(division_index),
-				"chapter_name":   chapter.ChapterTitle,
-				"chapter_id":     chapter.ChapterID,
+			division_info_list = append(division_info_list, map[string]string{
 				"is_valid":       chapter.IsValid,
+				"chapter_id":     chapter.ChapterID,
 				"money":          chapter.AuthAccess,
+				"chapter_name":   chapter.ChapterTitle,
+				"division_name":  division_info.DivisionName,
+				"division_id":    division_info.DivisionID,
+				"division_index": strconv.Itoa(division_index),
 				"chapter_index":  strconv.Itoa(chapter_index),
 				"file_name":      cfg.Config_file_name(division_index, chapter_index, chapter.ChapterID),
 			})
 		}
 	}
-	return division_info
+	return division_info_list
 }
 
 func GET_CATALOGUE(DivisionId string) []structs.ChapterList {
 	params := map[string]string{"division_id": DivisionId}
-	return req.Get("chapter/get_updated_chapter_by_division_id", &structs.ChapterStruct{}, params).(*structs.ChapterStruct).Data.ChapterList
+	return req.Get(GET_CHAPTER_UPDATE, &structs.ChapterStruct{}, params).(*structs.ChapterStruct).Data.ChapterList
 }
 
 func GET_BOOK_SHELF_INDEXES_INFORMATION(shelf_id string) ([]map[string]string, error) {
 	params := map[string]string{"shelf_id": shelf_id, "last_mod_time": "0", "direction": "prev"}
-	response := req.Get("bookshelf/get_shelf_book_list", &bookshelf.GetShelfBookList{}, params).(*bookshelf.GetShelfBookList)
+	response := req.Get(BOOKSHELF_GET_SHELF_BOOK_LIST, &bookshelf.GetShelfBookList{}, params).(*bookshelf.GetShelfBookList)
 	if response.Code != "100000" {
 		return nil, fmt.Errorf(response.Tip.(string))
 	}
@@ -62,7 +62,7 @@ func GET_BOOK_SHELF_INDEXES_INFORMATION(shelf_id string) ([]map[string]string, e
 
 func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 	bookshelf_info := make(map[int][]map[string]string)
-	response := req.Get("bookshelf/get_shelf_list", &bookshelf.GetShelfList{}, nil).(*bookshelf.GetShelfList)
+	response := req.Get(BOOKSHELF_GET_SHELF_LIST, &bookshelf.GetShelfList{}, nil).(*bookshelf.GetShelfList)
 	if response.Code != "100000" {
 		return nil, fmt.Errorf(response.Tip.(string))
 	}
@@ -78,7 +78,7 @@ func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 }
 func GET_BOOK_INFORMATION(bid string) (_struct.Books, error) {
 	params := map[string]string{"book_id": bid}
-	response := req.Get("book/get_info_by_id", &structs.DetailStruct{}, params).(*structs.DetailStruct)
+	response := req.Get(BOOK_GET_INFO_BY_ID, &structs.DetailStruct{}, params).(*structs.DetailStruct)
 	if response.Code == "100000" {
 		return _struct.Books{
 			NovelName:  cfg.RegexpName(response.Data.BookInfo.BookName),
@@ -96,12 +96,12 @@ func GET_BOOK_INFORMATION(bid string) (_struct.Books, error) {
 
 func GET_SEARCH(KeyWord string, page int) *structs.SearchStruct {
 	params := map[string]string{"count": "10", "page": strconv.Itoa(page), "category_index": "0", "key": KeyWord}
-	return req.Get("bookcity/get_filter_search_book_list", &structs.SearchStruct{}, params).(*structs.SearchStruct)
+	return req.Get(BOOKCITY_GET_FILTER_LIST, &structs.SearchStruct{}, params).(*structs.SearchStruct)
 }
 
 func Login(account, password string) {
 	params := map[string]string{"login_name": account, "password": password}
-	response := req.Get("signup/login", &structs.LoginStruct{}, params)
+	response := req.Get(MY_SIGN_LOGIN, &structs.LoginStruct{}, params)
 	result := response.(*structs.LoginStruct)
 	if result.Code == "100000" {
 		cfg.Apps.Cat.Params.LoginToken = result.Data.LoginToken
@@ -137,19 +137,19 @@ func TestGeetest(userID string) {
 
 func GetRecommend() *structs.RecommendStruct {
 	params := map[string]string{"theme_type": "NORMAL", "tab_type": "200"}
-	return req.Get("bookcity/get_index_list", &structs.RecommendStruct{}, params).(*structs.RecommendStruct)
+	return req.Get(BOOKCITY_RECOMMEND_DATA, &structs.RecommendStruct{}, params).(*structs.RecommendStruct)
 }
 func GetChangeRecommend() []structs.ChangeBookList {
 	params := map[string]string{"book_id": "100250589,100283902,100186621,100287528,100309123,100325245", "from_module_name": "长篇好书"}
-	return req.Get("bookcity/change_recommend_exposure_books", &structs.ChangeRecommendStruct{}, params).(*structs.ChangeRecommendStruct).Data.BookList
+	return req.Get(GET_CHANGE_RECOMMEND, &structs.ChangeRecommendStruct{}, params).(*structs.ChangeRecommendStruct).Data.BookList
 }
 
 func GetKeyByCid(chapterId string) string {
 	params := map[string]string{"chapter_id": chapterId}
-	return req.Get("chapter/get_chapter_cmd", &structs.KeyStruct{}, params).(*structs.KeyStruct).Data.Command
+	return req.Get(GET_CHAPTER_KEY, &structs.KeyStruct{}, params).(*structs.KeyStruct).Data.Command
 }
 
 func GetContent(chapterId string, ChapterKey string) *structs.ContentStruct {
 	params := map[string]string{"chapter_id": chapterId, "chapter_command": ChapterKey}
-	return req.Get("chapter/get_cpt_ifm", &structs.ContentStruct{}, params).(*structs.ContentStruct)
+	return req.Get(GET_CPT_IFM, &structs.ContentStruct{}, params).(*structs.ContentStruct)
 }

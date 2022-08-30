@@ -1,15 +1,15 @@
-package hbooker_structs
+package division
 
-type DivisionStruct struct {
+type DivisionList struct {
 	Code string       `json:"code"`
 	Data DivisionData `json:"data"`
 }
 
 type DivisionData struct {
-	DivisionList []DivisionList `json:"division_list"`
+	DivisionList []DivisionInfoList `json:"division_list"`
 }
 
-type DivisionList struct {
+type DivisionInfoList struct {
 	DivisionID    string `json:"division_id"`
 	DivisionIndex string `json:"division_index"`
 	DivisionName  string `json:"division_name"`
