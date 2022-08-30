@@ -7,7 +7,6 @@ import (
 	"sf/epub"
 	"sf/src/boluobao"
 	"sf/src/hbooker"
-	"sf/src/hbooker/Encrypt"
 	"strings"
 	"time"
 )
@@ -49,34 +48,19 @@ func (catalogue *Catalogue) GetDownloadsList() {
 }
 
 func (catalogue *Catalogue) DownloadContent(file_name string) {
-	chapter_id := strings.Replace(strings.Split(file_name, "-")[2], ".txt", "", -1)
-	catalogue.SpeedProgressAndDelayTime()
-	if cfg.Vars.AppType == "sfacg" {
-		response := boluobao.GET_CONTENT(chapter_id)
-		if response.Status.HTTPCode == 200 {
-			result := response.Data // get content data
-			content_title := fmt.Sprintf("%v: %v", result.Title, result.AddTime)
-			content_text := content_title + "\n" + cfg.StandardContent(result.Expand.Content)
-			cfg.Write(path.Join(cfg.Current.ConfigPath, file_name), content_text, "w")
-		} else {
-			fmt.Println("Error:", response.Status.Msg)
+	chapter_id := catalogue.speed_progress(file_name)
+	var content_text string
+	for i := 0; i < 5; i++ {
+		if cfg.Vars.AppType == "sfacg" {
+			content_text = boluobao.GET_CONTENT(chapter_id)
+		} else if cfg.Vars.AppType == "cat" {
+			content_text = hbooker.GET_CHAPTER_CONTENT(chapter_id, hbooker.GetKeyByCid(chapter_id))
 		}
-
-	} else if cfg.Vars.AppType == "cat" {
-		chapter_key := hbooker.GetKeyByCid(chapter_id)
-		response := hbooker.GetContent(chapter_id, chapter_key)
-		if response.Code == "100000" {
-			result := response.Data.ChapterInfo
-			TxtContent := Encrypt.Decode(result.TxtContent, chapter_key)
-			content_title := fmt.Sprintf("%v: %v", result.ChapterTitle, result.Uptime)
-			content_text := content_title + "\n" + cfg.StandardContent(string(TxtContent))
+		if content_text != "" {
 			cfg.Write(path.Join(cfg.Current.ConfigPath, file_name), content_text, "w")
+			break
 		}
-
-	} else {
-		panic("app type error please check config file, the app type is:" + cfg.Vars.AppType)
 	}
-
 }
 
 func (catalogue *Catalogue) MergeTextAndEpubFiles() {
@@ -101,12 +85,14 @@ func (catalogue *Catalogue) add_chapter_in_epub_file(title, content string) {
 		fmt.Printf("epub add chapter:%v\t\terror message:%v", title, err)
 	}
 }
-func (catalogue *Catalogue) SpeedProgressAndDelayTime() {
+func (catalogue *Catalogue) speed_progress(file_name string) string {
 	if err := catalogue.ChapterBar.Add(1); err != nil {
 		fmt.Println("bar error:", err)
 	} else {
 		//time.Sleep(time.Second * time.Duration(2))
 	}
+	return strings.ReplaceAll(strings.Split(file_name, "-")[2], ".txt", "")
+
 }
 
 //func (catalogue *Catalogue) makeContentInformation(response any) {
@@ -127,7 +113,7 @@ func (catalogue *Catalogue) SpeedProgressAndDelayTime() {
 //		catalogue.AddChapterInEpubFile(result.ChapterTitle, result.TxtContent)
 //		catalogue.ContentList[result.ChapterID] = writeContent
 //	}
-//	catalogue.SpeedProgressAndDelayTime()
+//	catalogue.SpeedProgress()
 //
 //}
 

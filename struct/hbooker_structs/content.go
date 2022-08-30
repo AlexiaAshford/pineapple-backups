@@ -2,6 +2,7 @@ package hbooker_structs
 
 type ContentStruct struct {
 	Code string      `json:"code"`
+	Tip  interface{} `json:"tip"`
 	Data ContentData `json:"data"`
 }
 

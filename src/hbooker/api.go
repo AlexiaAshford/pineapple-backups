@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gookit/color"
 	"sf/cfg"
+	"sf/src/hbooker/Encrypt"
 	req "sf/src/https"
 	_struct "sf/struct"
 	structs "sf/struct/hbooker_structs"
@@ -149,7 +150,16 @@ func GetKeyByCid(chapterId string) string {
 	return req.Get(GET_CHAPTER_KEY, &structs.KeyStruct{}, params).(*structs.KeyStruct).Data.Command
 }
 
-func GetContent(chapterId string, ChapterKey string) *structs.ContentStruct {
-	params := map[string]string{"chapter_id": chapterId, "chapter_command": ChapterKey}
-	return req.Get(GET_CPT_IFM, &structs.ContentStruct{}, params).(*structs.ContentStruct)
+func GET_CHAPTER_CONTENT(chapterId, chapter_key string) string {
+	params := map[string]string{"chapter_id": chapterId, "chapter_command": chapter_key}
+	response := req.Get(GET_CPT_IFM, &structs.ContentStruct{}, params).(*structs.ContentStruct)
+	if response != nil && response.Code == "100000" {
+		chapter_info := response.Data.ChapterInfo
+		content := string(Encrypt.Decode(chapter_info.TxtContent, chapter_key))
+		content_title := fmt.Sprintf("%v: %v", chapter_info.ChapterTitle, chapter_info.Uptime)
+		return content_title + "\n\n" + cfg.StandardContent(content)
+	} else {
+		fmt.Println("download failed! chapterId:", chapterId, "error:", response.Tip)
+	}
+	return ""
 }

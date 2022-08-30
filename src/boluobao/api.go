@@ -81,13 +81,17 @@ func GET_CATALOGUE(NovelID string) []map[string]string {
 
 }
 
-func GET_CONTENT(cid string) *sfacg_structs.Content {
+func GET_CONTENT(chapter_id string) string {
 	params := map[string]string{"expand": "content"}
-	if result := req.Get("Chaps/"+cid, &sfacg_structs.Content{}, params); result != nil {
-		return result.(*sfacg_structs.Content)
+	response := req.Get("Chaps/"+chapter_id, &sfacg_structs.Content{}, params).(*sfacg_structs.Content)
+	if response != nil && response.Status.HTTPCode == 200 {
+		content_title := fmt.Sprintf("%v: %v", response.Data.Title, response.Data.AddTime)
+		return content_title + "\n" + cfg.StandardContent(response.Data.Expand.Content)
+
 	} else {
-		return GET_CONTENT(cid) // retry once if failed to get content
+		fmt.Println("download failed! chapterId:", chapter_id, "error:", response.Status.Msg)
 	}
+	return ""
 }
 
 func GET_SEARCH(keyword string, page int) *sfacg_structs.Search {
