@@ -15,7 +15,10 @@ import (
 func GET_DIVISION(BookId string) []map[string]string {
 	var division_info []map[string]string
 	var chapter_index int
-	response := req.Get("book/get_division_list", &structs.DivisionStruct{}, map[string]string{"book_id": BookId})
+	params := map[string]string{"book_id": BookId, "recommend": "module_list",
+		"module_id": "20005", "use_daguan": "0", "carousel_position": "", "tab_type": "200",
+	}
+	response := req.Get("book/get_division_list", &structs.DivisionStruct{}, params)
 	for division_index, division := range response.(*structs.DivisionStruct).Data.DivisionList {
 		fmt.Printf("第%v卷\t\t%v\n", division_index+1, division.DivisionName)
 		for _, chapter := range GET_CATALOGUE(division.DivisionID) {
@@ -41,7 +44,7 @@ func GET_CATALOGUE(DivisionId string) []structs.ChapterList {
 	return req.Get("chapter/get_updated_chapter_by_division_id", &structs.ChapterStruct{}, params).(*structs.ChapterStruct).Data.ChapterList
 }
 
-func GET_BOOK_SHELF_INDEXES_INFORMATION(index int, shelf_id string) ([]map[string]string, error) {
+func GET_BOOK_SHELF_INDEXES_INFORMATION(shelf_id string) ([]map[string]string, error) {
 	params := map[string]string{"shelf_id": shelf_id, "last_mod_time": "0", "direction": "prev"}
 	response := req.Get("bookshelf/get_shelf_book_list", &bookshelf.GetShelfBookList{}, params).(*bookshelf.GetShelfBookList)
 	if response.Code != "100000" {
@@ -65,7 +68,7 @@ func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 	}
 	for index, value := range response.Data.ShelfList {
 		fmt.Println("bookshelf index:", index, "\t\t\tbookshelf name:", value.ShelfName)
-		if bookshelf_info_list, err := GET_BOOK_SHELF_INDEXES_INFORMATION(index, value.ShelfID); err == nil {
+		if bookshelf_info_list, err := GET_BOOK_SHELF_INDEXES_INFORMATION(value.ShelfID); err == nil {
 			bookshelf_info[index] = bookshelf_info_list
 		} else {
 			fmt.Println("ShelfID:", value.ShelfID, "\terr:", err)
