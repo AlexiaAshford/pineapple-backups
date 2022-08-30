@@ -6,6 +6,7 @@ import (
 	"sf/cfg"
 	"sf/src"
 	"sf/src/boluobao"
+	"sf/src/hbooker"
 	"strings"
 )
 
@@ -83,7 +84,7 @@ func InitBookShelf() {
 	if cfg.Vars.AppType == "sfacg" {
 		bookshelf_book_list, response_err = boluobao.GET_BOOK_SHELF_INFORMATION()
 	} else {
-		bookshelf_book_list, response_err = boluobao.GET_BOOK_SHELF_INFORMATION()
+		bookshelf_book_list, response_err = hbooker.GET_BOOK_SHELF_INFORMATION()
 	}
 	if response_err != nil {
 		fmt.Println("BookShelf Error:", response_err)
@@ -97,7 +98,7 @@ func InitBookShelf() {
 	}
 	if len(bookshelf_book_list) == 1 {
 		fmt.Println("you only have one bookshelf, default loading bookshelf index:1")
-		bookshelf_index = 1
+		bookshelf_index = 0
 	} else {
 		fmt.Println("please input bookshelf index:")
 		bookshelf_index = cfg.InputInt(">", len(bookshelf_book_list))
@@ -177,6 +178,7 @@ func main() {
 		for _, s := range cfg.HelpMessage {
 			fmt.Println("[info]", s)
 		}
+		//cfg.Vars.AppType = "cat"
 		InitBookShelf()
 
 	}

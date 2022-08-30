@@ -41,11 +41,20 @@ func GET_CATALOGUE(DivisionId string) []structs.ChapterList {
 	return req.Get("chapter/get_updated_chapter_by_division_id", &structs.ChapterStruct{}, params).(*structs.ChapterStruct).Data.ChapterList
 }
 
-func GET_BOOK_SHELF_INDEXES_INFORMATION(shelf_id string) (map[string]string, error) {
+func GET_BOOK_SHELF_INDEXES_INFORMATION(index int, shelf_id string) ([]map[string]string, error) {
 	params := map[string]string{"shelf_id": shelf_id, "last_mod_time": "0", "direction": "prev"}
-	response := req.Get("bookshelf/get_shelf_book_list", &structs.DetailStruct{}, params).(*structs.DetailStruct)
-	fmt.Println(response)
-	return nil, nil
+	response := req.Get("bookshelf/get_shelf_book_list", &bookshelf.GetShelfBookList{}, params).(*bookshelf.GetShelfBookList)
+	if response.Code != "100000" {
+		return nil, fmt.Errorf(response.Tip.(string))
+	}
+	var bookshelf_info_list []map[string]string
+	for _, book := range response.Data.BookList {
+		bookshelf_info_list = append(bookshelf_info_list,
+			map[string]string{"novel_name": book.BookInfo.BookName, "novel_id": book.BookInfo.BookID},
+		)
+	}
+
+	return bookshelf_info_list, nil
 }
 
 func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
@@ -56,16 +65,12 @@ func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 	}
 	for index, value := range response.Data.ShelfList {
 		fmt.Println("bookshelf index:", index, "\t\t\tbookshelf name:", value.ShelfName)
-		GET_BOOK_SHELF_INDEXES_INFORMATION(value.ShelfID)
+		if bookshelf_info_list, err := GET_BOOK_SHELF_INDEXES_INFORMATION(index, value.ShelfID); err == nil {
+			bookshelf_info[index] = bookshelf_info_list
+		} else {
+			fmt.Println("ShelfID:", value.ShelfID, "\terr:", err)
+		}
 	}
-	//	fmt.Println("bookshelf index:", index, "\t\t\tbookshelf name:", value.Name)
-	//	var bookshelf_info_list []map[string]string
-	//	for _, book := range value.Expand.Novels {
-	//		bookshelf_info_list = append(bookshelf_info_list,
-	//			map[string]string{"novel_name": book.NovelName, "novel_id": strconv.Itoa(book.NovelID)},
-	//		)
-	//	}
-	//	bookshelf_info[index] = bookshelf_info_list
 	return bookshelf_info, nil
 }
 func GET_BOOK_INFORMATION(bid string) (_struct.Books, error) {
