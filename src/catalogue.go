@@ -48,11 +48,13 @@ func (catalogue *Catalogue) GetDownloadsList() {
 }
 
 func (catalogue *Catalogue) DownloadContent(file_name string) {
+	cfg.FileLock.Lock()         // lock file to avoid file write conflict
+	defer cfg.FileLock.Unlock() // unlock file after write
 	chapter_id := catalogue.speed_progress(file_name)
 	var content_text string
 	for i := 0; i < 5; i++ {
 		if cfg.Vars.AppType == "sfacg" {
-			content_text = boluobao.GET_CONTENT(chapter_id)
+			content_text = boluobao.GET_CHAPTER_CONTENT(chapter_id)
 		} else if cfg.Vars.AppType == "cat" {
 			content_text = hbooker.GET_CHAPTER_CONTENT(chapter_id, hbooker.GetKeyByCid(chapter_id))
 		}
@@ -94,28 +96,6 @@ func (catalogue *Catalogue) speed_progress(file_name string) string {
 	return strings.ReplaceAll(strings.Split(file_name, "-")[2], ".txt", "")
 
 }
-
-//func (catalogue *Catalogue) makeContentInformation(response any) {
-//	cfg.FileLock.Lock()         // lock file to avoid file write conflict
-//	defer cfg.FileLock.Unlock() // unlock file after write
-//	var writeContent string
-//	switch response.(type) {
-//	case *sfacg_structs.Content:
-//		result := response.(*sfacg_structs.Content).Data
-//		writeContent = fmt.Sprintf("%v:%v\n%v\n\n\n", result.Title, result.AddTime, result.Expand.Content)
-//		catalogue.AddChapterConfig(result.ChapID)
-//		catalogue.AddChapterInEpubFile(result.Title, result.Expand.Content)
-//		catalogue.ContentList[strconv.Itoa(result.ChapID)] = writeContent
-//	case *hbooker_structs.ContentStruct:
-//		result := response.(*hbooker_structs.ContentStruct).Data.ChapterInfo
-//		writeContent = fmt.Sprintf("%v:%v\n%v\n\n\n", result.ChapterTitle, result.Uptime, result.TxtContent)
-//		catalogue.AddChapterConfig(result.ChapterID)
-//		catalogue.AddChapterInEpubFile(result.ChapterTitle, result.TxtContent)
-//		catalogue.ContentList[result.ChapterID] = writeContent
-//	}
-//	catalogue.SpeedProgress()
-//
-//}
 
 //func (catalogue *Catalogue) AddChapterConfig(chapId any) {
 //	switch chapId.(type) {

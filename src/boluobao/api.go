@@ -81,7 +81,7 @@ func GET_CATALOGUE(NovelID string) []map[string]string {
 
 }
 
-func GET_CONTENT(chapter_id string) string {
+func GET_CHAPTER_CONTENT(chapter_id string) string {
 	params := map[string]string{"expand": "content"}
 	response := req.Get("Chaps/"+chapter_id, &sfacg_structs.Content{}, params).(*sfacg_structs.Content)
 	if response != nil && response.Status.HTTPCode == 200 {
