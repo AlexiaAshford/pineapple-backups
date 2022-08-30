@@ -34,7 +34,7 @@ func (books *BookInits) InitEpubFile() {
 	}
 	if AddImage {
 		_, _ = books.EpubSetting.AddImage(cfg.Current.CoverPath, "")
-		books.EpubSetting.SetCover(strings.Replace(cfg.Current.CoverPath, "cover", "../images", -1), "")
+		books.EpubSetting.SetCover(strings.ReplaceAll(cfg.Current.CoverPath, "cover", "../images"), "")
 	}
 
 }

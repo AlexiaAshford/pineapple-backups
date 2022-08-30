@@ -73,7 +73,7 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	}
 	out_put_epub_now := time.Now() // 开始时间
 	// save epub file
-	epub_file_name := strings.Replace(cfg.Current.OutputPath, ".txt", ".epub", -1)
+	epub_file_name := strings.ReplaceAll(cfg.Current.OutputPath, ".txt", ".epub")
 	if err := catalogue.EpubSetting.Write(epub_file_name); err != nil {
 		fmt.Println(epub_file_name, " epub error:", err)
 	}
@@ -82,7 +82,7 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 }
 
 func (catalogue *Catalogue) add_chapter_in_epub_file(title, content string) {
-	xmlContent := "<h1>" + title + "</h1>\n<p>" + strings.Replace(content, "\n", "</p>\n<p>", -1)
+	xmlContent := "<h1>" + title + "</h1>\n<p>" + strings.ReplaceAll(content, "\n", "</p>\n<p>")
 	if _, err := catalogue.EpubSetting.AddSection(xmlContent, title, "", ""); err != nil {
 		fmt.Printf("epub add chapter:%v\t\terror message:%v", title, err)
 	}

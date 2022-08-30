@@ -416,7 +416,7 @@ func getStringWidth(c configProgressbar, str string) int {
 
 	// the width of the string, if printed to the console
 	// does not include the carriage return character
-	cleanString := strings.Replace(str, "\r", "", -1)
+	cleanString := strings.ReplaceAll(str, "\r", "")
 
 	if c.colorCodes {
 		// the ANSI codes for the colors do not take up space in the console output,

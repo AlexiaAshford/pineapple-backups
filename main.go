@@ -36,7 +36,7 @@ func current_download_book(book_id string) {
 func shellUpdateLocalBook() {
 	if cfg.Exist("./bookList.txt") && cfg.FileSize("./config.json") > 0 {
 		LocalBookList := cfg.Write("./bookList.json", "", "r")
-		for _, i := range strings.Replace(LocalBookList, "\n", "", -1) {
+		for _, i := range strings.ReplaceAll(LocalBookList, "\n", "") {
 			current_download_book(string(i))
 		}
 	} else {

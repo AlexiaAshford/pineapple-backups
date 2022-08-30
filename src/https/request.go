@@ -45,11 +45,11 @@ func QueryParams(url string, ParamsData map[string]string) string {
 func SET_URL(url string, params map[string]string) string {
 	switch cfg.Vars.AppType {
 	case "cat":
-		return CatWebSite + strings.Replace(QueryParams(url, params), CatWebSite, "", -1)
+		return CatWebSite + strings.ReplaceAll(QueryParams(url, params), CatWebSite, "")
 	case "sfacg":
-		return SFWebSite + strings.Replace(QueryParams(url, params), SFWebSite, "", -1)
+		return SFWebSite + strings.ReplaceAll(QueryParams(url, params), SFWebSite, "")
 	case "happybooker":
-		return HappyWebSite + strings.Replace(QueryParams(url, params), HappyWebSite, "", -1)
+		return HappyWebSite + strings.ReplaceAll(QueryParams(url, params), HappyWebSite, "")
 	default:
 		return url
 	}
