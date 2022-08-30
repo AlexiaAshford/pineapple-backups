@@ -11,17 +11,12 @@ import (
 )
 
 func current_download_book(book_id string) {
-	var catalogue src.Catalogue
-	if book_id = cfg.ExtractBookID(book_id); book_id == "" {
+	catalogue := src.SettingBooks(book_id) // get book catalogues
+	if !catalogue.Test {
+		fmt.Println(catalogue.BookMessage)
 		os.Exit(1)
 	} else {
-		catalogue = src.SettingBooks(book_id) // get book catalogues
-		if !catalogue.Test {
-			fmt.Println(catalogue.BookMessage)
-			os.Exit(1)
-		} else {
-			catalogue.GetDownloadsList()
-		}
+		catalogue.GetDownloadsList()
 	}
 	if len(cfg.Current.DownloadList) > 0 {
 		fmt.Println(len(cfg.Current.DownloadList), " chapters will be downloaded.")
@@ -46,18 +41,6 @@ func shellUpdateLocalBook() {
 		}
 	} else {
 		fmt.Println("bookList.txt not exist, create a new one!")
-	}
-}
-
-func shellBookMain(inputs []string) {
-	if cfg.Vars.AppType == "cat" {
-		if len(inputs[1]) == 9 { // test if the input is hbooker book id
-			current_download_book(inputs[1])
-		} else {
-			fmt.Println("hbooker bookid is 9 characters, please input again:")
-		}
-	} else {
-		current_download_book(inputs[1])
 	}
 }
 
@@ -141,7 +124,11 @@ func shell(inputs []string) {
 		}
 	case "book", "download":
 		if len(inputs) == 2 {
-			current_download_book(inputs[1])
+			if book_id := cfg.ExtractBookID(inputs[1]); book_id != "" {
+				current_download_book(book_id)
+			} else {
+				fmt.Println("book id is empty, please input again.")
+			}
 		} else {
 			fmt.Println("input book id or url, like:download <bookid/url>")
 		}
