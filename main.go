@@ -164,11 +164,10 @@ func shell(inputs []string) {
 
 func main() {
 	commentLine := cfg.CommandInit()
-	if len(os.Args) > 1 {
+	if len(os.Args) > 1 && commentLine[0] != "console" {
 		if cfg.Account != "" && cfg.Password != "" {
 			shell([]string{"login", cfg.Account, cfg.Password})
 		} else {
-			cfg.Vars.AppType = cfg.App_type
 			src.TestAppTypeAndAccount()
 		}
 		if len(commentLine) > 0 {
@@ -178,7 +177,6 @@ func main() {
 		for _, s := range cfg.HelpMessage {
 			fmt.Println("[info]", s)
 		}
-		//cfg.Vars.AppType = "cat"
 		InitBookShelf()
 
 	}

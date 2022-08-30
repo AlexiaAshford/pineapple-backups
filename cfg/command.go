@@ -61,7 +61,14 @@ func CommandInit() []string {
 	if err := rule_cmd.Execute(); err != nil {
 		fmt.Println("ruleCmd error:", err)
 	} else {
+		if TestList([]string{"sfacg", "cat"}, App_type) {
+			Vars.AppType = App_type
+		} else {
+			fmt.Println("app type error, default sfacg")
+			Vars.AppType = "sfacg"
+		}
 		Vars.ThreadNum = max_thread
+
 		if show_info {
 			FormatJson(ReadConfig(""))
 		}
@@ -73,7 +80,10 @@ func CommandInit() []string {
 			command_line = []string{"update"}
 		} else if Account != "" && Password != "" {
 			command_line = []string{"login", Account, Password}
+		} else {
+			command_line = []string{"console", ""}
 		}
+
 	}
 	return command_line
 }
