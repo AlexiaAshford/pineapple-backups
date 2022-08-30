@@ -13,10 +13,11 @@ import (
 )
 
 type Catalogue struct {
-	ChapterBar     *ProgressBar
-	ChapterCfg     []string
-	TestBookResult bool
-	EpubSetting    *epub.Epub
+	ChapterBar  *ProgressBar
+	ChapterCfg  []string
+	Test        bool
+	BookMessage string
+	EpubSetting *epub.Epub
 }
 
 func (catalogue *Catalogue) ReadChapterConfig() {

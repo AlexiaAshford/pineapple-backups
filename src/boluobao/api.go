@@ -25,7 +25,11 @@ func GET_BOOK_INFORMATION(NovelId string) (_struct.Books, error) {
 			SignStatus: response.Data.SignStatus,
 		}, nil
 	} else {
-		return _struct.Books{}, fmt.Errorf(response.Status.Msg.(string))
+		if response.Status.Msg != nil {
+			return _struct.Books{}, fmt.Errorf(response.Status.Msg.(string))
+		} else {
+			return _struct.Books{}, fmt.Errorf("book is not found")
+		}
 	}
 
 }

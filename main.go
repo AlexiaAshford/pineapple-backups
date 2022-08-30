@@ -10,18 +10,19 @@ import (
 	"strings"
 )
 
-func current_download_book(book_id any) {
-	current_book_id := cfg.ExtractBookID(book_id.(string))
-	if current_book_id == "" {
-		fmt.Println("input book id or url is empty, please input again:")
-		return
+func current_download_book(book_id string) {
+	var catalogue src.Catalogue
+	if book_id = cfg.ExtractBookID(book_id); book_id == "" {
+		os.Exit(1)
+	} else {
+		catalogue = src.SettingBooks(book_id) // get book catalogues
+		if !catalogue.Test {
+			fmt.Println(catalogue.BookMessage)
+			os.Exit(1)
+		} else {
+			catalogue.GetDownloadsList()
+		}
 	}
-	start := src.BookInits{BookID: current_book_id, Index: 0, Locks: nil, ShowBook: true}
-	catalogue := start.SetBookInfo() // get book catalogues
-	if !catalogue.TestBookResult {
-		return
-	}
-	catalogue.GetDownloadsList()
 	if len(cfg.Current.DownloadList) > 0 {
 		fmt.Println(len(cfg.Current.DownloadList), " chapters will be downloaded.")
 		catalogue.ChapterBar = src.New(len(cfg.Current.DownloadList))
@@ -33,17 +34,16 @@ func current_download_book(book_id any) {
 		catalogue.MergeTextAndEpubFiles()
 	} else {
 		catalogue.MergeTextAndEpubFiles()
-
 		cfg.ColorPrint(cfg.Current.Book.NovelName+" No chapter need to download!", 2|8)
 	}
-	os.Exit(1)
 }
 
 func shellUpdateLocalBook() {
 	if cfg.Exist("./bookList.txt") && cfg.FileSize("./config.json") > 0 {
 		LocalBookList := cfg.Write("./bookList.json", "", "r")
-		LocalBookList = strings.Replace(LocalBookList, "\n", "", -1)
-		current_download_book(LocalBookList)
+		for _, i := range strings.Replace(LocalBookList, "\n", "", -1) {
+			current_download_book(string(i))
+		}
 	} else {
 		fmt.Println("bookList.txt not exist, create a new one!")
 	}
@@ -87,15 +87,23 @@ func InitBookShelf() {
 		bookshelf_book_list, response_err = hbooker.GET_BOOK_SHELF_INFORMATION()
 	}
 	if response_err != nil {
+		var test_login_status bool
 		fmt.Println("BookShelf Error:", response_err)
-		if !src.AutoAccount() {
+		if cfg.Vars.AppType == "sfacg" {
+			test_login_status = src.AutoAccount()
+		} else if cfg.Vars.AppType == "cat" {
+			test_login_status = src.InputAccountToken()
+		}
+		if !test_login_status {
 			fmt.Println("please login your account and password, like: sf account password")
+			os.Exit(1)
 		} else {
 			InitBookShelf()
 		}
-	} else {
-		fmt.Println("\nyou account is valid, start loading bookshelf information.")
+
 	}
+
+	fmt.Println("\nyou account is valid, start loading bookshelf information.")
 	if len(bookshelf_book_list) == 1 {
 		fmt.Println("you only have one bookshelf, default loading bookshelf index:1")
 		bookshelf_index = 0
@@ -133,7 +141,7 @@ func shell(inputs []string) {
 		}
 	case "book", "download":
 		if len(inputs) == 2 {
-			shellBookMain(inputs)
+			current_download_book(inputs[1])
 		} else {
 			fmt.Println("input book id or url, like:download <bookid/url>")
 		}
