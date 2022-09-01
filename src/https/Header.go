@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/base64"
 	"fmt"
+	"github.com/VeronicaAlexia/pineapple-backups/cfg"
 	"net/http"
 	"os"
-	"sf/cfg"
 )
 
 func Base64Bytes(UserName, Password string) string {

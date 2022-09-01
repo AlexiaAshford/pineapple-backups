@@ -1,10 +1,10 @@
 package epub
 
 import (
+	"github.com/VeronicaAlexia/pineapple-backups/epub/internal/storage"
+	"github.com/VeronicaAlexia/pineapple-backups/epub/internal/storage/memory"
+	"github.com/VeronicaAlexia/pineapple-backups/epub/internal/storage/osfs"
 	"os"
-	"sf/epub/internal/storage"
-	"sf/epub/internal/storage/memory"
-	"sf/epub/internal/storage/osfs"
 )
 
 type FSType int

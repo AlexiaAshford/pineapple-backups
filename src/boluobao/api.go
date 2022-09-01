@@ -2,12 +2,12 @@ package boluobao
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/pineapple-backups/cfg"
+	req "github.com/VeronicaAlexia/pineapple-backups/src/https"
+	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
+	"github.com/VeronicaAlexia/pineapple-backups/struct/sfacg_structs"
+	"github.com/VeronicaAlexia/pineapple-backups/struct/sfacg_structs/bookshelf"
 	url_ "net/url"
-	"sf/cfg"
-	req "sf/src/https"
-	_struct "sf/struct"
-	"sf/struct/sfacg_structs"
-	"sf/struct/sfacg_structs/bookshelf"
 	"strconv"
 )
 

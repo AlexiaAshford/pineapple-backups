@@ -3,8 +3,8 @@ package cfg
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/VeronicaAlexia/pineapple-backups/struct"
 	"os"
-	"sf/struct"
 	"sync"
 )
 

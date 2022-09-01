@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/VeronicaAlexia/pineapple-backups/cfg"
+	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker/Encrypt"
+	"github.com/VeronicaAlexia/pineapple-backups/struct/sfacg_structs"
 	"io"
 	"net/http"
-	"sf/cfg"
-	"sf/src/hbooker/Encrypt"
-	"sf/struct/sfacg_structs"
 	"strings"
 )
 

@@ -2,14 +2,14 @@ package hbooker
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/pineapple-backups/cfg"
+	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker/Encrypt"
+	req "github.com/VeronicaAlexia/pineapple-backups/src/https"
+	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
+	structs "github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs"
+	"github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs/bookshelf"
+	"github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs/division"
 	"github.com/gookit/color"
-	"sf/cfg"
-	"sf/src/hbooker/Encrypt"
-	req "sf/src/https"
-	_struct "sf/struct"
-	structs "sf/struct/hbooker_structs"
-	"sf/struct/hbooker_structs/bookshelf"
-	"sf/struct/hbooker_structs/division"
 	"strconv"
 	"time"
 )

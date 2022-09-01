@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/pineapple-backups/cfg"
+	"github.com/VeronicaAlexia/pineapple-backups/src"
+	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
+	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker"
 	"os"
-	"sf/cfg"
-	"sf/src"
-	"sf/src/boluobao"
-	"sf/src/hbooker"
 	"strings"
 )
 

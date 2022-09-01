@@ -2,14 +2,14 @@ package src
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/pineapple-backups/cfg"
+	"github.com/VeronicaAlexia/pineapple-backups/epub"
+	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
+	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker"
+	"github.com/VeronicaAlexia/pineapple-backups/src/https"
+	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
 	"os"
 	"path"
-	"sf/cfg"
-	"sf/epub"
-	"sf/src/boluobao"
-	"sf/src/hbooker"
-	"sf/src/https"
-	_struct "sf/struct"
 	"strings"
 )
 

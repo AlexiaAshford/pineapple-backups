@@ -2,9 +2,9 @@ package src
 
 import (
 	"fmt"
-	"sf/cfg"
-	"sf/src/boluobao"
-	"sf/src/hbooker"
+	"github.com/VeronicaAlexia/pineapple-backups/cfg"
+	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
+	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker"
 	"strconv"
 )
 

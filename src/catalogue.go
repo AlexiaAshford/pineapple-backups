@@ -2,11 +2,11 @@ package src
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/pineapple-backups/cfg"
+	"github.com/VeronicaAlexia/pineapple-backups/epub"
+	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
+	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker"
 	"path"
-	"sf/cfg"
-	"sf/epub"
-	"sf/src/boluobao"
-	"sf/src/hbooker"
 	"strings"
 	"time"
 )

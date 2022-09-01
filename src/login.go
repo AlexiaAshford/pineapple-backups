@@ -2,9 +2,9 @@ package src
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/pineapple-backups/cfg"
+	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
 	"os"
-	"sf/cfg"
-	"sf/src/boluobao"
 )
 
 func AccountDetailed() string {
