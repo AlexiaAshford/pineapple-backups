@@ -21,7 +21,7 @@ var (
 	command_line []string
 )
 
-func Console() ([]string, bool) {
+func ConsoleInput() ([]string, bool) {
 	spaceRe, _ := regexp.Compile(`\s+`)
 	inputs := spaceRe.Split(strings.TrimSpace(Input(">")), -1)
 	if len(inputs) > 0 && inputs[0] != "" {

@@ -99,6 +99,22 @@ func shell(inputs []string) {
 	}
 
 }
+func Console(bookshelf_book_index []int, book_shelf_bookcase []map[string]string) {
+	for {
+		if comment, ok := config.ConsoleInput(); ok {
+			if config.TestIntList(bookshelf_book_index, comment[0]) {
+				shell([]string{"book", book_shelf_bookcase[config.StrToInt(comment[0])]["novel_id"]})
+			} else if comment[0] == "load" || comment[0] == "bookshelf" {
+				bookshelf_book_index, book_shelf_bookcase = src.InitBookShelf() // load bookshelf information
+			} else if comment[0] == "quit" || comment[0] == "exit" {
+				fmt.Println("exit the program!")
+				os.Exit(0)
+			} else {
+				shell(comment)
+			}
+		}
+	}
+}
 
 func main() {
 	commentLine := config.CommandInit()
@@ -116,20 +132,6 @@ func main() {
 			fmt.Println("[info]", s)
 		}
 		bookshelf_book_index, book_shelf_bookcase := src.InitBookShelf() // init bookshelf information
-		for {
-			if comment, ok := config.Console(); ok {
-				if config.TestIntList(bookshelf_book_index, comment[0]) {
-					shell([]string{"book", book_shelf_bookcase[config.StrToInt(comment[0])]["novel_id"]})
-				} else if comment[0] == "load" || comment[0] == "bookshelf" {
-					bookshelf_book_index, book_shelf_bookcase = src.InitBookShelf() // load bookshelf information
-				} else if comment[0] == "quit" || comment[0] == "exit" {
-					fmt.Println("exit the program!")
-					os.Exit(0)
-				} else {
-					shell(comment)
-				}
-			}
-		}
-
+		Console(bookshelf_book_index, book_shelf_bookcase)               // start console mode
 	}
 }
