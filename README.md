@@ -8,6 +8,7 @@
     
 </h3> 
 
+[简中](./docs/README_zh-CN.md) | [繁中](./docs/README_zh-TW.md)
 
 ## **Functions**
  - Download function is implemented for sfacg WeChat Api and hbooker Android API
