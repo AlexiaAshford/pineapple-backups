@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/src"
-	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
-	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker"
 	"os"
 	"strings"
 )
@@ -55,58 +53,6 @@ func init() {
 		config.SaveJson()
 	}
 	fmt.Println("you can input -h and --help to see the command list.")
-}
-
-func InitBookShelf() {
-	var (
-		bookshelf_index      int
-		response_err         error
-		bookshelf_book_index []int
-		bookshelf_book_list  map[int][]map[string]string
-	)
-	if config.Vars.AppType == "sfacg" {
-		bookshelf_book_list, response_err = boluobao.GET_BOOK_SHELF_INFORMATION()
-	} else {
-		bookshelf_book_list, response_err = hbooker.GET_BOOK_SHELF_INFORMATION()
-	}
-	if response_err != nil {
-		var test_login_status bool
-		fmt.Println("BookShelf Error:", response_err)
-		if config.Vars.AppType == "sfacg" {
-			test_login_status = src.AutoAccount()
-		} else if config.Vars.AppType == "cat" {
-			test_login_status = src.InputAccountToken()
-		}
-		if !test_login_status {
-			fmt.Println("please login your account and password, like: sf account password")
-			os.Exit(1)
-		} else {
-			InitBookShelf()
-		}
-
-	}
-
-	fmt.Println("\nyou account is valid, start loading bookshelf information.")
-	if len(bookshelf_book_list) == 1 {
-		fmt.Println("you only have one bookshelf, default loading bookshelf index:1")
-		bookshelf_index = 0
-	} else {
-		fmt.Println("please input bookshelf index:")
-		bookshelf_index = config.InputInt(">", len(bookshelf_book_list))
-	}
-	for book_index, book := range bookshelf_book_list[bookshelf_index] {
-		fmt.Println("book-index", book_index, "book-name:", book["novel_name"], "\t\tbook-id:", book["novel_id"])
-		bookshelf_book_index = append(bookshelf_book_index, book_index)
-	}
-	for {
-		if comment, ok := config.Console(); ok {
-			if config.TestIntList(bookshelf_book_index, comment[0]) {
-				shell([]string{"book", bookshelf_book_list[bookshelf_index][config.StrToInt(comment[0])]["novel_id"]})
-			} else {
-				shell(comment)
-			}
-		}
-	}
 }
 
 func shell(inputs []string) {
@@ -172,7 +118,16 @@ func main() {
 		for _, s := range config.HelpMessage {
 			fmt.Println("[info]", s)
 		}
-		InitBookShelf()
+		bookshelf_book_index, book_shelf_bookcase := src.InitBookShelf() // init bookshelf information
+		for {
+			if comment, ok := config.Console(); ok {
+				if config.TestIntList(bookshelf_book_index, comment[0]) {
+					shell([]string{"book", book_shelf_bookcase[config.StrToInt(comment[0])]["novel_id"]})
+				} else {
+					shell(comment)
+				}
+			}
+		}
 
 	}
 }
