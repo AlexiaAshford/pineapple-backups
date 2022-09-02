@@ -7,7 +7,6 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker"
 	"github.com/VeronicaAlexia/pineapple-backups/src/https"
-	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
 	"os"
 	"path"
 	"strings"
@@ -41,15 +40,13 @@ func (books *BookInits) InitEpubFile() {
 
 func SettingBooks(book_id string) Catalogue {
 	var err error
-	var result _struct.Books
 	switch config.Vars.AppType {
 	case "sfacg":
-		result, err = boluobao.GET_BOOK_INFORMATION(book_id)
+		err = boluobao.GET_BOOK_INFORMATION(book_id)
 	case "cat":
-		result, err = hbooker.GET_BOOK_INFORMATION(book_id)
+		err = hbooker.GET_BOOK_INFORMATION(book_id)
 	}
 	if err == nil {
-		config.Current.Book = result
 		config.Current.ConfigPath = path.Join(config.Vars.ConfigName, config.Current.Book.NovelName)
 		config.Current.OutputPath = path.Join(config.Vars.OutputName, config.Current.Book.NovelName+".txt")
 		config.Current.CoverPath = path.Join("cover", config.Current.Book.NovelName+".jpg")

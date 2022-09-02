@@ -79,11 +79,11 @@ func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 	}
 	return bookshelf_info, nil
 }
-func GET_BOOK_INFORMATION(bid string) (_struct.Books, error) {
+func GET_BOOK_INFORMATION(bid string) error {
 	s := new(structs.DetailStruct)
 	req.Get(new(req.Context).Init(BOOK_GET_INFO_BY_ID).Query("book_id", bid).QueryToString(), s)
 	if s.Code == "100000" {
-		return _struct.Books{
+		config.Current.Book = _struct.Books{
 			NovelName:  config.RegexpName(s.Data.BookInfo.BookName),
 			NovelID:    s.Data.BookInfo.BookID,
 			NovelCover: s.Data.BookInfo.Cover,
@@ -91,10 +91,10 @@ func GET_BOOK_INFORMATION(bid string) (_struct.Books, error) {
 			CharCount:  s.Data.BookInfo.TotalWordCount,
 			MarkCount:  s.Data.BookInfo.UpdateStatus,
 			SignStatus: s.Data.BookInfo.IsPaid,
-		}, nil
-	} else {
-		return _struct.Books{}, fmt.Errorf(s.Tip.(string))
+		}
+		return nil
 	}
+	return fmt.Errorf(s.Tip.(string))
 }
 
 func GET_SEARCH(KeyWord string, page int) *structs.SearchStruct {

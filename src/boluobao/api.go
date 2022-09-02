@@ -11,28 +11,26 @@ import (
 	"strconv"
 )
 
-func GET_BOOK_INFORMATION(NovelId string) (_struct.Books, error) {
+func GET_BOOK_INFORMATION(NovelId string) error {
 	s := new(sfacg_structs.BookInfo)
-	req.Get(new(req.Context).Init("novels/"+NovelId).
-		Query("expand", "intro,tags,sysTags,originTotalNeedFireMoney").QueryToString(), s)
+	req.Get(new(req.Context).Init("novels/"+NovelId).Query("expand", "intro,tags,sysTags").QueryToString(), s)
 	if s.Status.HTTPCode == 200 && s.Data.NovelName != "" {
-		return _struct.Books{
-			NovelName:  config.RegexpName(s.Data.NovelName),
-			NovelID:    strconv.Itoa(s.Data.NovelID),
+		config.Current.Book = _struct.Books{
 			NovelCover: s.Data.NovelCover,
 			AuthorName: s.Data.AuthorName,
+			SignStatus: s.Data.SignStatus,
+			NovelID:    strconv.Itoa(s.Data.NovelID),
 			CharCount:  strconv.Itoa(s.Data.CharCount),
 			MarkCount:  strconv.Itoa(s.Data.MarkCount),
-			SignStatus: s.Data.SignStatus,
-		}, nil
+			NovelName:  config.RegexpName(s.Data.NovelName),
+		}
+		return nil
 	} else {
 		if s.Status.Msg != nil {
-			return _struct.Books{}, fmt.Errorf(s.Status.Msg.(string))
-		} else {
-			return _struct.Books{}, fmt.Errorf("book is not found")
+			return fmt.Errorf(s.Status.Msg.(string))
 		}
+		return fmt.Errorf("book is not found")
 	}
-
 }
 
 func GET_ACCOUNT_INFORMATION() *sfacg_structs.Account {
