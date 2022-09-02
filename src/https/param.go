@@ -6,16 +6,16 @@ import (
 )
 
 type Context struct {
-	url      string
+	Url      string
 	Params   string
 	GetQuery []map[string]interface{}
+	Structs  interface{}
 }
 
 func (c *Context) Query(key string, value interface{}) {
 	c.GetQuery = append(c.GetQuery, map[string]interface{}{key: value})
 }
 func (c *Context) AddCatToken() {
-	c.Params = ""
 	if config.Vars.AppType == "cat" {
 		c.Query("login_token", config.Apps.Cat.Params.LoginToken)
 		c.Query("account", config.Apps.Cat.Params.Account)
@@ -31,5 +31,5 @@ func (c *Context) QueryToString() string {
 		}
 	}
 	c.GetQuery = nil
-	return c.url + "?" + c.Params
+	return c.Url + "?" + c.Params[1:]
 }
