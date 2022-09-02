@@ -12,9 +12,22 @@ type Context struct {
 	Structs  interface{}
 }
 
-func (c *Context) Query(key string, value interface{}) {
-	c.GetQuery = append(c.GetQuery, map[string]interface{}{key: value})
+//func (c *Context) Query(key string, value interface{}) {
+//	c.GetQuery = append(c.GetQuery, map[string]interface{}{key: value})
+//}
+
+func (c *Context) Query(key string, value string) *Context {
+	if key != "" && value != "" {
+		c.GetQuery = append(c.GetQuery, map[string]interface{}{key: value})
+	}
+	return c
 }
+func (c *Context) Init(url string) *Context {
+	c.Url = url
+	c.Params = ""
+	return c
+}
+
 func (c *Context) AddCatToken() {
 	if config.Vars.AppType == "cat" {
 		c.Query("login_token", config.Apps.Cat.Params.LoginToken)
