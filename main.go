@@ -56,10 +56,7 @@ func init() {
 }
 
 func shell(inputs []string) {
-	switch inputs[0] {
-	case "q", "quit":
-		fmt.Println("exit the program!")
-		os.Exit(0)
+	switch inputs[0] { // switch command
 	case "up", "update":
 		shellUpdateLocalBook()
 	case "a", "app":
@@ -123,6 +120,11 @@ func main() {
 			if comment, ok := config.Console(); ok {
 				if config.TestIntList(bookshelf_book_index, comment[0]) {
 					shell([]string{"book", book_shelf_bookcase[config.StrToInt(comment[0])]["novel_id"]})
+				} else if comment[0] == "load" || comment[0] == "bookshelf" {
+					bookshelf_book_index, book_shelf_bookcase = src.InitBookShelf() // load bookshelf information
+				} else if comment[0] == "quit" || comment[0] == "exit" {
+					fmt.Println("exit the program!")
+					os.Exit(0)
 				} else {
 					shell(comment)
 				}
