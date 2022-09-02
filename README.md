@@ -53,9 +53,6 @@
 ## **Disclaimers**
 - This tool is for learning only. Please delete it from your computer within 24 hours after downloading.
 - Please respect the copyright and do not spread the crawled books by yourself.
-- In no event shall the authors or copyright holders be liable for any claim
-- damages or other liability, whether in an action of contract
-- tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the
-  software.
+- In no event shall the authors or copyright holders be liable for any claim damages or other liability, whether in an action of contract tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software , including but not limited to the use of the software for illegal purposes,author is not responsible for any legal consequences.
 
  
