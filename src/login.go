@@ -2,7 +2,7 @@ package src
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/pineapple-backups/cfg"
+	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
 	"os"
 )
@@ -22,8 +22,8 @@ func AccountDetailed() string {
 func LoginAccount(username string, password string, retry int) {
 	LoginData := boluobao.LOGIN_ACCOUNT(username, password)
 	if LoginData.Status.HTTPCode == 200 {
-		cfg.Apps.Sfacg.Cookie, cfg.Apps.Sfacg.UserName, cfg.Apps.Sfacg.Password = LoginData.Cookie, username, password
-		cfg.SaveJson()
+		config.Apps.Sfacg.Cookie, config.Apps.Sfacg.UserName, config.Apps.Sfacg.Password = LoginData.Cookie, username, password
+		config.SaveJson()
 		if AccountDetailed() == "需要登录才能访问该资源" {
 			fmt.Println("Your login attempt was not successful, try again retry:", retry+1)
 			LoginAccount(username, password, retry+1)
@@ -41,7 +41,7 @@ func LoginAccount(username string, password string, retry int) {
 }
 
 func TestCatAccount() bool {
-	if cfg.Apps.Cat.Params.Account != "" && cfg.Apps.Cat.Params.LoginToken != "" {
+	if config.Apps.Cat.Params.Account != "" && config.Apps.Cat.Params.LoginToken != "" {
 		return true
 	} else {
 		if ok := InputAccountToken(); !ok {
@@ -52,12 +52,12 @@ func TestCatAccount() bool {
 }
 
 func AutoAccount() bool {
-	if cfg.Apps.Sfacg.UserName != "" && cfg.Apps.Sfacg.Password != "" {
+	if config.Apps.Sfacg.UserName != "" && config.Apps.Sfacg.Password != "" {
 		if AccountDetailed() == "需要登录才能访问该资源" {
 			fmt.Printf("cookie is Invalid,attempt to auto login!\naccount:%v\npassword:%v\n",
-				cfg.Apps.Sfacg.UserName, cfg.Apps.Sfacg.Password)
+				config.Apps.Sfacg.UserName, config.Apps.Sfacg.Password)
 			// auto login and get cookie
-			LoginAccount(cfg.Apps.Sfacg.UserName, cfg.Apps.Sfacg.Password, 0)
+			LoginAccount(config.Apps.Sfacg.UserName, config.Apps.Sfacg.Password, 0)
 		}
 		return true
 	}
@@ -65,14 +65,14 @@ func AutoAccount() bool {
 }
 
 func InputAccountToken() bool {
-	for i := 0; i < cfg.Vars.MaxRetry; i++ {
-		LoginToken := cfg.InputStr("you must input 32 characters login token:")
+	for i := 0; i < config.Vars.MaxRetry; i++ {
+		LoginToken := config.InputStr("you must input 32 characters login token:")
 		if len(LoginToken) != 32 {
 			fmt.Println("Login token is 32 characters, please input again:")
 		} else {
-			cfg.Apps.Cat.Params.LoginToken = LoginToken
-			cfg.Apps.Cat.Params.Account = cfg.InputStr("you must input account:")
-			cfg.SaveJson()
+			config.Apps.Cat.Params.LoginToken = LoginToken
+			config.Apps.Cat.Params.Account = config.InputStr("you must input account:")
+			config.SaveJson()
 			return true
 		}
 	}
@@ -81,7 +81,7 @@ func InputAccountToken() bool {
 
 func TestAppTypeAndAccount() {
 	// test AppType and Account is valid
-	switch cfg.Vars.AppType {
+	switch config.Vars.AppType {
 	case "cat":
 		if !TestCatAccount() {
 			fmt.Println("please input account and login token, please input again:")
@@ -93,7 +93,7 @@ func TestAppTypeAndAccount() {
 			os.Exit(1)
 		}
 	default:
-		panic("app type %v is invalid, please input again:" + cfg.Vars.AppType)
+		panic("app type %v is invalid, please input again:" + config.Vars.AppType)
 	}
 
 }

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/VeronicaAlexia/pineapple-backups/cfg"
+	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker/Encrypt"
 	"github.com/VeronicaAlexia/pineapple-backups/struct/sfacg_structs"
 	"io"
@@ -25,12 +25,12 @@ func JsonUnmarshal(response []byte, Struct any) any {
 
 func QueryParams(url string, ParamsData map[string]string) string {
 	var Params string
-	if cfg.Vars.AppType == "cat" {
+	if config.Vars.AppType == "cat" {
 		queryRequisite := map[string]interface{}{
-			"login_token":  cfg.Apps.Cat.Params.LoginToken,
-			"account":      cfg.Apps.Cat.Params.Account,
-			"app_version":  cfg.Apps.Cat.Params.AppVersion,
-			"device_token": cfg.Apps.Cat.Params.DeviceToken,
+			"login_token":  config.Apps.Cat.Params.LoginToken,
+			"account":      config.Apps.Cat.Params.Account,
+			"app_version":  config.Apps.Cat.Params.AppVersion,
+			"device_token": config.Apps.Cat.Params.DeviceToken,
 		}
 		for k, v := range queryRequisite {
 			Params += fmt.Sprintf("&%s=%s", k, v)
@@ -43,7 +43,7 @@ func QueryParams(url string, ParamsData map[string]string) string {
 }
 
 func SET_URL(url string, params map[string]string) string {
-	switch cfg.Vars.AppType {
+	switch config.Vars.AppType {
 	case "cat":
 		return CatWebSite + strings.ReplaceAll(QueryParams(url, params), CatWebSite, "")
 	case "sfacg":
@@ -88,21 +88,21 @@ func Request(method string, url string) ([]byte, error) {
 }
 
 func Get(url string, structural any, params map[string]string) any {
-	if cfg.Vars.AppType == "cat" {
+	if config.Vars.AppType == "cat" {
 		if result, ok := Request("POST", SET_URL(url, params)); ok == nil {
 			//fmt.Println(string(Encrypt.Decode(string(result), "")))
 			return JsonUnmarshal(Encrypt.Decode(string(result), ""), structural)
 		} else {
 			fmt.Println(ok)
 		}
-	} else if cfg.Vars.AppType == "sfacg" {
+	} else if config.Vars.AppType == "sfacg" {
 		if result, ok := Request("GET", SET_URL(url, params)); ok == nil {
 			return JsonUnmarshal(result, structural)
 		} else {
 			fmt.Println(ok)
 		}
 	} else {
-		fmt.Println("not support, please use cat or sfacg, now is " + cfg.Vars.AppType)
+		fmt.Println("not support, please use cat or sfacg, now is " + config.Vars.AppType)
 	}
 	return nil
 }

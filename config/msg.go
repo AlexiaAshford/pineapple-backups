@@ -1,4 +1,4 @@
-package cfg
+package config
 
 var HelpMessage = []string{"input help to see the command list:",
 	"input quit to quit",

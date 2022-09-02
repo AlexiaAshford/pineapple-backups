@@ -2,7 +2,7 @@ package hbooker
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/pineapple-backups/cfg"
+	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker/Encrypt"
 	req "github.com/VeronicaAlexia/pineapple-backups/src/https"
 	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
@@ -33,7 +33,7 @@ func GET_DIVISION(BookId string) []map[string]string {
 				"division_id":    division_info.DivisionID,
 				"division_index": strconv.Itoa(division_index),
 				"chapter_index":  strconv.Itoa(chapter_index),
-				"file_name":      cfg.Config_file_name(division_index, chapter_index, chapter.ChapterID),
+				"file_name":      config.FileCacheName(division_index, chapter_index, chapter.ChapterID),
 			})
 		}
 	}
@@ -82,7 +82,7 @@ func GET_BOOK_INFORMATION(bid string) (_struct.Books, error) {
 	response := req.Get(BOOK_GET_INFO_BY_ID, &structs.DetailStruct{}, params).(*structs.DetailStruct)
 	if response.Code == "100000" {
 		return _struct.Books{
-			NovelName:  cfg.RegexpName(response.Data.BookInfo.BookName),
+			NovelName:  config.RegexpName(response.Data.BookInfo.BookName),
 			NovelID:    response.Data.BookInfo.BookID,
 			NovelCover: response.Data.BookInfo.Cover,
 			AuthorName: response.Data.BookInfo.AuthorName,
@@ -105,9 +105,9 @@ func Login(account, password string) {
 	response := req.Get(MY_SIGN_LOGIN, &structs.LoginStruct{}, params)
 	result := response.(*structs.LoginStruct)
 	if result.Code == "100000" {
-		cfg.Apps.Cat.Params.LoginToken = result.Data.LoginToken
-		cfg.Apps.Cat.Params.Account = result.Data.ReaderInfo.Account
-		cfg.SaveJson()
+		config.Apps.Cat.Params.LoginToken = result.Data.LoginToken
+		config.Apps.Cat.Params.Account = result.Data.ReaderInfo.Account
+		config.SaveJson()
 	} else {
 		fmt.Println("Login failed!")
 	}
@@ -157,7 +157,7 @@ func GET_CHAPTER_CONTENT(chapterId, chapter_key string) string {
 		chapter_info := response.Data.ChapterInfo
 		content := string(Encrypt.Decode(chapter_info.TxtContent, chapter_key))
 		content_title := fmt.Sprintf("%v: %v", chapter_info.ChapterTitle, chapter_info.Uptime)
-		return content_title + "\n\n" + cfg.StandardContent(content)
+		return content_title + "\n\n" + config.StandardContent(content)
 	} else {
 		fmt.Println("download failed! chapterId:", chapterId, "error:", response.Tip)
 	}

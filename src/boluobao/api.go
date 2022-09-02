@@ -2,7 +2,7 @@ package boluobao
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/pineapple-backups/cfg"
+	"github.com/VeronicaAlexia/pineapple-backups/config"
 	req "github.com/VeronicaAlexia/pineapple-backups/src/https"
 	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
 	"github.com/VeronicaAlexia/pineapple-backups/struct/sfacg_structs"
@@ -16,7 +16,7 @@ func GET_BOOK_INFORMATION(NovelId string) (_struct.Books, error) {
 	response := req.Get("novels/"+NovelId, &sfacg_structs.BookInfo{}, params).(*sfacg_structs.BookInfo)
 	if response.Status.HTTPCode == 200 && response.Data.NovelName != "" {
 		return _struct.Books{
-			NovelName:  cfg.RegexpName(response.Data.NovelName),
+			NovelName:  config.RegexpName(response.Data.NovelName),
 			NovelID:    strconv.Itoa(response.Data.NovelID),
 			NovelCover: response.Data.NovelCover,
 			AuthorName: response.Data.AuthorName,
@@ -73,7 +73,7 @@ func GET_CATALOGUE(NovelID string) []map[string]string {
 				"chapter_id":     strconv.Itoa(chapter.ChapID),
 				"chapter_index":  strconv.Itoa(chapter_index),
 				"money":          strconv.Itoa(chapter.OriginNeedFireMoney),
-				"file_name":      cfg.Config_file_name(division_index, chapter_index, strconv.Itoa(chapter.ChapID)),
+				"file_name":      config.FileCacheName(division_index, chapter_index, strconv.Itoa(chapter.ChapID)),
 			})
 		}
 	}
@@ -86,7 +86,7 @@ func GET_CHAPTER_CONTENT(chapter_id string) string {
 	response := req.Get("Chaps/"+chapter_id, &sfacg_structs.Content{}, params).(*sfacg_structs.Content)
 	if response != nil && response.Status.HTTPCode == 200 {
 		content_title := fmt.Sprintf("%v: %v", response.Data.Title, response.Data.AddTime)
-		return content_title + "\n" + cfg.StandardContent(response.Data.Expand.Content)
+		return content_title + "\n" + config.StandardContent(response.Data.Expand.Content)
 
 	} else {
 		fmt.Println("download failed! chapterId:", chapter_id, "error:", response.Status.Msg)

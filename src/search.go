@@ -2,7 +2,7 @@ package src
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/pineapple-backups/cfg"
+	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker"
 	"strconv"
@@ -40,12 +40,12 @@ func SfacgSearchDetailed(keyword string, page int) []string {
 }
 
 func TestApp(searchName string, page int) []string {
-	if cfg.Vars.AppType == "cat" {
+	if config.Vars.AppType == "cat" {
 		return CatSearchDetailed(searchName, page)
-	} else if cfg.Vars.AppType == "sfacg" {
+	} else if config.Vars.AppType == "sfacg" {
 		return SfacgSearchDetailed(searchName, page)
 	} else {
-		panic("app type is not correct" + cfg.Vars.AppType)
+		panic("app type is not correct" + config.Vars.AppType)
 	}
 }
 
@@ -53,7 +53,7 @@ func SearchBook(searchName string) string {
 	var page int
 	searchResult := TestApp(searchName, 0)
 	for {
-		keyword := cfg.InputStr("Please input search keyword:")
+		keyword := config.InputStr("Please input search keyword:")
 		if keyword == "next" || keyword == "n" {
 			page += 1 // next page
 			searchResult = TestApp(searchName, page)
@@ -76,8 +76,8 @@ func SearchBook(searchName string) string {
 }
 
 func ReturnBookID(keyword string, searchResult []string) string {
-	if cfg.IsNum(keyword) {
-		inputInt := cfg.StrToInt(keyword)
+	if config.IsNum(keyword) {
+		inputInt := config.StrToInt(keyword)
 		if len(searchResult) > 0 { // if search result is not empty and input is number
 			//inputs := cfg.InputInt("please input the index of the book you want to download:")
 			if inputInt < len(searchResult) { // if the index is valid (less than the length of the search result)

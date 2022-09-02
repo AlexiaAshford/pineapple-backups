@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/pineapple-backups/cfg"
+	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/src"
 	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker"
@@ -18,24 +18,24 @@ func current_download_book(book_id string) {
 	} else {
 		catalogue.GetDownloadsList()
 	}
-	if len(cfg.Current.DownloadList) > 0 {
-		fmt.Println(len(cfg.Current.DownloadList), " chapters will be downloaded.")
-		catalogue.ChapterBar = src.New(len(cfg.Current.DownloadList))
+	if len(config.Current.DownloadList) > 0 {
+		fmt.Println(len(config.Current.DownloadList), " chapters will be downloaded.")
+		catalogue.ChapterBar = src.New(len(config.Current.DownloadList))
 		catalogue.ChapterBar.Describe("working...")
-		for _, file_name := range cfg.Current.DownloadList {
+		for _, file_name := range config.Current.DownloadList {
 			catalogue.DownloadContent(file_name)
 		}
-		fmt.Printf("\nNovel:%v download complete!\n", cfg.Current.Book.NovelName)
+		fmt.Printf("\nNovel:%v download complete!\n", config.Current.Book.NovelName)
 		catalogue.MergeTextAndEpubFiles()
 	} else {
 		catalogue.MergeTextAndEpubFiles()
-		cfg.ColorPrint(cfg.Current.Book.NovelName+" No chapter need to download!", 2|8)
+		config.ColorPrint(config.Current.Book.NovelName+" No chapter need to download!", 2|8)
 	}
 }
 
 func shellUpdateLocalBook() {
-	if cfg.Exist("./bookList.txt") && cfg.FileSize("./config.json") > 0 {
-		LocalBookList := cfg.Write("./bookList.json", "", "r")
+	if config.Exist("./bookList.txt") && config.FileSize("./config.json") > 0 {
+		LocalBookList := config.Write("./bookList.json", "", "r")
 		for _, i := range strings.ReplaceAll(LocalBookList, "\n", "") {
 			current_download_book(string(i))
 		}
@@ -45,14 +45,14 @@ func shellUpdateLocalBook() {
 }
 
 func init() {
-	if !cfg.Exist("./config.json") || cfg.FileSize("./config.json") == 0 {
+	if !config.Exist("./config.json") || config.FileSize("./config.json") == 0 {
 		fmt.Println("config.json not exist, create a new one!")
 	} else {
 		fmt.Println("config.json exist, load config.json!")
-		cfg.LoadJson()
+		config.LoadJson()
 	}
-	if cfg.UpdateConfig() {
-		cfg.SaveJson()
+	if config.UpdateConfig() {
+		config.SaveJson()
 	}
 	fmt.Println("you can input -h and --help to see the command list.")
 }
@@ -64,7 +64,7 @@ func InitBookShelf() {
 		bookshelf_book_index []int
 		bookshelf_book_list  map[int][]map[string]string
 	)
-	if cfg.Vars.AppType == "sfacg" {
+	if config.Vars.AppType == "sfacg" {
 		bookshelf_book_list, response_err = boluobao.GET_BOOK_SHELF_INFORMATION()
 	} else {
 		bookshelf_book_list, response_err = hbooker.GET_BOOK_SHELF_INFORMATION()
@@ -72,9 +72,9 @@ func InitBookShelf() {
 	if response_err != nil {
 		var test_login_status bool
 		fmt.Println("BookShelf Error:", response_err)
-		if cfg.Vars.AppType == "sfacg" {
+		if config.Vars.AppType == "sfacg" {
 			test_login_status = src.AutoAccount()
-		} else if cfg.Vars.AppType == "cat" {
+		} else if config.Vars.AppType == "cat" {
 			test_login_status = src.InputAccountToken()
 		}
 		if !test_login_status {
@@ -92,16 +92,16 @@ func InitBookShelf() {
 		bookshelf_index = 0
 	} else {
 		fmt.Println("please input bookshelf index:")
-		bookshelf_index = cfg.InputInt(">", len(bookshelf_book_list))
+		bookshelf_index = config.InputInt(">", len(bookshelf_book_list))
 	}
 	for book_index, book := range bookshelf_book_list[bookshelf_index] {
 		fmt.Println("book-index", book_index, "book-name:", book["novel_name"], "\t\tbook-id:", book["novel_id"])
 		bookshelf_book_index = append(bookshelf_book_index, book_index)
 	}
 	for {
-		if comment, ok := cfg.Console(); ok {
-			if cfg.TestIntList(bookshelf_book_index, comment[0]) {
-				shell([]string{"book", bookshelf_book_list[bookshelf_index][cfg.StrToInt(comment[0])]["novel_id"]})
+		if comment, ok := config.Console(); ok {
+			if config.TestIntList(bookshelf_book_index, comment[0]) {
+				shell([]string{"book", bookshelf_book_list[bookshelf_index][config.StrToInt(comment[0])]["novel_id"]})
 			} else {
 				shell(comment)
 			}
@@ -117,14 +117,14 @@ func shell(inputs []string) {
 	case "up", "update":
 		shellUpdateLocalBook()
 	case "a", "app":
-		if cfg.TestList([]string{"sfacg", "cat"}, inputs[1]) {
-			cfg.Vars.AppType = inputs[1]
+		if config.TestList([]string{"sfacg", "cat"}, inputs[1]) {
+			config.Vars.AppType = inputs[1]
 		} else {
 			fmt.Println("app type error, please input again.")
 		}
 	case "book", "download":
 		if len(inputs) == 2 {
-			if book_id := cfg.ExtractBookID(inputs[1]); book_id != "" {
+			if book_id := config.ExtractBookID(inputs[1]); book_id != "" {
 				current_download_book(book_id)
 			} else {
 				fmt.Println("book id is empty, please input again.")
@@ -158,10 +158,10 @@ func shell(inputs []string) {
 }
 
 func main() {
-	commentLine := cfg.CommandInit()
+	commentLine := config.CommandInit()
 	if len(os.Args) > 1 && commentLine[0] != "console" {
-		if cfg.Account != "" && cfg.Password != "" {
-			shell([]string{"login", cfg.Account, cfg.Password})
+		if config.Account != "" && config.Password != "" {
+			shell([]string{"login", config.Account, config.Password})
 		} else {
 			src.TestAppTypeAndAccount()
 		}
@@ -169,7 +169,7 @@ func main() {
 			shell(commentLine)
 		}
 	} else {
-		for _, s := range cfg.HelpMessage {
+		for _, s := range config.HelpMessage {
 			fmt.Println("[info]", s)
 		}
 		InitBookShelf()

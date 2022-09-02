@@ -1,4 +1,4 @@
-package cfg
+package config
 
 import (
 	"bufio"
@@ -34,7 +34,7 @@ func FormatBool(b bool) string {
 	}
 	return "false"
 }
-func Config_file_name(index, chapter_index, ChapID any) string {
+func FileCacheName(index, chapter_index, ChapID any) string {
 	index = StrToInt(fmt.Sprintf("%d", index))
 	return fmt.Sprintf("%05d", index) + "-" + fmt.Sprintf("%05d", chapter_index) + "-" +
 		fmt.Sprintf("%v", ChapID) + ".txt"

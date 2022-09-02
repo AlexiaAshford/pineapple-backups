@@ -2,7 +2,7 @@ package src
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/pineapple-backups/cfg"
+	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker"
@@ -20,26 +20,26 @@ type Catalogue struct {
 }
 
 func (catalogue *Catalogue) ReadChapterConfig() {
-	if !cfg.Exist(cfg.Current.ConfigPath) {
-		cfg.Mkdir(cfg.Current.ConfigPath)
+	if !config.Exist(config.Current.ConfigPath) {
+		config.Mkdir(config.Current.ConfigPath)
 		catalogue.ChapterCfg = []string{}
 	} else {
-		catalogue.ChapterCfg = cfg.GetFileName(cfg.Current.ConfigPath)
+		catalogue.ChapterCfg = config.GetFileName(config.Current.ConfigPath)
 	}
 }
 
 func (catalogue *Catalogue) GetDownloadsList() {
 	catalogue.ReadChapterConfig()
 	var chapter_info_list []map[string]string
-	if cfg.Vars.AppType == "sfacg" {
-		chapter_info_list = boluobao.GET_CATALOGUE(cfg.Current.Book.NovelID)
-	} else if cfg.Vars.AppType == "cat" {
-		chapter_info_list = hbooker.GET_DIVISION(cfg.Current.Book.NovelID)
+	if config.Vars.AppType == "sfacg" {
+		chapter_info_list = boluobao.GET_CATALOGUE(config.Current.Book.NovelID)
+	} else if config.Vars.AppType == "cat" {
+		chapter_info_list = hbooker.GET_DIVISION(config.Current.Book.NovelID)
 	}
 	for _, chapter_info := range chapter_info_list {
-		if !cfg.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {
+		if !config.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {
 			if chapter_info["money"] == "0" || chapter_info["money"] == "1" {
-				cfg.Current.DownloadList = append(cfg.Current.DownloadList, chapter_info["file_name"])
+				config.Current.DownloadList = append(config.Current.DownloadList, chapter_info["file_name"])
 			} else {
 				fmt.Println(chapter_info["chapter_name"], " is vip chapter, You need to subscribe it")
 			}
@@ -48,37 +48,37 @@ func (catalogue *Catalogue) GetDownloadsList() {
 }
 
 func (catalogue *Catalogue) DownloadContent(file_name string) {
-	cfg.FileLock.Lock()         // lock file to avoid file write conflict
-	defer cfg.FileLock.Unlock() // unlock file after write
+	config.FileLock.Lock()         // lock file to avoid file write conflict
+	defer config.FileLock.Unlock() // unlock file after write
 	chapter_id := catalogue.speed_progress(file_name)
 	var content_text string
 	for i := 0; i < 5; i++ {
-		if cfg.Vars.AppType == "sfacg" {
+		if config.Vars.AppType == "sfacg" {
 			content_text = boluobao.GET_CHAPTER_CONTENT(chapter_id)
-		} else if cfg.Vars.AppType == "cat" {
+		} else if config.Vars.AppType == "cat" {
 			content_text = hbooker.GET_CHAPTER_CONTENT(chapter_id, hbooker.GetKeyByCid(chapter_id))
 		}
 		if content_text != "" {
-			cfg.Write(path.Join(cfg.Current.ConfigPath, file_name), content_text, "w")
+			config.Write(path.Join(config.Current.ConfigPath, file_name), content_text, "w")
 			break
 		}
 	}
 }
 
 func (catalogue *Catalogue) MergeTextAndEpubFiles() {
-	for _, local_file_name := range cfg.GetFileName(cfg.Current.ConfigPath) {
-		content := cfg.Write(cfg.Current.ConfigPath+"/"+local_file_name, "", "r")
+	for _, local_file_name := range config.GetFileName(config.Current.ConfigPath) {
+		content := config.Write(config.Current.ConfigPath+"/"+local_file_name, "", "r")
 		catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content)
-		cfg.Write(cfg.Current.OutputPath, "\n\n\n"+content, "a")
+		config.Write(config.Current.OutputPath, "\n\n\n"+content, "a")
 	}
 	out_put_epub_now := time.Now() // 开始时间
 	// save epub file
-	epub_file_name := strings.ReplaceAll(cfg.Current.OutputPath, ".txt", ".epub")
+	epub_file_name := strings.ReplaceAll(config.Current.OutputPath, ".txt", ".epub")
 	if err := catalogue.EpubSetting.Write(epub_file_name); err != nil {
 		fmt.Println(epub_file_name, " epub error:", err)
 	}
 	fmt.Println("out put epub file success, time:", time.Since(out_put_epub_now))
-	cfg.Current.DownloadList = nil
+	config.Current.DownloadList = nil
 }
 
 func (catalogue *Catalogue) add_chapter_in_epub_file(title, content string) {

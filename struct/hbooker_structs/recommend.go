@@ -1,8 +1,8 @@
 package hbooker_structs
 
 type RecommendStruct struct {
-	Code int  `json:"code"`
-	Data Data `json:"data"`
+	Code string `json:"code"`
+	Data Data   `json:"data"`
 }
 type ChangeRecommendStruct struct {
 	Code int        `json:"code"`
@@ -17,7 +17,6 @@ type ChangeBookList struct {
 	Description     string `json:"description"`
 	AuthorName      string `json:"author_name"`
 	Cover           string `json:"cover"`
-	Discount        int    `json:"discount"`
 	DiscountEndTime string `json:"discount_end_time"`
 	UpStatus        string `json:"up_status"`
 	TotalWordCount  string `json:"total_word_count"`
