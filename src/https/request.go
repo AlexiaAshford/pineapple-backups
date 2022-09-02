@@ -45,7 +45,7 @@ func QueryParams(url string, ParamsData map[string]string) string {
 func SET_URL(url string, params map[string]string) string {
 	switch config.Vars.AppType {
 	case "cat":
-		return CatWebSite + strings.ReplaceAll(QueryParams(url, params), CatWebSite, "")
+		return CatWebSite + strings.ReplaceAll(url, CatWebSite, "")
 	case "sfacg":
 		return SFWebSite + strings.ReplaceAll(QueryParams(url, params), SFWebSite, "")
 	case "happybooker":

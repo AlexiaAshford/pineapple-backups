@@ -15,12 +15,11 @@ import (
 )
 
 func GET_DIVISION(BookId string) []map[string]string {
-	var (
-		division_info_list []map[string]string
-		chapter_index      int
-	)
-	response := req.Get(GET_DIVISION_LIST, &division.DivisionList{}, map[string]string{"book_id": BookId})
-	for division_index, division_info := range response.(*division.DivisionList).Data.DivisionList {
+	var chapter_index int
+	var division_info_list []map[string]string
+	var s = new(division.DivisionList)
+	req.Get(new(req.Context).Init(GET_DIVISION_LIST).Query("book_id", BookId).QueryToString(), s, nil)
+	for division_index, division_info := range s.Data.DivisionList {
 		fmt.Printf("第%v卷\t\t%v\n", division_index+1, division_info.DivisionName)
 		for _, chapter := range GET_CATALOGUE(division_info.DivisionID) {
 			chapter_index += 1
@@ -41,18 +40,20 @@ func GET_DIVISION(BookId string) []map[string]string {
 }
 
 func GET_CATALOGUE(DivisionId string) []structs.ChapterList {
-	params := map[string]string{"division_id": DivisionId}
-	return req.Get(GET_CHAPTER_UPDATE, &structs.ChapterStruct{}, params).(*structs.ChapterStruct).Data.ChapterList
+	s := new(structs.ChapterStruct)
+	req.Get(new(req.Context).Init(GET_CHAPTER_UPDATE).Query("division_id", DivisionId).QueryToString(), s, nil)
+	return s.Data.ChapterList
 }
 
 func GET_BOOK_SHELF_INDEXES_INFORMATION(shelf_id string) ([]map[string]string, error) {
-	params := map[string]string{"shelf_id": shelf_id, "last_mod_time": "0", "direction": "prev"}
-	response := req.Get(BOOKSHELF_GET_SHELF_BOOK_LIST, &bookshelf.GetShelfBookList{}, params).(*bookshelf.GetShelfBookList)
-	if response.Code != "100000" {
-		return nil, fmt.Errorf(response.Tip.(string))
+	s := new(bookshelf.GetShelfBookList)
+	req.Get(new(req.Context).Init(BOOKSHELF_GET_SHELF_BOOK_LIST).Query("shelf_id", shelf_id).
+		Query("direction", "prev").Query("last_mod_time", "0").QueryToString(), s, nil)
+	if s.Code != "100000" {
+		return nil, fmt.Errorf(s.Tip.(string))
 	}
 	var bookshelf_info_list []map[string]string
-	for _, book := range response.Data.BookList {
+	for _, book := range s.Data.BookList {
 		bookshelf_info_list = append(bookshelf_info_list,
 			map[string]string{"novel_name": book.BookInfo.BookName, "novel_id": book.BookInfo.BookID},
 		)
@@ -62,12 +63,13 @@ func GET_BOOK_SHELF_INDEXES_INFORMATION(shelf_id string) ([]map[string]string, e
 }
 
 func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
+	s := new(bookshelf.GetShelfList)
 	bookshelf_info := make(map[int][]map[string]string)
-	response := req.Get(BOOKSHELF_GET_SHELF_LIST, &bookshelf.GetShelfList{}, nil).(*bookshelf.GetShelfList)
-	if response.Code != "100000" {
-		return nil, fmt.Errorf(response.Tip.(string))
+	req.Get(new(req.Context).Init(BOOKSHELF_GET_SHELF_LIST).QueryToString(), s, nil)
+	if s.Code != "100000" {
+		return nil, fmt.Errorf(s.Tip.(string))
 	}
-	for index, value := range response.Data.ShelfList {
+	for index, value := range s.Data.ShelfList {
 		fmt.Println("bookshelf index:", index, "\t\t\tbookshelf name:", value.ShelfName)
 		if bookshelf_info_list, err := GET_BOOK_SHELF_INDEXES_INFORMATION(value.ShelfID); err == nil {
 			bookshelf_info[index] = bookshelf_info_list
@@ -78,35 +80,38 @@ func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 	return bookshelf_info, nil
 }
 func GET_BOOK_INFORMATION(bid string) (_struct.Books, error) {
-	params := map[string]string{"book_id": bid}
-	response := req.Get(BOOK_GET_INFO_BY_ID, &structs.DetailStruct{}, params).(*structs.DetailStruct)
-	if response.Code == "100000" {
+	s := new(structs.DetailStruct)
+	req.Get(new(req.Context).Init(BOOK_GET_INFO_BY_ID).Query("book_id", bid).QueryToString(), s, nil)
+	if s.Code == "100000" {
 		return _struct.Books{
-			NovelName:  config.RegexpName(response.Data.BookInfo.BookName),
-			NovelID:    response.Data.BookInfo.BookID,
-			NovelCover: response.Data.BookInfo.Cover,
-			AuthorName: response.Data.BookInfo.AuthorName,
-			CharCount:  response.Data.BookInfo.TotalWordCount,
-			MarkCount:  response.Data.BookInfo.UpdateStatus,
-			SignStatus: response.Data.BookInfo.IsPaid,
+			NovelName:  config.RegexpName(s.Data.BookInfo.BookName),
+			NovelID:    s.Data.BookInfo.BookID,
+			NovelCover: s.Data.BookInfo.Cover,
+			AuthorName: s.Data.BookInfo.AuthorName,
+			CharCount:  s.Data.BookInfo.TotalWordCount,
+			MarkCount:  s.Data.BookInfo.UpdateStatus,
+			SignStatus: s.Data.BookInfo.IsPaid,
 		}, nil
 	} else {
-		return _struct.Books{}, fmt.Errorf(response.Tip.(string))
+		return _struct.Books{}, fmt.Errorf(s.Tip.(string))
 	}
 }
 
 func GET_SEARCH(KeyWord string, page int) *structs.SearchStruct {
-	params := map[string]string{"count": "10", "page": strconv.Itoa(page), "category_index": "0", "key": KeyWord}
-	return req.Get(BOOKCITY_GET_FILTER_LIST, &structs.SearchStruct{}, params).(*structs.SearchStruct)
+	s := new(structs.SearchStruct)
+	req.Get(new(req.Context).Init(BOOKCITY_GET_FILTER_LIST).Query("count", "10").
+		Query("page", strconv.Itoa(page)).Query("category_index", "0").Query("key", KeyWord).
+		QueryToString(), s, nil)
+	return s
 }
 
 func Login(account, password string) {
-	params := map[string]string{"login_name": account, "password": password}
-	response := req.Get(MY_SIGN_LOGIN, &structs.LoginStruct{}, params)
-	result := response.(*structs.LoginStruct)
-	if result.Code == "100000" {
-		config.Apps.Cat.Params.LoginToken = result.Data.LoginToken
-		config.Apps.Cat.Params.Account = result.Data.ReaderInfo.Account
+	s := new(structs.LoginStruct)
+	req.Get(new(req.Context).Init(MY_SIGN_LOGIN).Query("login_name", account).
+		Query("password", password).QueryToString(), s, nil)
+	if s.Code == "100000" {
+		config.Apps.Cat.Params.LoginToken = s.Data.LoginToken
+		config.Apps.Cat.Params.Account = s.Data.ReaderInfo.Account
 		config.SaveJson()
 	} else {
 		fmt.Println("Login failed!")
@@ -118,10 +123,12 @@ func UseGeetest() *structs.GeetestStruct {
 }
 
 func GeetestRegister(userID string) (string, string) {
-	params := map[string]string{"t": strconv.FormatInt(time.Now().UnixNano()/1e6, 10), "user_id": userID}
-	response, _ := req.Request("POST", req.QueryParams("signup/geetest_first_register", params))
-	result := req.JsonUnmarshal(response, &structs.GeetestChallenge{}).(*structs.GeetestChallenge)
-	return result.Challenge, result.Gt
+	s := new(structs.GeetestChallenge)
+	response, _ := req.Request("POST", new(req.Context).Init("signup/geetest_register").
+		Query("t", strconv.FormatInt(time.Now().UnixNano()/1e6, 10)).
+		Query("user_id", userID).QueryToString())
+	req.JsonUnmarshal(response, s)
+	return s.Challenge, s.Gt
 }
 func TestGeetest(userID string) {
 	UseGeetest()
@@ -137,29 +144,42 @@ func TestGeetest(userID string) {
 }
 
 func GetRecommend() *structs.RecommendStruct {
-	params := map[string]string{"theme_type": "NORMAL", "tab_type": "200"}
-	return req.Get(BOOKCITY_RECOMMEND_DATA, &structs.RecommendStruct{}, params).(*structs.RecommendStruct)
+	s := new(structs.RecommendStruct)
+	req.Get(new(req.Context).Init(BOOKCITY_RECOMMEND_DATA).Query("theme_type", "NORMAL").
+		Query("tab_type", "200").QueryToString(), s, nil)
+	return s
 }
+
 func GetChangeRecommend() []structs.ChangeBookList {
-	params := map[string]string{"book_id": "100250589,100283902,100186621,100287528,100309123,100325245", "from_module_name": "长篇好书"}
-	return req.Get(GET_CHANGE_RECOMMEND, &structs.ChangeRecommendStruct{}, params).(*structs.ChangeRecommendStruct).Data.BookList
+	s := new(structs.ChangeRecommendStruct)
+	req.Get(new(req.Context).Init(GET_CHANGE_RECOMMEND).
+		Query("book_id", "100250589,100283902,100186621,100287528,100309123,100325245").QueryToString(), s, nil)
+	return s.Data.BookList
 }
 
 func GetKeyByCid(chapterId string) string {
-	params := map[string]string{"chapter_id": chapterId}
-	return req.Get(GET_CHAPTER_KEY, &structs.KeyStruct{}, params).(*structs.KeyStruct).Data.Command
+	url_query_params := new(req.Context).Init(GET_CHAPTER_KEY).Query("chapter_id", chapterId).QueryToString()
+	return req.Get(url_query_params, &structs.KeyStruct{}, nil).(*structs.KeyStruct).Data.Command
 }
 
 func GET_CHAPTER_CONTENT(chapterId, chapter_key string) string {
-	params := map[string]string{"chapter_id": chapterId, "chapter_command": chapter_key}
-	response := req.Get(GET_CPT_IFM, &structs.ContentStruct{}, params).(*structs.ContentStruct)
-	if response != nil && response.Code == "100000" {
-		chapter_info := response.Data.ChapterInfo
+	s := new(structs.ContentStruct)
+	req.Get(new(req.Context).Init(GET_CPT_IFM).Query("chapter_id", chapterId).
+		Query("chapter_command", chapter_key).QueryToString(), s, nil)
+	if s != nil && s.Code == "100000" {
+		chapter_info := s.Data.ChapterInfo
 		content := string(Encrypt.Decode(chapter_info.TxtContent, chapter_key))
 		content_title := fmt.Sprintf("%v: %v", chapter_info.ChapterTitle, chapter_info.Uptime)
 		return content_title + "\n\n" + config.StandardContent(content)
 	} else {
-		fmt.Println("download failed! chapterId:", chapterId, "error:", response.Tip)
+		fmt.Println("download failed! chapterId:", chapterId, "error:", s.Tip)
 	}
 	return ""
+}
+
+func mains() {
+	Login("account", "password")
+	TestGeetest("123")
+	GetRecommend()
+	GetChangeRecommend()
 }
