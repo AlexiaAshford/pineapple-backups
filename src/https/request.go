@@ -23,39 +23,20 @@ func JsonUnmarshal(response []byte, Struct any) any {
 	return Struct
 }
 
-func QueryParams(url string, ParamsData map[string]string) string {
-	var Params string
-	if config.Vars.AppType == "cat" {
-		queryRequisite := map[string]interface{}{
-			"login_token":  config.Apps.Cat.Params.LoginToken,
-			"account":      config.Apps.Cat.Params.Account,
-			"app_version":  config.Apps.Cat.Params.AppVersion,
-			"device_token": config.Apps.Cat.Params.DeviceToken,
-		}
-		for k, v := range queryRequisite {
-			Params += fmt.Sprintf("&%s=%s", k, v)
-		}
-	}
-	for k, v := range ParamsData {
-		Params += fmt.Sprintf("&%s=%s", k, v)
-	}
-	return url + "?" + Params
-}
-
-func SET_URL(url string, params map[string]string) string {
+func SET_URL(url string) string {
 	switch config.Vars.AppType {
 	case "cat":
 		return CatWebSite + strings.ReplaceAll(url, CatWebSite, "")
 	case "sfacg":
-		return SFWebSite + strings.ReplaceAll(QueryParams(url, params), SFWebSite, "")
+		return SFWebSite + strings.ReplaceAll(url, SFWebSite, "")
 	case "happybooker":
-		return HappyWebSite + strings.ReplaceAll(QueryParams(url, params), HappyWebSite, "")
+		return HappyWebSite + strings.ReplaceAll(url, HappyWebSite, "")
 	default:
 		return url
 	}
 }
 func Login(url string, dataJson []byte) (*sfacg_structs.Login, []*http.Cookie) {
-	request, err := http.NewRequest("POST", SET_URL(url, nil), bytes.NewBuffer(dataJson))
+	request, err := http.NewRequest("POST", SET_URL(url), bytes.NewBuffer(dataJson))
 	if err != nil {
 		fmt.Printf("Login session error:%v\n", err)
 		return nil, nil
@@ -87,16 +68,16 @@ func Request(method string, url string) ([]byte, error) {
 	return nil, errors.New("request error:" + method + "url:" + url)
 }
 
-func Get(url string, structural any, params map[string]string) any {
+func Get(url string, structural any) any {
 	if config.Vars.AppType == "cat" {
-		if result, ok := Request("POST", SET_URL(url, params)); ok == nil {
+		if result, ok := Request("POST", SET_URL(url)); ok == nil {
 			//fmt.Println(string(Encrypt.Decode(string(result), "")))
 			return JsonUnmarshal(Encrypt.Decode(string(result), ""), structural)
 		} else {
 			fmt.Println(ok)
 		}
 	} else if config.Vars.AppType == "sfacg" {
-		if result, ok := Request("GET", SET_URL(url, params)); ok == nil {
+		if result, ok := Request("GET", SET_URL(url)); ok == nil {
 			return JsonUnmarshal(result, structural)
 		} else {
 			fmt.Println(ok)
@@ -114,3 +95,23 @@ func GetCover(imgUrl string) []byte {
 	}
 	return nil
 }
+
+//
+//func QueryParams(url string, ParamsData map[string]string) string {
+//	var Params string
+//	if config.Vars.AppType == "cat" {
+//		queryRequisite := map[string]interface{}{
+//			"login_token":  config.Apps.Cat.Params.LoginToken,
+//			"account":      config.Apps.Cat.Params.Account,
+//			"app_version":  config.Apps.Cat.Params.AppVersion,
+//			"device_token": config.Apps.Cat.Params.DeviceToken,
+//		}
+//		for k, v := range queryRequisite {
+//			Params += fmt.Sprintf("&%s=%s", k, v)
+//		}
+//	}
+//	for k, v := range ParamsData {
+//		Params += fmt.Sprintf("&%s=%s", k, v)
+//	}
+//	return url + "?" + Params
+//}

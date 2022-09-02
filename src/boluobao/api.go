@@ -14,7 +14,7 @@ import (
 func GET_BOOK_INFORMATION(NovelId string) (_struct.Books, error) {
 	s := new(sfacg_structs.BookInfo)
 	req.Get(new(req.Context).Init("novels/"+NovelId).
-		Query("expand", "intro,tags,sysTags,originTotalNeedFireMoney").QueryToString(), s, nil)
+		Query("expand", "intro,tags,sysTags,originTotalNeedFireMoney").QueryToString(), s)
 	if s.Status.HTTPCode == 200 && s.Data.NovelName != "" {
 		return _struct.Books{
 			NovelName:  config.RegexpName(s.Data.NovelName),
@@ -36,13 +36,13 @@ func GET_BOOK_INFORMATION(NovelId string) (_struct.Books, error) {
 }
 
 func GET_ACCOUNT_INFORMATION() *sfacg_structs.Account {
-	return req.Get("user", &sfacg_structs.Account{}, nil).(*sfacg_structs.Account)
+	return req.Get("user", &sfacg_structs.Account{}).(*sfacg_structs.Account)
 }
 
 func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 	s := new(bookshelf.InfoData)
 	bookshelf_info := make(map[int][]map[string]string)
-	req.Get(new(req.Context).Init("user/Pockets").Query("expand", "novels").QueryToString(), s, nil)
+	req.Get(new(req.Context).Init("user/Pockets").Query("expand", "novels").QueryToString(), s)
 	if s.Status.HTTPCode != 200 {
 		return nil, fmt.Errorf(s.Status.Msg.(string))
 	}
@@ -64,7 +64,7 @@ func GET_CATALOGUE(NovelID string) []map[string]string {
 	var division_info []map[string]string
 	s := new(sfacg_structs.Catalogue)
 	req.Get(new(req.Context).Init(fmt.Sprintf("novels/%v/dirs", NovelID)).
-		Query("expand", "originNeedFireMoney").QueryToString(), s, nil)
+		Query("expand", "originNeedFireMoney").QueryToString(), s)
 	for division_index, division := range s.Data.VolumeList {
 		fmt.Printf("第%v卷\t\t%v\n", division_index+1, division.Title)
 		for _, chapter := range division.ChapterList {
@@ -87,7 +87,7 @@ func GET_CATALOGUE(NovelID string) []map[string]string {
 
 func GET_CHAPTER_CONTENT(chapter_id string) string {
 	s := new(sfacg_structs.Content)
-	req.Get(new(req.Context).Init("Chaps/"+chapter_id).Query("expand", "content").QueryToString(), s, nil)
+	req.Get(new(req.Context).Init("Chaps/"+chapter_id).Query("expand", "content").QueryToString(), s)
 	if s != nil && s.Status.HTTPCode == 200 {
 		content_title := fmt.Sprintf("%v: %v", s.Data.Title, s.Data.AddTime)
 		return content_title + "\n" + config.StandardContent(s.Data.Expand.Content)
@@ -101,7 +101,7 @@ func GET_CHAPTER_CONTENT(chapter_id string) string {
 func GET_SEARCH(keyword string, page int) *sfacg_structs.Search {
 	s := new(sfacg_structs.Search)
 	req.Get(new(req.Context).Init("search/novels/result").Query("q", url_.QueryEscape(keyword)).
-		Query("size", "20").Query("page", strconv.Itoa(page)).QueryToString(), s, nil)
+		Query("size", "20").Query("page", strconv.Itoa(page)).QueryToString(), s)
 	return s
 
 }
@@ -109,9 +109,9 @@ func GET_SEARCH(keyword string, page int) *sfacg_structs.Search {
 func LOGIN_ACCOUNT(username, password string) *sfacg_structs.Login {
 	//s := new(sfacg_structs.Login)
 	//req.Get(new(req.Context).Init("sessions").Query("username", username).
-	//	Query("password", password).QueryToString(), s, nil)
+	//	Query("password", password).QueryToString(), s)
 	params := fmt.Sprintf(`{"username":"%s", "password": "%s"}`, username, password)
-	response, Cookie := req.Login(req.SET_URL("sessions", nil), []byte(params))
+	response, Cookie := req.Login(req.SET_URL("sessions"), []byte(params))
 	for _, cookie := range Cookie {
 		response.Cookie += cookie.Name + "=" + cookie.Value + ";"
 	}

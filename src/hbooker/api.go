@@ -18,7 +18,7 @@ func GET_DIVISION(BookId string) []map[string]string {
 	var chapter_index int
 	var division_info_list []map[string]string
 	var s = new(division.DivisionList)
-	req.Get(new(req.Context).Init(GET_DIVISION_LIST).Query("book_id", BookId).QueryToString(), s, nil)
+	req.Get(new(req.Context).Init(GET_DIVISION_LIST).Query("book_id", BookId).QueryToString(), s)
 	for division_index, division_info := range s.Data.DivisionList {
 		fmt.Printf("第%v卷\t\t%v\n", division_index+1, division_info.DivisionName)
 		for _, chapter := range GET_CATALOGUE(division_info.DivisionID) {
@@ -41,14 +41,14 @@ func GET_DIVISION(BookId string) []map[string]string {
 
 func GET_CATALOGUE(DivisionId string) []structs.ChapterList {
 	s := new(structs.ChapterStruct)
-	req.Get(new(req.Context).Init(GET_CHAPTER_UPDATE).Query("division_id", DivisionId).QueryToString(), s, nil)
+	req.Get(new(req.Context).Init(GET_CHAPTER_UPDATE).Query("division_id", DivisionId).QueryToString(), s)
 	return s.Data.ChapterList
 }
 
 func GET_BOOK_SHELF_INDEXES_INFORMATION(shelf_id string) ([]map[string]string, error) {
 	s := new(bookshelf.GetShelfBookList)
 	req.Get(new(req.Context).Init(BOOKSHELF_GET_SHELF_BOOK_LIST).Query("shelf_id", shelf_id).
-		Query("direction", "prev").Query("last_mod_time", "0").QueryToString(), s, nil)
+		Query("direction", "prev").Query("last_mod_time", "0").QueryToString(), s)
 	if s.Code != "100000" {
 		return nil, fmt.Errorf(s.Tip.(string))
 	}
@@ -65,7 +65,7 @@ func GET_BOOK_SHELF_INDEXES_INFORMATION(shelf_id string) ([]map[string]string, e
 func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 	s := new(bookshelf.GetShelfList)
 	bookshelf_info := make(map[int][]map[string]string)
-	req.Get(new(req.Context).Init(BOOKSHELF_GET_SHELF_LIST).QueryToString(), s, nil)
+	req.Get(new(req.Context).Init(BOOKSHELF_GET_SHELF_LIST).QueryToString(), s)
 	if s.Code != "100000" {
 		return nil, fmt.Errorf(s.Tip.(string))
 	}
@@ -81,7 +81,7 @@ func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 }
 func GET_BOOK_INFORMATION(bid string) (_struct.Books, error) {
 	s := new(structs.DetailStruct)
-	req.Get(new(req.Context).Init(BOOK_GET_INFO_BY_ID).Query("book_id", bid).QueryToString(), s, nil)
+	req.Get(new(req.Context).Init(BOOK_GET_INFO_BY_ID).Query("book_id", bid).QueryToString(), s)
 	if s.Code == "100000" {
 		return _struct.Books{
 			NovelName:  config.RegexpName(s.Data.BookInfo.BookName),
@@ -101,14 +101,14 @@ func GET_SEARCH(KeyWord string, page int) *structs.SearchStruct {
 	s := new(structs.SearchStruct)
 	req.Get(new(req.Context).Init(BOOKCITY_GET_FILTER_LIST).Query("count", "10").
 		Query("page", strconv.Itoa(page)).Query("category_index", "0").Query("key", KeyWord).
-		QueryToString(), s, nil)
+		QueryToString(), s)
 	return s
 }
 
 func Login(account, password string) {
 	s := new(structs.LoginStruct)
 	req.Get(new(req.Context).Init(MY_SIGN_LOGIN).Query("login_name", account).
-		Query("password", password).QueryToString(), s, nil)
+		Query("password", password).QueryToString(), s)
 	if s.Code == "100000" {
 		config.Apps.Cat.Params.LoginToken = s.Data.LoginToken
 		config.Apps.Cat.Params.Account = s.Data.ReaderInfo.Account
@@ -119,7 +119,7 @@ func Login(account, password string) {
 }
 
 func UseGeetest() *structs.GeetestStruct {
-	return req.Get("signup/use_geetest", &structs.GeetestStruct{}, nil).(*structs.GeetestStruct)
+	return req.Get("signup/use_geetest", &structs.GeetestStruct{}).(*structs.GeetestStruct)
 }
 
 func GeetestRegister(userID string) (string, string) {
@@ -146,26 +146,27 @@ func TestGeetest(userID string) {
 func GetRecommend() *structs.RecommendStruct {
 	s := new(structs.RecommendStruct)
 	req.Get(new(req.Context).Init(BOOKCITY_RECOMMEND_DATA).Query("theme_type", "NORMAL").
-		Query("tab_type", "200").QueryToString(), s, nil)
+		Query("tab_type", "200").QueryToString(), s)
 	return s
 }
 
 func GetChangeRecommend() []structs.ChangeBookList {
 	s := new(structs.ChangeRecommendStruct)
 	req.Get(new(req.Context).Init(GET_CHANGE_RECOMMEND).
-		Query("book_id", "100250589,100283902,100186621,100287528,100309123,100325245").QueryToString(), s, nil)
+		Query("book_id", "100250589,100283902,100186621,100287528,100309123,100325245").QueryToString(), s)
 	return s.Data.BookList
 }
 
 func GetKeyByCid(chapterId string) string {
-	url_query_params := new(req.Context).Init(GET_CHAPTER_KEY).Query("chapter_id", chapterId).QueryToString()
-	return req.Get(url_query_params, &structs.KeyStruct{}, nil).(*structs.KeyStruct).Data.Command
+	s := new(structs.KeyStruct)
+	req.Get(new(req.Context).Init(GET_CHAPTER_KEY).Query("chapter_id", chapterId).QueryToString(), s)
+	return s.Data.Command
 }
 
 func GET_CHAPTER_CONTENT(chapterId, chapter_key string) string {
 	s := new(structs.ContentStruct)
 	req.Get(new(req.Context).Init(GET_CPT_IFM).Query("chapter_id", chapterId).
-		Query("chapter_command", chapter_key).QueryToString(), s, nil)
+		Query("chapter_command", chapter_key).QueryToString(), s)
 	if s != nil && s.Code == "100000" {
 		chapter_info := s.Data.ChapterInfo
 		content := string(Encrypt.Decode(chapter_info.TxtContent, chapter_key))
