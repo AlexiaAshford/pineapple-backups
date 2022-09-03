@@ -137,7 +137,6 @@ func Input(prompt string) string {
 		if err == nil {
 			return input
 		}
-		return ""
 	}
 }
 func IsNum(s string) bool {

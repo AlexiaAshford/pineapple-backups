@@ -88,7 +88,6 @@ func shell(inputs []string) {
 		}
 
 	case "l", "login":
-
 		if len(inputs) >= 3 {
 			src.LoginAccount(inputs[1], inputs[2], 0)
 		} else {
