@@ -28,12 +28,6 @@ func StandardContent(content string) string {
 	}
 	return content
 }
-func FormatBool(b bool) string {
-	if b {
-		return "true"
-	}
-	return "false"
-}
 func FileCacheName(index, chapter_index, ChapID any) string {
 	index = StrToInt(fmt.Sprintf("%d", index))
 	return fmt.Sprintf("%05d", index) + "-" + fmt.Sprintf("%05d", chapter_index) + "-" +
@@ -197,4 +191,12 @@ func InputInt(introduction string, max_indexes int) int {
 //	default:
 //		panic("keyword type error")
 //	}
+//}
+
+// strconv.FormatBool()
+//func FormatBool(b bool) string {
+//	if b {
+//		return "true"
+//	}
+//	return "false"
 //}
