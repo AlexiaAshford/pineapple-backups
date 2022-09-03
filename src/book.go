@@ -3,6 +3,8 @@ package src
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
+	"github.com/VeronicaAlexia/pineapple-backups/config/file"
+	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker"
@@ -47,7 +49,7 @@ func SettingBooks(book_id string) Catalogue {
 		err = hbooker.GET_BOOK_INFORMATION(book_id)
 	}
 	if err == nil {
-		OutputPath := config.Mkdir(path.Join(config.Vars.OutputName, config.Current.Book.NovelName))
+		OutputPath := tool.Mkdir(path.Join(config.Vars.OutputName, config.Current.Book.NovelName))
 		config.Current.ConfigPath = path.Join(config.Vars.ConfigName, config.Current.Book.NovelName)
 		config.Current.OutputPath = path.Join(OutputPath, config.Current.Book.NovelName+".txt")
 		config.Current.CoverPath = path.Join("cover", config.Current.Book.NovelName+".jpg")
@@ -67,6 +69,6 @@ func (books *BookInits) BookDetailed() Catalogue {
 	if books.ShowBook {
 		fmt.Println(briefIntroduction)
 	}
-	config.Write(config.Current.OutputPath, briefIntroduction, "w")
+	config_file.Write(config.Current.OutputPath, briefIntroduction, "w")
 	return Catalogue{Test: true, EpubSetting: books.EpubSetting}
 }

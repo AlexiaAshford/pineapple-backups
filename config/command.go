@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/spf13/cobra"
 	"os"
 	"regexp"
@@ -23,7 +24,7 @@ var (
 
 func ConsoleInput() ([]string, bool) {
 	spaceRe, _ := regexp.Compile(`\s+`)
-	inputs := spaceRe.Split(strings.TrimSpace(Input(">")), -1)
+	inputs := spaceRe.Split(strings.TrimSpace(tool.Input(">")), -1)
 	if len(inputs) > 0 && inputs[0] != "" {
 		return inputs, true
 	} else {
@@ -61,7 +62,7 @@ func CommandInit() []string {
 	if err := rule_cmd.Execute(); err != nil {
 		fmt.Println("ruleCmd error:", err)
 	} else {
-		if TestList([]string{"sfacg", "cat"}, App_type) {
+		if tool.TestList([]string{"sfacg", "cat"}, App_type) {
 			Vars.AppType = App_type
 		} else {
 			fmt.Println("app type error, default sfacg")
@@ -70,7 +71,7 @@ func CommandInit() []string {
 		Vars.ThreadNum = max_thread
 
 		if show_info {
-			FormatJson(ReadConfig(""))
+			tool.FormatJson(ReadConfig(""))
 		}
 		if Book_id != "" {
 			command_line = []string{"download", Book_id}

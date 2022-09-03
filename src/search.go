@@ -3,6 +3,7 @@ package src
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
+	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker"
 	"strconv"
@@ -17,9 +18,9 @@ func CatSearchDetailed(searchName string, page int) []string {
 	} else {
 		fmt.Println("this page has", len(response.Data.BookList), "books")
 	}
-	for index, book := range response.Data.BookList {
-		fmt.Println("Index:", index, "\t\t\tBookName:", book.BookName)
-		searchResult = append(searchResult, book.BookID)
+	for index, book_info := range response.Data.BookList {
+		fmt.Println("Index:", index, "\t\t\tBookName:", book_info.BookName)
+		searchResult = append(searchResult, book_info.BookID)
 	}
 	return searchResult
 }
@@ -53,7 +54,7 @@ func SearchBook(searchName string) string {
 	var page int
 	searchResult := TestApp(searchName, 0)
 	for {
-		keyword := config.InputStr("Please input search keyword:")
+		keyword := tool.InputStr("Please input search keyword:")
 		if keyword == "next" || keyword == "n" {
 			page += 1 // next page
 			searchResult = TestApp(searchName, page)
@@ -76,8 +77,8 @@ func SearchBook(searchName string) string {
 }
 
 func ReturnBookID(keyword string, searchResult []string) string {
-	if config.IsNum(keyword) {
-		inputInt := config.StrToInt(keyword)
+	if tool.IsNum(keyword) {
+		inputInt := tool.StrToInt(keyword)
 		if len(searchResult) > 0 { // if search result is not empty and input is number
 			//inputs := cfg.InputInt("please input the index of the book you want to download:")
 			if inputInt < len(searchResult) { // if the index is valid (less than the length of the search result)

@@ -1,4 +1,4 @@
-package config
+package tool
 
 import (
 	"bufio"
@@ -12,7 +12,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"syscall"
 )
 
 func RegexpName(Name string) string {
@@ -27,11 +26,6 @@ func StandardContent(content string) string {
 		}
 	}
 	return content
-}
-func FileCacheName(index, chapter_index, ChapID any) string {
-	index = StrToInt(fmt.Sprintf("%d", index))
-	return fmt.Sprintf("%05d", index) + "-" + fmt.Sprintf("%05d", chapter_index) + "-" +
-		fmt.Sprintf("%v", ChapID) + ".txt"
 }
 func TestList(List []string, testString string) bool {
 	for _, s := range List {
@@ -68,36 +62,16 @@ func GetFileName(dirname string) []string {
 	return nil
 }
 
-func ColorPrint(s string, i int) {
-	//set color and print
-	kernel32 := syscall.NewLazyDLL("kernel32.dll")
-	proc := kernel32.NewProc("SetConsoleTextAttribute")
-	handle, _, _ := proc.Call(uintptr(syscall.Stdout), uintptr(i))
-	fmt.Print(s)
-	handle, _, _ = proc.Call(uintptr(syscall.Stdout), uintptr(7))
-	CloseHandle := kernel32.NewProc("CloseHandle")
-	_, _, _ = CloseHandle.Call(handle)
-}
-
-func ExtractBookID(url string) string {
-	current_book_id := regexp.MustCompile(`(\d+)`).FindStringSubmatch(url)
-	if len(current_book_id) > 1 {
-		if Vars.AppType == "sfacg" {
-			if len(current_book_id[1]) < 5 {
-				fmt.Println("book_id is invalid")
-			} else {
-				return current_book_id[1]
-			}
-		} else if Vars.AppType == "cat" {
-			if len(current_book_id[1]) != 9 { // test if the input is hbooker book id
-				fmt.Println("hbooker bookid is 9 characters, please input again:")
-			} else {
-				return current_book_id[1]
-			}
-		}
-	}
-	return ""
-}
+//func ColorPrint(s string, i int) {
+//	//set color and print
+//	kernel32 := syscall.NewLazyDLL("kernel32.dll")
+//	proc := kernel32.NewProc("SetConsoleTextAttribute")
+//	handle, _, _ := proc.Call(uintptr(syscall.Stdout), uintptr(i))
+//	fmt.Print(s)
+//	handle, _, _ = proc.Call(uintptr(syscall.Stdout), uintptr(7))
+//	CloseHandle := kernel32.NewProc("CloseHandle")
+//	_, _, _ = CloseHandle.Call(handle)
+//}
 
 func get_working_directory() string {
 	dir, err := os.Getwd()

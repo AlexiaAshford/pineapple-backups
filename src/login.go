@@ -3,6 +3,7 @@ package src
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
+	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
 	"os"
 )
@@ -66,12 +67,12 @@ func AutoAccount() bool {
 
 func InputAccountToken() bool {
 	for i := 0; i < config.Vars.MaxRetry; i++ {
-		LoginToken := config.InputStr("you must input 32 characters login token:")
+		LoginToken := tool.InputStr("you must input 32 characters login token:")
 		if len(LoginToken) != 32 {
 			fmt.Println("Login token is 32 characters, please input again:")
 		} else {
 			config.Apps.Cat.Params.LoginToken = LoginToken
-			config.Apps.Cat.Params.Account = config.InputStr("you must input account:")
+			config.Apps.Cat.Params.Account = tool.InputStr("you must input account:")
 			config.SaveJson()
 			return true
 		}

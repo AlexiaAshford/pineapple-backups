@@ -3,6 +3,7 @@ package src
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
+	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker"
 	"strings"
@@ -30,8 +31,8 @@ func InitBookShelf() ([]int, []map[string]string) {
 		}
 		if !test_login_status {
 			fmt.Println("please login your sfacg account and password!")
-			account := config.InputStr("please input your account:")
-			password := config.InputStr("please input your password:")
+			account := tool.InputStr("please input your account:")
+			password := tool.InputStr("please input your password:")
 			LoginAccount(strings.TrimSpace(account), strings.TrimSpace(password), 0)
 		}
 		return InitBookShelf()
@@ -49,7 +50,7 @@ func select_bookcase(bookshelf_book_list map[int][]map[string]string) ([]int, []
 		bookshelf_index = 0
 	} else {
 		fmt.Println("please input bookshelf index:")
-		bookshelf_index = config.InputInt(">", len(bookshelf_book_list))
+		bookshelf_index = tool.InputInt(">", len(bookshelf_book_list))
 	}
 	book_shelf_bookcase := bookshelf_book_list[bookshelf_index]
 	var bookshelf_book_index []int

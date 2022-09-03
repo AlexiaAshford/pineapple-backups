@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
+	"github.com/VeronicaAlexia/pineapple-backups/config/book"
+	"github.com/VeronicaAlexia/pineapple-backups/config/file"
+	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/src"
 	"os"
 	"strings"
@@ -27,13 +30,13 @@ func current_download_book(book_id string) {
 		catalogue.MergeTextAndEpubFiles()
 	} else {
 		catalogue.MergeTextAndEpubFiles()
-		config.ColorPrint(config.Current.Book.NovelName+" No chapter need to download!\n", 2|8)
+		fmt.Println(config.Current.Book.NovelName+" No chapter need to download!\n", 2|8)
 	}
 }
 
 func shellUpdateLocalBook() {
-	if config.Exist("./bookList.txt") && config.FileSize("./config.json") > 0 {
-		LocalBookList := config.Write("./bookList.json", "", "r")
+	if config.Exist("./bookList.txt") && config_file.SizeFile("./config.json") > 0 {
+		LocalBookList := config_file.Write("./bookList.json", "", "r")
 		for _, i := range strings.ReplaceAll(LocalBookList, "\n", "") {
 			current_download_book(string(i))
 		}
@@ -43,7 +46,7 @@ func shellUpdateLocalBook() {
 }
 
 func init() {
-	if !config.Exist("./config.json") || config.FileSize("./config.json") == 0 {
+	if !config.Exist("./config.json") || config_file.SizeFile("./config.json") == 0 {
 		fmt.Println("config.json not exist, create a new one!")
 	} else {
 		fmt.Println("config.json exist, load config.json!")
@@ -60,14 +63,14 @@ func shell(inputs []string) {
 	case "up", "update":
 		shellUpdateLocalBook()
 	case "a", "app":
-		if config.TestList([]string{"sfacg", "cat"}, inputs[1]) {
+		if tool.TestList([]string{"sfacg", "cat"}, inputs[1]) {
 			config.Vars.AppType = inputs[1]
 		} else {
 			fmt.Println("app type error, please input again.")
 		}
 	case "book", "download":
 		if len(inputs) == 2 {
-			if book_id := config.ExtractBookID(inputs[1]); book_id != "" {
+			if book_id := config_book.ExtractBookID(inputs[1]); book_id != "" {
 				current_download_book(book_id)
 			} else {
 				fmt.Println("book id is empty, please input again.")
@@ -101,8 +104,8 @@ func shell(inputs []string) {
 func Console(bookshelf_book_index []int, book_shelf_bookcase []map[string]string) {
 	for {
 		if comment, ok := config.ConsoleInput(); ok {
-			if config.TestIntList(bookshelf_book_index, comment[0]) {
-				shell([]string{"book", book_shelf_bookcase[config.StrToInt(comment[0])]["novel_id"]})
+			if tool.TestIntList(bookshelf_book_index, comment[0]) {
+				shell([]string{"book", book_shelf_bookcase[tool.StrToInt(comment[0])]["novel_id"]})
 			} else if comment[0] == "load" || comment[0] == "bookshelf" {
 				bookshelf_book_index, book_shelf_bookcase = src.InitBookShelf() // load bookshelf information
 			} else if comment[0] == "quit" || comment[0] == "exit" {

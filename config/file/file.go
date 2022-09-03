@@ -1,10 +1,33 @@
-package config
+package config_file
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"io"
 	"os"
 )
+
+func Write(Path string, content string, permMode string) string {
+	var perm os.FileMode
+	if permMode == "w" {
+		perm = 0644
+	} else if permMode == "a" {
+		perm = 0666
+	} else if permMode == "r" {
+		return ReadFile(Path)
+	} else {
+
+		panic("permMode error")
+	}
+	for i := 0; i < config.Vars.MaxRetry; i++ {
+		if WriteFile(Path, content, perm) == nil {
+			break
+		} else {
+			fmt.Println("write file error, try again:", i)
+		}
+	}
+	return ""
+}
 
 // WriteFile write content to file with file name
 func WriteFile(fileName string, content string, perm os.FileMode) error {
@@ -30,30 +53,9 @@ func WriteFile(fileName string, content string, perm os.FileMode) error {
 	}
 	return nil
 }
-func Write(Path string, content string, permMode string) string {
-	var perm os.FileMode
-	if permMode == "w" {
-		perm = 0644
-	} else if permMode == "a" {
-		perm = 0666
-	} else if permMode == "r" {
-		return ReadFile(Path)
-	} else {
-
-		panic("permMode error")
-	}
-	for i := 0; i < Vars.MaxRetry; i++ {
-		if WriteFile(Path, content, perm) == nil {
-			break
-		} else {
-			fmt.Println("write file error, try again:", i)
-		}
-	}
-	return ""
-}
-func FileSize(FilePath string) int {
-	if file, err := os.Open(FilePath); err != nil {
-		fmt.Println("open file error:", err)
+func SizeFile(FilePath string) int {
+	if file, ok := os.Open(FilePath); ok != nil {
+		fmt.Println("open file error:", ok)
 	} else {
 		sum := 0
 		buf := make([]byte, 2014)

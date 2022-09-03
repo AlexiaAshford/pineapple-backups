@@ -3,6 +3,8 @@ package hbooker
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
+	config_file "github.com/VeronicaAlexia/pineapple-backups/config/file"
+	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker/Encrypt"
 	req "github.com/VeronicaAlexia/pineapple-backups/src/https"
 	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
@@ -32,7 +34,7 @@ func GET_DIVISION(BookId string) []map[string]string {
 				"division_id":    division_info.DivisionID,
 				"division_index": strconv.Itoa(division_index),
 				"chapter_index":  strconv.Itoa(chapter_index),
-				"file_name":      config.FileCacheName(division_index, chapter_index, chapter.ChapterID),
+				"file_name":      config_file.FileCacheName(division_index, chapter_index, chapter.ChapterID),
 			})
 		}
 	}
@@ -84,7 +86,7 @@ func GET_BOOK_INFORMATION(bid string) error {
 	req.Get(new(req.Context).Init(BOOK_GET_INFO_BY_ID).Query("book_id", bid).QueryToString(), s)
 	if s.Code == "100000" {
 		config.Current.Book = _struct.Books{
-			NovelName:  config.RegexpName(s.Data.BookInfo.BookName),
+			NovelName:  tool.RegexpName(s.Data.BookInfo.BookName),
 			NovelID:    s.Data.BookInfo.BookID,
 			NovelCover: s.Data.BookInfo.Cover,
 			AuthorName: s.Data.BookInfo.AuthorName,
@@ -171,7 +173,7 @@ func GET_CHAPTER_CONTENT(chapterId, chapter_key string) string {
 		chapter_info := s.Data.ChapterInfo
 		content := string(Encrypt.Decode(chapter_info.TxtContent, chapter_key))
 		content_title := fmt.Sprintf("%v: %v", chapter_info.ChapterTitle, chapter_info.Uptime)
-		return content_title + "\n\n" + config.StandardContent(content)
+		return content_title + "\n\n" + tool.StandardContent(content)
 	} else {
 		fmt.Println("download failed! chapterId:", chapterId, "error:", s.Tip)
 	}

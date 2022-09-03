@@ -3,6 +3,8 @@ package boluobao
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
+	config_file "github.com/VeronicaAlexia/pineapple-backups/config/file"
+	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	req "github.com/VeronicaAlexia/pineapple-backups/src/https"
 	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
 	"github.com/VeronicaAlexia/pineapple-backups/struct/sfacg_structs"
@@ -22,7 +24,7 @@ func GET_BOOK_INFORMATION(NovelId string) error {
 			NovelID:    strconv.Itoa(s.Data.NovelID),
 			CharCount:  strconv.Itoa(s.Data.CharCount),
 			MarkCount:  strconv.Itoa(s.Data.MarkCount),
-			NovelName:  config.RegexpName(s.Data.NovelName),
+			NovelName:  tool.RegexpName(s.Data.NovelName),
 		}
 		return nil
 	} else {
@@ -63,9 +65,11 @@ func GET_CATALOGUE(NovelID string) []map[string]string {
 	s := new(sfacg_structs.Catalogue)
 	req.Get(new(req.Context).Init(fmt.Sprintf("novels/%v/dirs", NovelID)).
 		Query("expand", "originNeedFireMoney").QueryToString(), s)
+
 	for division_index, division := range s.Data.VolumeList {
 		fmt.Printf("第%v卷\t\t%v\n", division_index+1, division.Title)
 		for _, chapter := range division.ChapterList {
+
 			chapter_index += 1
 			division_info = append(division_info, map[string]string{
 				"division_name":  division.Title,
@@ -75,7 +79,7 @@ func GET_CATALOGUE(NovelID string) []map[string]string {
 				"chapter_id":     strconv.Itoa(chapter.ChapID),
 				"chapter_index":  strconv.Itoa(chapter_index),
 				"money":          strconv.Itoa(chapter.OriginNeedFireMoney),
-				"file_name":      config.FileCacheName(division_index, chapter_index, strconv.Itoa(chapter.ChapID)),
+				"file_name":      config_file.NameSetting(chapter.VolumeID, chapter.ChapOrder, chapter.ChapID),
 			})
 		}
 	}
@@ -88,7 +92,7 @@ func GET_CHAPTER_CONTENT(chapter_id string) string {
 	req.Get(new(req.Context).Init("Chaps/"+chapter_id).Query("expand", "content").QueryToString(), s)
 	if s != nil && s.Status.HTTPCode == 200 {
 		content_title := fmt.Sprintf("%v: %v", s.Data.Title, s.Data.AddTime)
-		return content_title + "\n" + config.StandardContent(s.Data.Expand.Content)
+		return content_title + "\n" + tool.StandardContent(s.Data.Expand.Content)
 
 	} else {
 		fmt.Println("download failed! chapterId:", chapter_id, "error:", s.Status.Msg)

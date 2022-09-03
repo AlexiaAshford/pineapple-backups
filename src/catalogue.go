@@ -3,6 +3,8 @@ package src
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
+	"github.com/VeronicaAlexia/pineapple-backups/config/file"
+	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker"
@@ -21,10 +23,10 @@ type Catalogue struct {
 
 func (catalogue *Catalogue) ReadChapterConfig() {
 	if !config.Exist(config.Current.ConfigPath) {
-		config.Mkdir(config.Current.ConfigPath)
+		tool.Mkdir(config.Current.ConfigPath)
 		catalogue.ChapterCfg = []string{}
 	} else {
-		catalogue.ChapterCfg = config.GetFileName(config.Current.ConfigPath)
+		catalogue.ChapterCfg = tool.GetFileName(config.Current.ConfigPath)
 	}
 }
 
@@ -37,7 +39,7 @@ func (catalogue *Catalogue) GetDownloadsList() {
 		chapter_info_list = hbooker.GET_DIVISION(config.Current.Book.NovelID)
 	}
 	for _, chapter_info := range chapter_info_list {
-		if !config.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {
+		if !tool.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {
 			if chapter_info["money"] == "0" || chapter_info["money"] == "1" {
 				config.Current.DownloadList = append(config.Current.DownloadList, chapter_info["file_name"])
 			} else {
@@ -48,8 +50,6 @@ func (catalogue *Catalogue) GetDownloadsList() {
 }
 
 func (catalogue *Catalogue) DownloadContent(file_name string) {
-	config.FileLock.Lock()         // lock file to avoid file write conflict
-	defer config.FileLock.Unlock() // unlock file after write
 	chapter_id := catalogue.speed_progress(file_name)
 	var content_text string
 	for i := 0; i < 5; i++ {
@@ -59,17 +59,17 @@ func (catalogue *Catalogue) DownloadContent(file_name string) {
 			content_text = hbooker.GET_CHAPTER_CONTENT(chapter_id, hbooker.GetKeyByCid(chapter_id))
 		}
 		if content_text != "" {
-			config.Write(path.Join(config.Current.ConfigPath, file_name), content_text, "w")
+			config_file.Write(path.Join(config.Current.ConfigPath, file_name), content_text, "w")
 			break
 		}
 	}
 }
 
 func (catalogue *Catalogue) MergeTextAndEpubFiles() {
-	for _, local_file_name := range config.GetFileName(config.Current.ConfigPath) {
-		content := config.Write(config.Current.ConfigPath+"/"+local_file_name, "", "r")
+	for _, local_file_name := range tool.GetFileName(config.Current.ConfigPath) {
+		content := config_file.Write(config.Current.ConfigPath+"/"+local_file_name, "", "r")
 		catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content)
-		config.Write(config.Current.OutputPath, "\n\n\n"+content, "a")
+		config_file.Write(config.Current.OutputPath, "\n\n\n"+content, "a")
 	}
 	out_put_epub_now := time.Now() // 开始时间
 	// save epub file
