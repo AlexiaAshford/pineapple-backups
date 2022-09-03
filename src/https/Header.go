@@ -28,14 +28,12 @@ func SET_THE_HEADERS(req *http.Request, TestCookie bool) {
 
 	case "sfacg":
 		if config.Apps.Sfacg.Cookie == "" && TestCookie == true {
-			fmt.Println(req.URL.String())
 			fmt.Println("Cookie is empty, please login first!")
-			os.Exit(1)
 		}
 		HeaderCollection["sf-minip-info"] = config.Apps.Sfacg.UserAgent
-		//HeaderCollection["Authorization"] = Base64Bytes(cfg.Apps.Sfacg.UserName, cfg.Apps.Sfacg.Password)
+		HeaderCollection["Authorization"] = Base64Bytes(config.Apps.Sfacg.UserName, config.Apps.Sfacg.Password)
 		HeaderCollection["Cookie"] = config.Apps.Sfacg.Cookie
-		//HeaderCollection["account-sfacg"] = cfg.Apps.Sfacg.UserName + "&" + cfg.Apps.Sfacg.Password
+		HeaderCollection["account-sfacg"] = config.Apps.Sfacg.UserName + "&" + config.Apps.Sfacg.Password
 	case "cat":
 		HeaderCollection["User-Agent"] = config.Apps.Cat.UserAgent
 		HeaderCollection["Cookie"] = "Account:" + config.Apps.Cat.Params.Account + ";" + config.Apps.Cat.Params.LoginToken
