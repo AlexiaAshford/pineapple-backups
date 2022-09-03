@@ -47,8 +47,9 @@ func SettingBooks(book_id string) Catalogue {
 		err = hbooker.GET_BOOK_INFORMATION(book_id)
 	}
 	if err == nil {
+		OutputPath := config.Mkdir(path.Join(config.Vars.OutputName, config.Current.Book.NovelName))
 		config.Current.ConfigPath = path.Join(config.Vars.ConfigName, config.Current.Book.NovelName)
-		config.Current.OutputPath = path.Join(config.Vars.OutputName, config.Current.Book.NovelName+".txt")
+		config.Current.OutputPath = path.Join(OutputPath, config.Current.Book.NovelName+".txt")
 		config.Current.CoverPath = path.Join("cover", config.Current.Book.NovelName+".jpg")
 		books := BookInits{BookID: book_id, Locks: nil, ShowBook: true}
 		return books.BookDetailed()

@@ -27,7 +27,7 @@ func current_download_book(book_id string) {
 		catalogue.MergeTextAndEpubFiles()
 	} else {
 		catalogue.MergeTextAndEpubFiles()
-		config.ColorPrint(config.Current.Book.NovelName+" No chapter need to download!", 2|8)
+		config.ColorPrint(config.Current.Book.NovelName+" No chapter need to download!\n", 2|8)
 	}
 }
 

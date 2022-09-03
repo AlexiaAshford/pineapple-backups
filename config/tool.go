@@ -105,11 +105,22 @@ func ExtractBookID(url string) string {
 	return ""
 }
 
-func Mkdir(filePath string) {
-	dirPath, _ := os.Getwd()
-	if err := os.MkdirAll(path.Join(dirPath, filePath), os.ModePerm); err != nil {
+func get_working_directory() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		return dir
+	}
+	return ""
+}
+
+func Mkdir(filePath string) string {
+	file_path := path.Join(get_working_directory(), filePath)
+	if err := os.MkdirAll(file_path, os.ModePerm); err != nil {
 		fmt.Println(err)
 	}
+	return file_path
 }
 
 // InputStr input str
