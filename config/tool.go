@@ -168,16 +168,6 @@ func FormatJson(jsonString []byte) {
 		log.Fatalln(err)
 	}
 }
-func TestKeyword(Text string, keyword any) bool {
-	switch keyword.(type) {
-	case string:
-		return strings.Contains(Text, keyword.(string))
-	case int:
-		return strings.Contains(Text, strconv.Itoa(keyword.(int)))
-	default:
-		panic("keyword type error")
-	}
-}
 
 // InputInt input int
 func InputInt(introduction string, max_indexes int) int {
@@ -197,3 +187,14 @@ func InputInt(introduction string, max_indexes int) int {
 		return InputInt(">", max_indexes)
 	}
 }
+
+//func TestKeyword(Text string, keyword any) bool {
+//	switch keyword.(type) {
+//	case string:
+//		return strings.Contains(Text, keyword.(string))
+//	case int:
+//		return strings.Contains(Text, strconv.Itoa(keyword.(int)))
+//	default:
+//		panic("keyword type error")
+//	}
+//}
