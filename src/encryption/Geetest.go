@@ -1,7 +1,6 @@
-package hbooker
+package encryption
 
 import (
-	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker/Encrypt"
 	"github.com/go-resty/resty/v2"
 	"github.com/gookit/color"
 	"github.com/tidwall/gjson"
@@ -142,8 +141,8 @@ func Slide(g *Geetest) {
 	lastTrace := trace[len(trace)-1]
 	c := lastTrace[0]
 	passTime := lastTrace[len(lastTrace)-1]
-	aa := Encrypt.CalAA(trace, g.C, g.S)
-	w := Encrypt.GetRequestW(g.GT, g.Challenge, aa, strconv.FormatInt(passTime, 10), c)
+	aa := CalAA(trace, g.C, g.S)
+	w := GetRequestW(g.GT, g.Challenge, aa, strconv.FormatInt(passTime, 10), c)
 	res, err := client.R().
 		SetHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64").
 		SetQueryParam("gt", g.GT).
@@ -168,17 +167,17 @@ func Slide(g *Geetest) {
 func (g Geetest) CalW(text string, flag bool) string {
 	EncSecKey := ""
 	if !flag {
-		secKey := Encrypt.CreateSecretKey()
+		secKey := CreateSecretKey()
 		if len(secKey) == 16 {
-			EncSecKey = Encrypt.RSAEncrypt(secKey)
-			encTextByte := Encrypt.AESEncrypt([]byte(text), secKey)
-			encText := Encrypt.BytesToString(encTextByte)
+			EncSecKey = RSAEncrypt(secKey)
+			encTextByte := AESEncrypt([]byte(text), secKey)
+			encText := BytesToString(encTextByte)
 			return encText + EncSecKey
 		} else {
 			return g.CalW(text, flag)
 		}
 	}
-	encTextByte := Encrypt.AESEncrypt([]byte(text), Encrypt.CreateSecretKey())
-	encText := Encrypt.BytesToString(encTextByte)
+	encTextByte := AESEncrypt([]byte(text), CreateSecretKey())
+	encText := BytesToString(encTextByte)
 	return encText + EncSecKey
 }

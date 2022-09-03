@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
-	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker/Encrypt"
+	"github.com/VeronicaAlexia/pineapple-backups/src/encryption"
 	"github.com/VeronicaAlexia/pineapple-backups/struct/sfacg_structs"
 	"io"
 	"net/http"
@@ -72,7 +72,7 @@ func Get(url string, structural any) any {
 	if config.Vars.AppType == "cat" {
 		if result, ok := Request("POST", SET_URL(url)); ok == nil {
 			//fmt.Println(string(Encrypt.Decode(string(result), "")))
-			return JsonUnmarshal(Encrypt.Decode(string(result), ""), structural)
+			return JsonUnmarshal(encryption.Decode(string(result), ""), structural)
 		} else {
 			fmt.Println(ok)
 		}

@@ -5,7 +5,7 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	config_file "github.com/VeronicaAlexia/pineapple-backups/config/file"
 	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
-	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker/Encrypt"
+	"github.com/VeronicaAlexia/pineapple-backups/src/encryption"
 	req "github.com/VeronicaAlexia/pineapple-backups/src/https"
 	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
 	structs "github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs"
@@ -135,7 +135,7 @@ func GeetestRegister(userID string) (string, string) {
 func TestGeetest(userID string) {
 	UseGeetest()
 	challenge, gt := GeetestRegister(userID)
-	status, CaptchaType, errorDetail := GetFullBG(&Geetest{GT: gt, Challenge: challenge})
+	status, CaptchaType, errorDetail := encryption.GetFullBG(&encryption.Geetest{GT: gt, Challenge: challenge})
 	fmt.Println(status, CaptchaType, errorDetail)
 	if status == "success" {
 		color.Infoln("验证码类型：", CaptchaType, "")
@@ -171,7 +171,7 @@ func GET_CHAPTER_CONTENT(chapterId, chapter_key string) string {
 		Query("chapter_command", chapter_key).QueryToString(), s)
 	if s != nil && s.Code == "100000" {
 		chapter_info := s.Data.ChapterInfo
-		content := string(Encrypt.Decode(chapter_info.TxtContent, chapter_key))
+		content := string(encryption.Decode(chapter_info.TxtContent, chapter_key))
 		content_title := fmt.Sprintf("%v: %v", chapter_info.ChapterTitle, chapter_info.Uptime)
 		return content_title + "\n\n" + tool.StandardContent(content)
 	} else {
