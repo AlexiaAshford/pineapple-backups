@@ -139,6 +139,7 @@ func TestGeetest(userID string) {
 	fmt.Println(status, CaptchaType, errorDetail)
 	if status == "success" {
 		color.Infoln("验证码类型：", CaptchaType, "")
+		encryption.Slide(&encryption.Geetest{GT: gt, Challenge: challenge})
 	} else {
 		color.Errorln("获取图片失败 Error: ", status, " ErrorDetail:", errorDetail)
 		TestGeetest(userID)

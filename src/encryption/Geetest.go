@@ -154,8 +154,6 @@ func Slide(g *Geetest) {
 		color.Errorln("Slide Request Error: ", err)
 	} else {
 		response := res.String()
-		//color.Green.Println(response) // 输出结果，可注释
-
 		success := gjson.Get(response, "success").String()
 		validate := gjson.Get(response, "validate").String()
 		score := gjson.Get(response, "score").String()
