@@ -5,7 +5,7 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	config_file "github.com/VeronicaAlexia/pineapple-backups/config/file"
 	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
-	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker/Encrypt"
+	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker/Encrypt"
 	req "github.com/VeronicaAlexia/pineapple-backups/src/https"
 	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
 	structs "github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs"

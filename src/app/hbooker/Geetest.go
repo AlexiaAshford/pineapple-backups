@@ -1,7 +1,7 @@
 package hbooker
 
 import (
-	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker/Encrypt"
+	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker/Encrypt"
 	"github.com/go-resty/resty/v2"
 	"github.com/gookit/color"
 	"github.com/tidwall/gjson"

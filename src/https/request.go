@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
-	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker/Encrypt"
+	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker/Encrypt"
 	"github.com/VeronicaAlexia/pineapple-backups/struct/sfacg_structs"
 	"io"
 	"net/http"

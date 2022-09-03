@@ -1,11 +1,11 @@
-package src
+package app
 
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
-	"github.com/VeronicaAlexia/pineapple-backups/src/boluobao"
-	"github.com/VeronicaAlexia/pineapple-backups/src/hbooker"
+	"github.com/VeronicaAlexia/pineapple-backups/src/app/boluobao"
+	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	"strings"
 )
 

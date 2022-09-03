@@ -6,13 +6,13 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/config/book"
 	"github.com/VeronicaAlexia/pineapple-backups/config/file"
 	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
-	"github.com/VeronicaAlexia/pineapple-backups/src"
+	"github.com/VeronicaAlexia/pineapple-backups/src/app"
 	"os"
 	"strings"
 )
 
 func current_download_book(book_id string) {
-	catalogue := src.SettingBooks(book_id) // get book catalogues
+	catalogue := app.SettingBooks(book_id) // get book catalogues
 	if !catalogue.Test {
 		fmt.Println(catalogue.BookMessage)
 		os.Exit(1)
@@ -21,7 +21,7 @@ func current_download_book(book_id string) {
 	}
 	if len(config.Current.DownloadList) > 0 {
 		fmt.Println(len(config.Current.DownloadList), " chapters will be downloaded.")
-		catalogue.ChapterBar = src.New(len(config.Current.DownloadList))
+		catalogue.ChapterBar = app.New(len(config.Current.DownloadList))
 		catalogue.ChapterBar.Describe("working...")
 		for _, file_name := range config.Current.DownloadList {
 			catalogue.DownloadContent(file_name)
@@ -80,19 +80,19 @@ func shell(inputs []string) {
 		}
 	case "s", "search":
 		if len(inputs) == 2 && inputs[1] != "" {
-			current_download_book(src.SearchBook(inputs[1]))
+			current_download_book(app.SearchBook(inputs[1]))
 		} else {
 			fmt.Println("input book id or url, like:download <bookid/url>")
 		}
 	case "t", "token":
 
-		if ok := src.InputAccountToken(); !ok {
+		if ok := app.InputAccountToken(); !ok {
 			fmt.Println("you must input account and token.")
 		}
 
 	case "l", "login":
 		if len(inputs) >= 3 {
-			src.LoginAccount(inputs[1], inputs[2], 0)
+			app.LoginAccount(inputs[1], inputs[2], 0)
 		} else {
 			fmt.Println("you must input account and password, like: sf account password")
 		}
@@ -107,7 +107,7 @@ func Console(bookshelf_book_index []int, book_shelf_bookcase []map[string]string
 			if tool.TestIntList(bookshelf_book_index, comment[0]) {
 				shell([]string{"book", book_shelf_bookcase[tool.StrToInt(comment[0])]["novel_id"]})
 			} else if comment[0] == "load" || comment[0] == "bookshelf" {
-				bookshelf_book_index, book_shelf_bookcase = src.InitBookShelf() // load bookshelf information
+				bookshelf_book_index, book_shelf_bookcase = app.InitBookShelf() // load bookshelf information
 			} else if comment[0] == "quit" || comment[0] == "exit" {
 				fmt.Println("exit the program!")
 				os.Exit(0)
@@ -124,7 +124,7 @@ func main() {
 		if config.Account != "" && config.Password != "" {
 			shell([]string{"login", config.Account, config.Password})
 		} else {
-			src.TestAppTypeAndAccount()
+			app.TestAppTypeAndAccount()
 		}
 		if len(commentLine) > 0 {
 			shell(commentLine)
@@ -133,7 +133,7 @@ func main() {
 		for _, s := range config.HelpMessage {
 			fmt.Println("[info]", s)
 		}
-		bookshelf_book_index, book_shelf_bookcase := src.InitBookShelf() // init bookshelf information
+		bookshelf_book_index, book_shelf_bookcase := app.InitBookShelf() // init bookshelf information
 		Console(bookshelf_book_index, book_shelf_bookcase)               // start console mode
 	}
 }
