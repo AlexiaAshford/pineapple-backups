@@ -80,7 +80,9 @@ func shell(inputs []string) {
 		}
 	case "s", "search":
 		if len(inputs) == 2 && inputs[1] != "" {
-			current_download_book(app.SearchBook(inputs[1]))
+
+			s := app.Search{Keyword: inputs[1], Page: 0}
+			current_download_book(s.SearchBook())
 		} else {
 			fmt.Println("input book id or url, like:download <bookid/url>")
 		}
@@ -118,7 +120,15 @@ func Console(bookshelf_book_index []int, book_shelf_bookcase []map[string]string
 	}
 }
 
+//	func test_local_file() {
+//		FileNameArray := tool.GetFileName("./save")
+//		for index, file_name := range FileNameArray {
+//			fmt.Println("index:", index, "\t\t\tfile_name:", file_name)
+//		}
+//		app.SearchBook(FileNameArray[tool.InputInt(">", len(FileNameArray))])
+//	}
 func main() {
+	//test_local_file()
 	commentLine := config.CommandInit()
 	if len(os.Args) > 1 && commentLine[0] != "console" {
 		if config.Account != "" && config.Password != "" {
