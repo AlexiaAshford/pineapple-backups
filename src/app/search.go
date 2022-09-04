@@ -46,7 +46,7 @@ func (s *Search) SfacgSearchDetailed() []string {
 	return searchResult
 }
 
-func (s *Search) TestApp() {
+func (s *Search) load_search_list() {
 	if config.Vars.AppType == "cat" {
 		s.SearchResult = s.CatSearchDetailed()
 	} else if config.Vars.AppType == "sfacg" {
@@ -56,23 +56,31 @@ func (s *Search) TestApp() {
 	}
 }
 
+func (s *Search) subtraction() {
+	if s.Page > 0 {
+		s.Page -= 1 // previous page
+	} else {
+		fmt.Println("page is 0, cannot go previous")
+	}
+	s.load_search_list()
+}
+
+func (s *Search) add() {
+	s.Page += 1 // next page
+	s.load_search_list()
+}
+
 func (s *Search) SearchBook() string {
-	s.TestApp()
+	s.load_search_list()
 	for {
-		keyword := tool.InputStr("Please input search keyword:")
+		keyword := tool.InputStr("lease input search keyword:")
 		if keyword == "next" || keyword == "n" {
-			s.Page += 1 // next page
-			s.TestApp()
+			s.add()
 		} else if keyword == "previous" || keyword == "p" {
-			if s.Page > 0 {
-				s.Page -= 1 // previous page
-				s.TestApp()
-			} else {
-				fmt.Println("page is 0, cannot go previous")
-				s.TestApp()
-			}
-		} else {
-			if BookID := s.SearchResult[tool.InputInt(keyword, len(s.SearchResult))]; BookID != "" {
+			s.subtraction()
+		}
+		if tool.IsNum(keyword) && tool.StrToInt(keyword) < len(s.SearchResult) {
+			if BookID := s.SearchResult[tool.StrToInt(keyword)]; BookID != "" {
 				return BookID // if the input is a number (book id)
 			} else {
 				fmt.Println("No found search book, please input again:")
