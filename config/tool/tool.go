@@ -17,9 +17,8 @@ import (
 func RegexpName(Name string) string {
 	return regexp.MustCompile(`[\\/:*?"<>|]`).ReplaceAllString(Name, "")
 }
-func StandardContent(content string) string {
-	content_list := strings.Split(content, "\n")
-	content = "" // clear content string
+func StandardContent(content_list []string) string {
+	content := "" // clear content string
 	for _, s := range content_list {
 		if s != "" {
 			content += "\n" + strings.ReplaceAll(s, " ", "")

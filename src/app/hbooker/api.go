@@ -13,6 +13,7 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs/division"
 	"github.com/gookit/color"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -174,7 +175,7 @@ func GET_CHAPTER_CONTENT(chapterId, chapter_key string) string {
 		chapter_info := s.Data.ChapterInfo
 		content := string(encryption.Decode(chapter_info.TxtContent, chapter_key))
 		content_title := fmt.Sprintf("%v: %v", chapter_info.ChapterTitle, chapter_info.Uptime)
-		return content_title + "\n\n" + tool.StandardContent(content)
+		return content_title + "\n\n" + tool.StandardContent(strings.Split(content, "\n"))
 	} else {
 		fmt.Println("download failed! chapterId:", chapterId, "error:", s.Tip)
 	}

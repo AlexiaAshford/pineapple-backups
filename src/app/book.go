@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/config/file"
@@ -9,6 +10,7 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	"github.com/VeronicaAlexia/pineapple-backups/src/https"
+	"log"
 	"os"
 	"path"
 	"strings"
@@ -40,7 +42,19 @@ func (books *BookInits) InitEpubFile() {
 
 }
 
+// SaveJson save json to local file
+func (books *BookInits) SaveJson() {
+	tool.Mkdir("backups")
+	if info, err := json.Marshal(config.Current.Book); err == nil {
+		config_file.Write(config.Current.BackupsPath, string(info), "w")
+	} else {
+		log.Fatalf("save json failed:%v", err)
+	}
+}
+
 func SettingBooks(book_id string) Catalogue {
+
+	config.Current.BackupsPath = path.Join("backups", book_id+".json")
 	var err error
 	switch config.Vars.AppType {
 	case "sfacg":
@@ -48,12 +62,14 @@ func SettingBooks(book_id string) Catalogue {
 	case "cat":
 		err = hbooker.GET_BOOK_INFORMATION(book_id)
 	}
+
 	if err == nil {
 		OutputPath := tool.Mkdir(path.Join(config.Vars.OutputName, config.Current.Book.NovelName))
 		config.Current.ConfigPath = path.Join(config.Vars.ConfigName, config.Current.Book.NovelName)
 		config.Current.OutputPath = path.Join(OutputPath, config.Current.Book.NovelName+".txt")
 		config.Current.CoverPath = path.Join("cover", config.Current.Book.NovelName+".jpg")
 		books := BookInits{BookID: book_id, Locks: nil, ShowBook: true}
+		//books.SaveJson()
 		return books.BookDetailed()
 	} else {
 		return Catalogue{Test: false, BookMessage: fmt.Sprintf("book_id:%v is invalid:%v", book_id, err)}

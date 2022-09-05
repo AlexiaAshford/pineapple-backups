@@ -11,6 +11,7 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/struct/sfacg_structs/bookshelf"
 	url_ "net/url"
 	"strconv"
+	"strings"
 )
 
 func GET_BOOK_INFORMATION(NovelId string) error {
@@ -92,7 +93,7 @@ func GET_CHAPTER_CONTENT(chapter_id string) string {
 	req.Get(new(req.Context).Init("Chaps/"+chapter_id).Query("expand", "content").QueryToString(), s)
 	if s != nil && s.Status.HTTPCode == 200 {
 		content_title := fmt.Sprintf("%v: %v", s.Data.Title, s.Data.AddTime)
-		return content_title + "\n" + tool.StandardContent(s.Data.Expand.Content)
+		return content_title + "\n" + tool.StandardContent(strings.Split(s.Data.Expand.Content, "\n"))
 
 	} else {
 		fmt.Println("download failed! chapterId:", chapter_id, "error:", s.Status.Msg)

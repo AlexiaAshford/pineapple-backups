@@ -43,6 +43,7 @@ type MyBookInfoJsonPro struct {
 	OutputPath   string
 	ConfigPath   string
 	CoverPath    string
+	BackupsPath  string
 	BookInfoList []Books
 	DownloadList []string
 }
