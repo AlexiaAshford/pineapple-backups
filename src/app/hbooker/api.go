@@ -73,7 +73,7 @@ func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 		return nil, fmt.Errorf(s.Tip.(string))
 	}
 	for index, value := range s.Data.ShelfList {
-		fmt.Println("bookshelf index:", index, "\t\t\tbookshelf name:", value.ShelfName)
+		fmt.Println("书架号:", index, "\t\t\t书架名:", value.ShelfName)
 		if bookshelf_info_list, err := GET_BOOK_SHELF_INDEXES_INFORMATION(value.ShelfID); err == nil {
 			bookshelf_info[index] = bookshelf_info_list
 		} else {

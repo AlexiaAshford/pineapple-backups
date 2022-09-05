@@ -38,7 +38,7 @@ func InitBookShelf() ([]int, []map[string]string) {
 		return InitBookShelf()
 
 	}
-	fmt.Println("\nyou account is valid, start loading bookshelf information.")
+
 	return select_bookcase(bookshelf_book_list)
 
 }
@@ -55,7 +55,7 @@ func select_bookcase(bookshelf_book_list map[int][]map[string]string) ([]int, []
 	book_shelf_bookcase := bookshelf_book_list[bookshelf_index]
 	var bookshelf_book_index []int
 	for book_index, book := range book_shelf_bookcase {
-		fmt.Println("book-index", book_index, "book-name:", book["novel_name"], "\t\tbook-id:", book["novel_id"])
+		fmt.Println("index:", book_index, "\t\tid:", book["novel_id"], "\t\tname:", book["novel_name"])
 		bookshelf_book_index = append(bookshelf_book_index, book_index)
 	}
 	return bookshelf_book_index, book_shelf_bookcase

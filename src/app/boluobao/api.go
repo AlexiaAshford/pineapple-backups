@@ -48,7 +48,7 @@ func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 		return nil, fmt.Errorf(s.Status.Msg.(string))
 	}
 	for index, value := range s.Data {
-		fmt.Println("bookshelf index:", index, "\t\t\tbookshelf name:", value.Name)
+		fmt.Println("书架号:", index, "\t\t\t书架名:", value.Name)
 		var bookshelf_info_list []map[string]string
 		for _, book := range value.Expand.Novels {
 			bookshelf_info_list = append(bookshelf_info_list,

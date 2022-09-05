@@ -49,7 +49,7 @@ func init() {
 	if !config.Exist("./config.json") || config_file.SizeFile("./config.json") == 0 {
 		fmt.Println("config.json not exist, create a new one!")
 	} else {
-		fmt.Println("config.json exist, load config.json!")
+		//fmt.Println("config.json exist, load config.json!")
 		config.LoadJson()
 	}
 	if config.UpdateConfig() {
