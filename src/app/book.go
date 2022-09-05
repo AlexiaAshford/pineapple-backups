@@ -44,7 +44,7 @@ func (books *BookInits) InitEpubFile() {
 func SettingBooks(book_id string) Catalogue {
 	var err error
 	config.Current.BackupsPath = path.Join("backups", book_id+".json")
-	if !config_file.Exist(config.Current.BackupsPath) {
+	if !config.Exist(config.Current.BackupsPath) {
 		fmt.Println("book info is not exist, request book info...")
 		tool.Mkdir("backups")
 		switch config.Vars.AppType {

@@ -80,9 +80,3 @@ func ReadFile(filePath string) string {
 	}
 	return ""
 }
-
-// Exist check file exist
-func Exist(filePath string) bool {
-	_, err := os.Stat(filePath)
-	return err == nil || os.IsExist(err)
-}

@@ -27,18 +27,19 @@ func current_download_book(book_id string) {
 			catalogue.DownloadContent(file_name)
 		}
 		fmt.Printf("\nNovel:%v download complete!\n", config.Current.Book.NovelName)
-		catalogue.MergeTextAndEpubFiles()
 	} else {
-		catalogue.MergeTextAndEpubFiles()
-		fmt.Println(config.Current.Book.NovelName+" No chapter need to download!\n", 2|8)
+		fmt.Println(config.Current.Book.NovelName + " No chapter need to download!\n")
 	}
+	catalogue.MergeTextAndEpubFiles()
 }
 
 func shellUpdateLocalBook() {
 	if config.Exist("./bookList.txt") && config_file.SizeFile("./config.json") > 0 {
 		LocalBookList := config_file.Write("./bookList.json", "", "r")
 		for _, i := range strings.ReplaceAll(LocalBookList, "\n", "") {
-			current_download_book(string(i))
+			if !strings.Contains(string(i), "#") {
+				current_download_book(string(i))
+			}
 		}
 	} else {
 		fmt.Println("bookList.txt not exist, create a new one!")
