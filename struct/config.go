@@ -25,10 +25,9 @@ type MyAppPro struct {
 }
 
 type SfacgApp struct {
-	UserName  string `json:"account"`
-	Password  string `json:"password"`
-	Cookie    string `json:"Cookie"`
-	UserAgent string `json:"user-agent"`
+	UserName string `json:"account"`
+	Password string `json:"password"`
+	Cookie   string `json:"Cookie"`
 }
 
 type CatApp struct {
@@ -38,7 +37,6 @@ type CatApp struct {
 		AppVersion  string `json:"app_version"`
 		DeviceToken string `json:"device_token"`
 	} `json:"common_params"`
-	UserAgent string `json:"user-agent"`
 }
 type MyBookInfoJsonPro struct {
 	Book         Books

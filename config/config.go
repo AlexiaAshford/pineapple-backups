@@ -29,11 +29,6 @@ func UpdateConfig() bool { // update config.json if necessary
 		Vars.AppType = "sfacg"
 		changeVar = true
 	}
-	if Apps.Sfacg.UserAgent == "" || Apps.Cat.UserAgent == "" {
-		Apps.Sfacg.UserAgent = "minip_novel/1.0.70(android;11)/wxmp"
-		Apps.Cat.UserAgent = "Android com.kuangxiangciweimao.novel 2.9.291"
-		changeVar = true
-	}
 	if Vars.ConfigName == "" || Vars.OutputName == "" || Vars.CoverFile == "" {
 		Vars.ConfigName, Vars.OutputName, Vars.CoverFile = "cache", "save", "cover"
 		changeVar = true

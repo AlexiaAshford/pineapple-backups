@@ -30,12 +30,12 @@ func SET_THE_HEADERS(req *http.Request, TestCookie bool) {
 		if config.Apps.Sfacg.Cookie == "" && TestCookie == true {
 			fmt.Println("Cookie is empty, please login first!")
 		}
-		HeaderCollection["sf-minip-info"] = config.Apps.Sfacg.UserAgent
+		HeaderCollection["sf-minip-info"] = "minip_novel/1.0.70(android;11)/wxmp"
 		HeaderCollection["Authorization"] = Base64Bytes(config.Apps.Sfacg.UserName, config.Apps.Sfacg.Password)
 		HeaderCollection["Cookie"] = config.Apps.Sfacg.Cookie
 		HeaderCollection["account-sfacg"] = config.Apps.Sfacg.UserName + "&" + config.Apps.Sfacg.Password
 	case "cat":
-		HeaderCollection["User-Agent"] = config.Apps.Cat.UserAgent
+		HeaderCollection["User-Agent"] = "Android com.kuangxiangciweimao.novel 2.9.291"
 		HeaderCollection["Cookie"] = "Account:" + config.Apps.Cat.Params.Account + ";" + config.Apps.Cat.Params.LoginToken
 		HeaderCollection["Authorization"] = Base64Bytes(config.Apps.Cat.Params.Account, config.Apps.Cat.Params.LoginToken)
 
