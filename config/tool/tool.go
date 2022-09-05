@@ -17,9 +17,19 @@ import (
 func RegexpName(Name string) string {
 	return regexp.MustCompile(`[\\/:*?"<>|]`).ReplaceAllString(Name, "")
 }
-func StandardContent(content_list []string) string {
+
+func JsonString(jsonStruct any) string {
+	if jsonInfo, err := json.MarshalIndent(jsonStruct, "", "    "); err == nil {
+		return string(jsonInfo)
+	} else {
+		log.Println(err)
+	}
+	return ""
+}
+
+func StandardContent(contentList []string) string {
 	content := "" // clear content string
-	for _, s := range content_list {
+	for _, s := range contentList {
 		if s != "" {
 			content += "\n" + strings.ReplaceAll(s, " ", "")
 		}
