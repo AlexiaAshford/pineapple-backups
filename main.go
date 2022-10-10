@@ -11,6 +11,18 @@ import (
 	"strings"
 )
 
+func init() {
+	if !config.Exist("./config.json") || config_file.SizeFile("./config.json") == 0 {
+		fmt.Println("config.json not exist, create a new one!")
+	} else {
+		config.LoadJson()
+	}
+	if config.UpdateConfig() {
+		config.SaveJson()
+	}
+	fmt.Println("you can input -h and --help to see the command list.")
+}
+
 func current_download_book_function(book_id string) {
 	catalogue := app.SettingBooks(book_id) // get book catalogues
 	if !catalogue.Test {
@@ -44,19 +56,6 @@ func update_local_booklist() {
 		fmt.Println("bookList.txt not exist, create a new one!")
 	}
 }
-
-func init() {
-	if !config.Exist("./config.json") || config_file.SizeFile("./config.json") == 0 {
-		fmt.Println("config.json not exist, create a new one!")
-	} else {
-		config.LoadJson()
-	}
-	if config.UpdateConfig() {
-		config.SaveJson()
-	}
-	fmt.Println("you can input -h and --help to see the command list.")
-}
-
 func shell(inputs []string) {
 	switch inputs[0] { // switch command
 	case "up", "update":
@@ -67,7 +66,7 @@ func shell(inputs []string) {
 		} else {
 			fmt.Println("app type error, please input again.")
 		}
-	case "book", "download":
+	case "d", "b", "book", "download":
 		if len(inputs) == 2 {
 			if book_id := config_book.ExtractBookID(inputs[1]); book_id != "" {
 				current_download_book_function(book_id)
@@ -79,13 +78,12 @@ func shell(inputs []string) {
 		}
 	case "s", "search":
 		if len(inputs) == 2 && inputs[1] != "" {
-
 			s := app.Search{Keyword: inputs[1], Page: 0}
 			current_download_book_function(s.SearchBook())
 		} else {
 			fmt.Println("input book id or url, like:download <bookid/url>")
 		}
-	case "l", "login", "t", "token":
+	case "l", "t", "token", "login":
 		if config.Vars.AppType == "cat" {
 			if ok := app.InputAccountToken(); !ok {
 				fmt.Println("you must input account and token.")
@@ -98,32 +96,22 @@ func shell(inputs []string) {
 	default:
 		fmt.Println("command not found,please input help to see the command list:", inputs[0])
 	}
-
 }
 func Console(bookshelf_book_index []int, book_shelf_bookcase []map[string]string) {
-	for {
-		if comment, ok := config.ConsoleInput(); ok {
-			if tool.TestIntList(bookshelf_book_index, comment[0]) {
-				shell([]string{"book", book_shelf_bookcase[tool.StrToInt(comment[0])]["novel_id"]})
-			} else if comment[0] == "load" || comment[0] == "bookshelf" {
-				bookshelf_book_index, book_shelf_bookcase = app.InitBookShelf() // load bookshelf information
-			} else if comment[0] == "quit" || comment[0] == "exit" {
-				fmt.Println("exit the program!")
-				os.Exit(0)
-			} else {
-				shell(comment)
-			}
+	if comment, ok := config.ConsoleInput(); ok {
+		if tool.TestIntList(bookshelf_book_index, comment[0]) {
+			shell([]string{"book", book_shelf_bookcase[tool.StrToInt(comment[0])]["novel_id"]})
+		} else if comment[0] == "load" || comment[0] == "bookshelf" {
+			bookshelf_book_index, book_shelf_bookcase = app.InitBookShelf() // load bookshelf information
+		} else if comment[0] == "quit" || comment[0] == "exit" {
+			fmt.Println("exit the program!")
+			os.Exit(0)
+		} else {
+			shell(comment)
 		}
 	}
 }
 
-//	func test_local_file() {
-//		FileNameArray := tool.GetFileName("./save")
-//		for index, file_name := range FileNameArray {
-//			fmt.Println("index:", index, "\t\t\tfile_name:", file_name)
-//		}
-//		app.SearchBook(FileNameArray[tool.InputInt(">", len(FileNameArray))])
-//	}
 func main() {
 	commentLine := config.CommandInit()
 	if len(os.Args) > 1 && commentLine[0] != "console" {
@@ -140,6 +128,9 @@ func main() {
 			fmt.Println("[info]", s)
 		}
 		bookshelf_book_index, book_shelf_bookcase := app.InitBookShelf() // init bookshelf information
-		Console(bookshelf_book_index, book_shelf_bookcase)               // start console mode
+
+		for {
+			Console(bookshelf_book_index, book_shelf_bookcase) // start console mode}
+		}
 	}
 }
