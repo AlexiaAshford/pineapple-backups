@@ -26,7 +26,8 @@ func UpdateConfig() bool { // update config.json if necessary
 		changeVar = true
 	}
 	if Vars.AppType == "" {
-		Vars.AppType = "sfacg"
+		// default app type
+		Vars.AppType = "cat"
 		changeVar = true
 	}
 	if Vars.ConfigName == "" || Vars.OutputName == "" || Vars.CoverFile == "" {
