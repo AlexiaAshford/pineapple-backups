@@ -85,14 +85,12 @@ func shell(inputs []string) {
 		} else {
 			fmt.Println("input book id or url, like:download <bookid/url>")
 		}
-	case "t", "token":
-
-		if ok := app.InputAccountToken(); !ok {
-			fmt.Println("you must input account and token.")
-		}
-
-	case "l", "login":
-		if len(inputs) >= 3 {
+	case "l", "login", "t", "token":
+		if config.Vars.AppType == "cat" {
+			if ok := app.InputAccountToken(); !ok {
+				fmt.Println("you must input account and token.")
+			}
+		} else if len(inputs) >= 3 {
 			app.LoginAccount(inputs[1], inputs[2], 0)
 		} else {
 			fmt.Println("you must input account and password, like: sf account password")
