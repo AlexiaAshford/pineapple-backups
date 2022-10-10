@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func current_download_book(book_id string) {
+func current_download_book_function(book_id string) {
 	catalogue := app.SettingBooks(book_id) // get book catalogues
 	if !catalogue.Test {
 		fmt.Println(catalogue.BookMessage)
@@ -33,12 +33,11 @@ func current_download_book(book_id string) {
 	catalogue.MergeTextAndEpubFiles()
 }
 
-func shellUpdateLocalBook() {
-	if config.Exist("./bookList.txt") && config_file.SizeFile("./config.json") > 0 {
-		LocalBookList := config_file.Write("./bookList.json", "", "r")
-		for _, i := range strings.ReplaceAll(LocalBookList, "\n", "") {
+func update_local_booklist() {
+	if config.Exist("./bookList.txt") {
+		for _, i := range strings.ReplaceAll(config_file.Write("./bookList.json", "", "r"), "\n", "") {
 			if !strings.Contains(string(i), "#") {
-				current_download_book(string(i))
+				current_download_book_function(string(i))
 			}
 		}
 	} else {
@@ -50,7 +49,6 @@ func init() {
 	if !config.Exist("./config.json") || config_file.SizeFile("./config.json") == 0 {
 		fmt.Println("config.json not exist, create a new one!")
 	} else {
-		//fmt.Println("config.json exist, load config.json!")
 		config.LoadJson()
 	}
 	if config.UpdateConfig() {
@@ -62,7 +60,7 @@ func init() {
 func shell(inputs []string) {
 	switch inputs[0] { // switch command
 	case "up", "update":
-		shellUpdateLocalBook()
+		update_local_booklist()
 	case "a", "app":
 		if tool.TestList([]string{"sfacg", "cat"}, inputs[1]) {
 			config.Vars.AppType = inputs[1]
@@ -72,7 +70,7 @@ func shell(inputs []string) {
 	case "book", "download":
 		if len(inputs) == 2 {
 			if book_id := config_book.ExtractBookID(inputs[1]); book_id != "" {
-				current_download_book(book_id)
+				current_download_book_function(book_id)
 			} else {
 				fmt.Println("book id is empty, please input again.")
 			}
@@ -83,7 +81,7 @@ func shell(inputs []string) {
 		if len(inputs) == 2 && inputs[1] != "" {
 
 			s := app.Search{Keyword: inputs[1], Page: 0}
-			current_download_book(s.SearchBook())
+			current_download_book_function(s.SearchBook())
 		} else {
 			fmt.Println("input book id or url, like:download <bookid/url>")
 		}
@@ -129,7 +127,6 @@ func Console(bookshelf_book_index []int, book_shelf_bookcase []map[string]string
 //		app.SearchBook(FileNameArray[tool.InputInt(">", len(FileNameArray))])
 //	}
 func main() {
-	//test_local_file()
 	commentLine := config.CommandInit()
 	if len(os.Args) > 1 && commentLine[0] != "console" {
 		if config.Account != "" && config.Password != "" {
