@@ -95,23 +95,3 @@ func GetCover(imgUrl string) []byte {
 	}
 	return nil
 }
-
-//
-//func QueryParams(url string, ParamsData map[string]string) string {
-//	var Params string
-//	if config.Vars.AppType == "cat" {
-//		queryRequisite := map[string]interface{}{
-//			"login_token":  config.Apps.Cat.Params.LoginToken,
-//			"account":      config.Apps.Cat.Params.Account,
-//			"app_version":  config.Apps.Cat.Params.AppVersion,
-//			"device_token": config.Apps.Cat.Params.DeviceToken,
-//		}
-//		for k, v := range queryRequisite {
-//			Params += fmt.Sprintf("&%s=%s", k, v)
-//		}
-//	}
-//	for k, v := range ParamsData {
-//		Params += fmt.Sprintf("&%s=%s", k, v)
-//	}
-//	return url + "?" + Params
-//}

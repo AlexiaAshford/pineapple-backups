@@ -23,13 +23,14 @@ func InitBookShelf() ([]int, []map[string]string) {
 	bookshelf_book_list, response_err := request_bookshelf_book_list()
 	if response_err != nil || bookshelf_book_list == nil {
 		var test_login_status bool
+		fmt.Println("config.Vars.AppType ", config.Vars.AppType)
 		fmt.Println("BookShelf Error:", response_err)
 		if config.Vars.AppType == "sfacg" {
 			test_login_status = AutoAccount()
 		} else if config.Vars.AppType == "cat" {
 			test_login_status = InputAccountToken()
 		}
-		if !test_login_status {
+		if !test_login_status && config.Vars.AppType == "sfacg" {
 			fmt.Println("please login your sfacg account and password!")
 			account := tool.InputStr("please input your account:")
 			password := tool.InputStr("please input your password:")

@@ -20,7 +20,6 @@ func init() {
 	if config.UpdateConfig() {
 		config.SaveJson()
 	}
-	fmt.Println("you can input -h and --help to see the command list.")
 }
 
 func current_download_book_function(book_id string) {
@@ -113,19 +112,26 @@ func Console(bookshelf_book_index []int, book_shelf_bookcase []map[string]string
 }
 
 func main() {
-	commentLine := config.CommandInit()
-	if len(os.Args) > 1 && commentLine[0] != "console" {
-		if config.Account != "" && config.Password != "" {
-			shell([]string{"login", config.Account, config.Password})
-		} else {
+	commentLine := config.InitCommand()
+	config.Vars.ThreadNum = commentLine.MaxThread
+	config.Vars.AppType = commentLine.AppType
+	if len(os.Args) > 1 {
+		if commentLine.Account != "" && commentLine.Password != "" {
+			shell([]string{"login", commentLine.Account, commentLine.Password})
+		} else if commentLine.Login {
 			app.TestAppTypeAndAccount()
-		}
-		if len(commentLine) > 0 {
-			shell(commentLine)
+		} else if commentLine.BookId != "" {
+			shell([]string{"book", commentLine.BookId})
+		} else if commentLine.SearchKey != "" {
+			shell([]string{"search", commentLine.SearchKey})
+		} else if commentLine.Update {
+			update_local_booklist()
+		} else if commentLine.Token {
+			app.InputAccountToken()
 		}
 	} else {
-		for _, s := range config.HelpMessage {
-			fmt.Println("[info]", s)
+		for _, message := range config.HelpMessage {
+			fmt.Println("[info]", message)
 		}
 		bookshelf_book_index, book_shelf_bookcase := app.InitBookShelf() // init bookshelf information
 
