@@ -14,10 +14,10 @@ type Command struct {
 	BookId    string
 	Account   string
 	Password  string
-	Token     bool
 	AppType   string
 	SearchKey string
 	MaxThread int
+	Token     bool
 	Login     bool
 	ShowInfo  bool
 	Update    bool

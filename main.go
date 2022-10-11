@@ -102,7 +102,7 @@ func shell_run_console_and_bookshelf() {
 	for {
 		if comment, ok := config.ConsoleInput(); ok {
 			if tool.TestIntList(bookshelf_book_index, comment[0]) {
-				shell([]string{"book", book_shelf_bookcase[tool.StrToInt(comment[0])]["novel_id"]})
+				current_download_book_function(book_shelf_bookcase[tool.StrToInt(comment[0])]["novel_id"])
 			} else if comment[0] == "load" || comment[0] == "bookshelf" {
 				bookshelf_book_index, book_shelf_bookcase = app.InitBookShelf() // load bookshelf information
 			} else if comment[0] == "quit" || comment[0] == "exit" {
