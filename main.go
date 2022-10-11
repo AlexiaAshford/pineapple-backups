@@ -96,17 +96,21 @@ func shell(inputs []string) {
 		fmt.Println("command not found,please input help to see the command list:", inputs[0])
 	}
 }
-func Console(bookshelf_book_index []int, book_shelf_bookcase []map[string]string) {
-	if comment, ok := config.ConsoleInput(); ok {
-		if tool.TestIntList(bookshelf_book_index, comment[0]) {
-			shell([]string{"book", book_shelf_bookcase[tool.StrToInt(comment[0])]["novel_id"]})
-		} else if comment[0] == "load" || comment[0] == "bookshelf" {
-			bookshelf_book_index, book_shelf_bookcase = app.InitBookShelf() // load bookshelf information
-		} else if comment[0] == "quit" || comment[0] == "exit" {
-			fmt.Println("exit the program!")
-			os.Exit(0)
-		} else {
-			shell(comment)
+
+func shell_run_console_and_bookshelf() {
+	bookshelf_book_index, book_shelf_bookcase := app.InitBookShelf() // init bookshelf information
+	for {
+		if comment, ok := config.ConsoleInput(); ok {
+			if tool.TestIntList(bookshelf_book_index, comment[0]) {
+				shell([]string{"book", book_shelf_bookcase[tool.StrToInt(comment[0])]["novel_id"]})
+			} else if comment[0] == "load" || comment[0] == "bookshelf" {
+				bookshelf_book_index, book_shelf_bookcase = app.InitBookShelf() // load bookshelf information
+			} else if comment[0] == "quit" || comment[0] == "exit" {
+				fmt.Println("exit the program!")
+				os.Exit(0)
+			} else {
+				shell(comment)
+			}
 		}
 	}
 }
@@ -122,22 +126,21 @@ func main() {
 		} else if commentLine.Login {
 			app.TestAppTypeAndAccount()
 		} else if commentLine.BookId != "" {
-			shell([]string{"book", commentLine.BookId})
+			current_download_book_function(commentLine.BookId)
 		} else if commentLine.SearchKey != "" {
-			shell([]string{"search", commentLine.SearchKey})
+			s := app.Search{Keyword: commentLine.SearchKey, Page: 0}
+			current_download_book_function(s.SearchBook())
 		} else if commentLine.Update {
 			update_local_booklist()
 		} else if commentLine.Token {
 			app.InputAccountToken()
+		} else {
+			shell_run_console_and_bookshelf()
 		}
 	} else {
 		for _, message := range config.HelpMessage {
 			fmt.Println("[info]", message)
 		}
-		bookshelf_book_index, book_shelf_bookcase := app.InitBookShelf() // init bookshelf information
-
-		for {
-			Console(bookshelf_book_index, book_shelf_bookcase) // start console mode}
-		}
+		shell_run_console_and_bookshelf()
 	}
 }
