@@ -115,6 +115,7 @@ func main() {
 	commentLine := config.InitCommand()
 	config.Vars.ThreadNum = commentLine.MaxThread
 	config.Vars.AppType = commentLine.AppType
+	fmt.Println("current app type:", config.Vars.AppType)
 	if len(os.Args) > 1 {
 		if commentLine.Account != "" && commentLine.Password != "" {
 			shell([]string{"login", commentLine.Account, commentLine.Password})

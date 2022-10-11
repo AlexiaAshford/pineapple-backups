@@ -85,6 +85,10 @@ func InitCommand() Command {
 	}
 	app.Action = func(c *cli.Context) {
 		fmt.Println("you can input -h and --help to see the command list.")
+		if CommandLines.AppType != "cat" && CommandLines.AppType != "sfacg" {
+			fmt.Println(CommandLines.AppType, "app type error, default app type is cat.")
+			CommandLines.AppType = "cat" // default app type is cat
+		}
 	}
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err)
