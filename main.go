@@ -49,7 +49,7 @@ func current_download_book_function(book_id string) {
 
 func update_local_booklist() {
 	if config.Exist("./bookList.txt") {
-		for _, i := range strings.ReplaceAll(config_file.Write("./bookList.json", "", "r"), "\n", "") {
+		for _, i := range strings.ReplaceAll(config_file.Open("./bookList.json", "", "r"), "\n", "") {
 			if !strings.Contains(string(i), "#") {
 				current_download_book_function(string(i))
 			}

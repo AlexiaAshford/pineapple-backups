@@ -60,7 +60,7 @@ func (catalogue *Catalogue) DownloadContent(threading *config.GoLimit, file_name
 			content_text = hbooker.GET_CHAPTER_CONTENT(chapter_id, hbooker.GetKeyByCid(chapter_id))
 		}
 		if content_text != "" {
-			config_file.Write(path.Join(config.Current.ConfigPath, file_name), content_text, "w")
+			config_file.Open(path.Join(config.Current.ConfigPath, file_name), content_text, "w")
 			break
 		}
 	}
@@ -68,9 +68,9 @@ func (catalogue *Catalogue) DownloadContent(threading *config.GoLimit, file_name
 
 func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	for _, local_file_name := range tool.GetFileName(config.Current.ConfigPath) {
-		content := config_file.Write(config.Current.ConfigPath+"/"+local_file_name, "", "r")
+		content := config_file.Open(config.Current.ConfigPath+"/"+local_file_name, "", "r")
 		catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content)
-		config_file.Write(config.Current.OutputPath, "\n\n\n"+content, "a")
+		config_file.Open(config.Current.OutputPath, "\n\n\n"+content, "a")
 	}
 	out_put_epub_now := time.Now() // 开始时间
 	// save epub file

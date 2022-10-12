@@ -54,7 +54,7 @@ func SettingBooks(book_id string) Catalogue {
 			err = hbooker.GET_BOOK_INFORMATION(book_id)
 		}
 		if err == nil {
-			config_file.Write(config.Current.BackupsPath, tool.JsonString(config.Current.Book), "w")
+			config_file.Open(config.Current.BackupsPath, tool.JsonString(config.Current.Book), "w")
 		} else {
 			return Catalogue{Test: false, BookMessage: fmt.Sprintf("book_id:%v is invalid:%v", book_id, err)}
 		}
@@ -77,6 +77,6 @@ func (books *BookInits) BookDetailed() Catalogue {
 	if books.ShowBook {
 		fmt.Println(briefIntroduction)
 	}
-	config_file.Write(config.Current.OutputPath, briefIntroduction, "w")
+	config_file.Open(config.Current.OutputPath, briefIntroduction, "w")
 	return Catalogue{Test: true, EpubSetting: books.EpubSetting}
 }

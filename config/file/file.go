@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func Write(Path string, content string, permMode string) string {
+func Open(Path string, content string, permMode string) string {
 	var perm os.FileMode
 	if permMode == "w" {
 		perm = 0644
@@ -16,7 +16,6 @@ func Write(Path string, content string, permMode string) string {
 	} else if permMode == "r" {
 		return ReadFile(Path)
 	} else {
-
 		panic("permMode error")
 	}
 	for i := 0; i < config.Vars.MaxRetry; i++ {
