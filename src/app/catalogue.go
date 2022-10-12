@@ -49,7 +49,8 @@ func (catalogue *Catalogue) GetDownloadsList() {
 	}
 }
 
-func (catalogue *Catalogue) DownloadContent(file_name string) {
+func (catalogue *Catalogue) DownloadContent(threading *config.GoLimit, file_name string) {
+	defer threading.Done()
 	chapter_id := catalogue.speed_progress(file_name)
 	var content_text string
 	for i := 0; i < 5; i++ {

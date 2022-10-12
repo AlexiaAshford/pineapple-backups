@@ -31,12 +31,15 @@ func current_download_book_function(book_id string) {
 		catalogue.GetDownloadsList()
 	}
 	if len(config.Current.DownloadList) > 0 {
+		threading := config.NewGoLimit(uint(config.Vars.MaxRetry))
 		fmt.Println(len(config.Current.DownloadList), " chapters will be downloaded.")
 		catalogue.ChapterBar = app.New(len(config.Current.DownloadList))
 		catalogue.ChapterBar.Describe("working...")
 		for _, file_name := range config.Current.DownloadList {
-			catalogue.DownloadContent(file_name)
+			threading.Add()
+			go catalogue.DownloadContent(threading, file_name)
 		}
+		threading.WaitZero()
 		fmt.Printf("\nNovel:%v download complete!\n", config.Current.Book.NovelName)
 	} else {
 		fmt.Println(config.Current.Book.NovelName + " No chapter need to download!\n")
