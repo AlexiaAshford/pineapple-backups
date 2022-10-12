@@ -2,12 +2,9 @@ package config
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
-	"regexp"
-	"strings"
 )
 
 type Command struct {
@@ -97,15 +94,6 @@ func InitCommand() Command {
 		return CommandLines
 	}
 
-}
-func ConsoleInput() ([]string, bool) {
-	spaceRe, _ := regexp.Compile(`\s+`)
-	inputs := spaceRe.Split(strings.TrimSpace(tool.Input(">")), -1)
-	if len(inputs) > 0 && inputs[0] != "" {
-		return inputs, true
-	} else {
-		return nil, false
-	}
 }
 
 // delete cobra command line

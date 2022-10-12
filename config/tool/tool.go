@@ -113,6 +113,15 @@ func InputStr(introduction string) string {
 	return InputStr(">")
 }
 
+func GET(prompt string) []string {
+	compile, _ := regexp.Compile(`\s+`)
+	inputs := compile.Split(strings.TrimSpace(Input(prompt)), -1)
+	if len(inputs) > 0 && inputs[0] != "" {
+		return inputs
+	}
+	return nil
+}
+
 func Input(prompt string) string {
 	for {
 		fmt.Printf(prompt)
@@ -131,9 +140,8 @@ func IsNum(s string) bool {
 func StrToInt(str string) int {
 	if i, err := strconv.Atoi(str); err == nil {
 		return i
-	} else {
-		return 0
 	}
+	return 0
 }
 
 func FormatJson(jsonString []byte) {

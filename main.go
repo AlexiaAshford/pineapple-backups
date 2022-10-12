@@ -83,7 +83,7 @@ func shell(inputs []string) {
 			s := app.Search{Keyword: inputs[1], Page: 0}
 			current_download_book_function(s.SearchBook())
 		} else {
-			fmt.Println("input book id or url, like:download <bookid/url>")
+			fmt.Println("input search keyword, like:search <keyword>")
 		}
 	case "l", "t", "token", "login":
 		if config.Vars.AppType == "cat" {
@@ -103,7 +103,7 @@ func shell(inputs []string) {
 func shell_run_console_and_bookshelf() {
 	bookshelf_book_index, book_shelf_bookcase := app.InitBookShelf() // init bookshelf information
 	for {
-		if comment, ok := config.ConsoleInput(); ok {
+		if comment := tool.GET(">"); comment != nil {
 			if tool.TestIntList(bookshelf_book_index, comment[0]) {
 				current_download_book_function(book_shelf_bookcase[tool.StrToInt(comment[0])]["novel_id"])
 			} else if comment[0] == "load" || comment[0] == "bookshelf" {
