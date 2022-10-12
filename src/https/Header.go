@@ -25,7 +25,6 @@ func SET_THE_HEADERS(req *http.Request, TestCookie bool) {
 	HeaderCollection := make(map[string]string)
 	HeaderCollection["Content-Type"] = "application/json"
 	switch config.Vars.AppType {
-
 	case "sfacg":
 		if config.Apps.Sfacg.Cookie == "" && TestCookie == true {
 			fmt.Println("Cookie is empty, please login first!")

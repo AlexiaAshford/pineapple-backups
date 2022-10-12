@@ -27,7 +27,7 @@ func (books *BookInits) InitEpubFile() {
 	books.EpubSetting = epub.NewEpub(config.Current.Book.NovelName) // set epub setting and add section
 	books.EpubSetting.SetAuthor(config.Current.Book.AuthorName)     // set author
 	if !config.Exist(config.Current.CoverPath) {
-		if reader := https.GetCover(config.Current.Book.NovelCover); reader == nil {
+		if reader := https.Request(config.Current.Book.NovelCover); reader == nil {
 			fmt.Println("download cover failed!")
 			AddImage = false
 		} else {

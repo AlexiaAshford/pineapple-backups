@@ -69,10 +69,10 @@ func (catalogue *Catalogue) DownloadContent(threading *config.GoLimit, file_name
 func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	for _, local_file_name := range tool.GetFileName(config.Current.ConfigPath) {
 		content := config_file.Open(config.Current.ConfigPath+"/"+local_file_name, "", "r")
-		catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content)
+		catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content+"</p>")
 		config_file.Open(config.Current.OutputPath, "\n\n\n"+content, "a")
 	}
-	out_put_epub_now := time.Now() // 开始时间
+	out_put_epub_now := time.Now() // start time
 	// save epub file
 	epub_file_name := strings.ReplaceAll(config.Current.OutputPath, ".txt", ".epub")
 	if err := catalogue.EpubSetting.Write(epub_file_name); err != nil {

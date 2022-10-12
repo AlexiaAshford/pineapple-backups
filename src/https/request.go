@@ -3,7 +3,6 @@ package https
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/src/encryption"
@@ -12,8 +11,6 @@ import (
 	"net/http"
 	"strings"
 )
-
-var client = &http.Client{}
 
 func JsonUnmarshal(response []byte, Struct any) any {
 	err := json.Unmarshal(response, Struct)
@@ -42,7 +39,7 @@ func Login(url string, dataJson []byte) (*sfacg_structs.Login, []*http.Cookie) {
 		return nil, nil
 	}
 	SET_THE_HEADERS(request, false)
-	response, ok := client.Do(request)
+	response, ok := http.DefaultClient.Do(request)
 	if ok != nil {
 		return nil, nil
 	}
@@ -50,48 +47,32 @@ func Login(url string, dataJson []byte) (*sfacg_structs.Login, []*http.Cookie) {
 	return JsonUnmarshal(body, &sfacg_structs.Login{}).(*sfacg_structs.Login), response.Cookies()
 }
 
-func Request(method string, url string) ([]byte, error) {
-	if method != "GET" && method != "POST" && method != "PUT" {
-		panic("Error: method must be GET or POST or PUT, but now is " + method)
-	}
-	if request, err := http.NewRequest(method, url, nil); err != nil {
-		fmt.Printf("NewRequest %v error:%v\n", method, err)
-	} else {
-		SET_THE_HEADERS(request, true)
-		if response, ok := client.Do(request); ok == nil {
-			// delete ioutil.ReadAll and use io.ReadAll instead
-			if body, bodyError := io.ReadAll(response.Body); bodyError == nil {
-				return body, nil
-			}
+func Request(url string) []byte {
+	method := "GET"
+	if config.Vars.AppType == "cat" || strings.Contains(url, "session") {
+		if !strings.Contains(url, "jpg") {
+			method = "POST"
 		}
 	}
-	return nil, errors.New("request error:" + method + "url:" + url)
+	request, _ := http.NewRequest(method, url, nil)
+	SET_THE_HEADERS(request, true)
+	if response, ok := http.DefaultClient.Do(request); ok == nil {
+		result_body, _ := io.ReadAll(response.Body)
+		if config.Vars.AppType == "cat" && !strings.Contains(url, "jpg") {
+			return encryption.Decode(string(result_body), "")
+		} else {
+			return result_body
+		}
+	} else {
+		fmt.Println("request error:", method, "\t\turl:"+url, "\t\tError:", ok)
+	}
+
+	return nil
 }
 
 func Get(url string, structural any) any {
-	if config.Vars.AppType == "cat" {
-		if result, ok := Request("POST", SET_URL(url)); ok == nil {
-			//fmt.Println(string(Encrypt.Decode(string(result), "")))
-			return JsonUnmarshal(encryption.Decode(string(result), ""), structural)
-		} else {
-			fmt.Println(ok)
-		}
-	} else if config.Vars.AppType == "sfacg" {
-		if result, ok := Request("GET", SET_URL(url)); ok == nil {
-			return JsonUnmarshal(result, structural)
-		} else {
-			fmt.Println(ok)
-		}
-	} else {
-		fmt.Println("not support, please use cat or sfacg, now is " + config.Vars.AppType)
-	}
-	return nil
-}
-func GetCover(imgUrl string) []byte {
-	if res, err := Request("GET", imgUrl); err == nil {
-		return res
-	} else {
-		fmt.Println(err)
+	if result := Request(SET_URL(url)); result != nil {
+		return JsonUnmarshal(result, structural)
 	}
 	return nil
 }

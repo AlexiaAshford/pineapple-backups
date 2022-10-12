@@ -127,10 +127,9 @@ func UseGeetest() *structs.GeetestStruct {
 
 func GeetestRegister(userID string) (string, string) {
 	s := new(structs.GeetestChallenge)
-	response, _ := req.Request("POST", new(req.Context).Init("signup/geetest_register").
+	req.JsonUnmarshal(req.Request(new(req.Context).Init("signup/geetest_register").
 		Query("t", strconv.FormatInt(time.Now().UnixNano()/1e6, 10)).
-		Query("user_id", userID).QueryToString())
-	req.JsonUnmarshal(response, s)
+		Query("user_id", userID).QueryToString()), s)
 	return s.Challenge, s.Gt
 }
 func TestGeetest(userID string) {
