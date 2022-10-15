@@ -70,18 +70,6 @@ func GetFileName(dirname string) []string {
 	}
 	return nil
 }
-
-//func ColorPrint(s string, i int) {
-//	//set color and print
-//	kernel32 := syscall.NewLazyDLL("kernel32.dll")
-//	proc := kernel32.NewProc("SetConsoleTextAttribute")
-//	handle, _, _ := proc.Call(uintptr(syscall.Stdout), uintptr(i))
-//	fmt.Print(s)
-//	handle, _, _ = proc.Call(uintptr(syscall.Stdout), uintptr(7))
-//	CloseHandle := kernel32.NewProc("CloseHandle")
-//	_, _, _ = CloseHandle.Call(handle)
-//}
-
 func get_working_directory() string {
 	dir, err := os.Getwd()
 	if err != nil {

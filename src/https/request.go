@@ -15,7 +15,7 @@ import (
 func JsonUnmarshal(response []byte, Struct any) any {
 	err := json.Unmarshal(response, Struct)
 	if err != nil {
-		fmt.Println("json unmarshal error:", err)
+		fmt.Println(config.Error("json unmarshal", err, 18))
 	}
 	return Struct
 }
@@ -35,7 +35,7 @@ func SET_URL(url string) string {
 func Login(url string, dataJson []byte) (*sfacg_structs.Login, []*http.Cookie) {
 	request, err := http.NewRequest("POST", SET_URL(url), bytes.NewBuffer(dataJson))
 	if err != nil {
-		fmt.Printf("Login session error:%v\n", err)
+		fmt.Println(config.Error("Login session", err, 39))
 		return nil, nil
 	}
 	SET_THE_HEADERS(request, false)
@@ -64,7 +64,7 @@ func Request(url string) []byte {
 			return result_body
 		}
 	} else {
-		fmt.Println("request error:", method, "\t\turl:"+url, "\t\tError:", ok)
+		fmt.Println(config.Error(method+":"+url, ok, 67))
 	}
 
 	return nil
