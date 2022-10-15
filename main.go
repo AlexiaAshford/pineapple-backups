@@ -11,6 +11,8 @@ import (
 	"strings"
 )
 
+var commentLine config.Command
+
 func init() {
 	if !config.Exist("./config.json") || config_file.SizeFile("./config.json") == 0 {
 		fmt.Println("config.json not exist, create a new one!")
@@ -20,6 +22,11 @@ func init() {
 	if config.UpdateConfig() {
 		config.SaveJson()
 	}
+	commentLine = config.InitCommand()
+	config.Vars.ThreadNum = commentLine.MaxThread
+	config.Vars.AppType = commentLine.AppType
+	config.Vars.Epub = commentLine.Epub
+	fmt.Println("current app type:", config.Vars.AppType)
 }
 
 func current_download_book_function(book_id string) {
@@ -119,10 +126,6 @@ func shell_run_console_and_bookshelf() {
 }
 
 func main() {
-	commentLine := config.InitCommand()
-	config.Vars.ThreadNum = commentLine.MaxThread
-	config.Vars.AppType = commentLine.AppType
-	fmt.Println("current app type:", config.Vars.AppType)
 	if len(os.Args) > 1 {
 		if commentLine.Account != "" && commentLine.Password != "" {
 			shell([]string{"login", commentLine.Account, commentLine.Password})

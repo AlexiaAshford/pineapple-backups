@@ -17,6 +17,7 @@ type MyConfigPro struct {
 	AppType    string
 	ThreadNum  int
 	MaxRetry   int
+	Epub       bool
 }
 
 type MyAppPro struct {

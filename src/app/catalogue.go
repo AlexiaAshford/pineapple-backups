@@ -69,16 +69,18 @@ func (catalogue *Catalogue) DownloadContent(threading *config.GoLimit, file_name
 func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	for _, local_file_name := range tool.GetFileName(config.Current.ConfigPath) {
 		content := config_file.Open(config.Current.ConfigPath+"/"+local_file_name, "", "r")
-		catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content+"</p>")
 		config_file.Open(config.Current.OutputPath, "\n\n\n"+content, "a")
+		if config.Vars.Epub {
+			catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content+"</p>")
+		} // save to epub file if epub is true
 	}
-	out_put_epub_now := time.Now() // start time
-	// save epub file
-	epub_file_name := strings.ReplaceAll(config.Current.OutputPath, ".txt", ".epub")
-	if err := catalogue.EpubSetting.Write(epub_file_name); err != nil {
-		fmt.Println(epub_file_name, " epub error:", err)
+	if config.Vars.Epub { // output epub file
+		out_put_epub_now := time.Now() // start time
+		if err := catalogue.EpubSetting.Write(strings.ReplaceAll(config.Current.OutputPath, ".txt", ".epub")); err != nil {
+			fmt.Println("output epub error:", err)
+		}
+		fmt.Println("output epub file success, time:", time.Since(out_put_epub_now))
 	}
-	fmt.Println("out put epub file success, time:", time.Since(out_put_epub_now))
 	config.Current.DownloadList = nil
 }
 

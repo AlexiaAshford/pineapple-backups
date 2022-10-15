@@ -22,12 +22,21 @@
 
 ## **Example**
 
-- --app=```<type[sfacg / cat]>```
-- --account=```<account>```
-- --password=```<password>```
-- --download=```<type[bid / url]>```
-- --search=```<keyword>```
-- --show  < show the config.json file >
+```
+GLOBAL OPTIONS:
+   -a value, --app value       cheng app type (default: "cat")
+   -d value, --download value  book id or url
+   -t, --token                 input hbooker token 
+   -m value, --max value       change max thread number (default: 16)
+   -u value, --user value      input account name (you must enter a user name and password to use this function.)
+   -p value, --password value  input password (you must enter a user name and password to use this function.)
+   --update                    update book
+   -s value, --search value    search book by keyword
+   -l, --login                 login local account
+   -e, --epub                  start epub(default: false)
+   --help, -h                  show help (default: false)
+   --version, -v               print the version 
+```
 
 ## **Disclaimers**
 
@@ -38,8 +47,8 @@
   dealings in the software , including but not limited to the use of the software for illegal purposes,author is not
   responsible for any legal consequences.
 
-
 ## **File tree**
+
 ``` 
 C:.
 │  .gitignore

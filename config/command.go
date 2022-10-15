@@ -18,6 +18,7 @@ type Command struct {
 	Login     bool
 	ShowInfo  bool
 	Update    bool
+	Epub      bool
 }
 
 var CommandLines = Command{}
@@ -78,6 +79,11 @@ func InitCommand() Command {
 			Name:        "l, login",
 			Usage:       "login local account",
 			Destination: &CommandLines.Login,
+		},
+		cli.BoolFlag{
+			Name:        "e, epub",
+			Usage:       "start epub",
+			Destination: &CommandLines.Epub,
 		},
 	}
 	app.Action = func(c *cli.Context) {
