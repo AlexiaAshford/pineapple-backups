@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
-	"github.com/VeronicaAlexia/pineapple-backups/config/book"
 	"github.com/VeronicaAlexia/pineapple-backups/config/file"
 	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app"
@@ -92,7 +91,7 @@ func shell(inputs []string) {
 		}
 	case "d", "b", "book", "download":
 		if len(inputs) == 2 {
-			if book_id := config_book.ExtractBookID(inputs[1]); book_id != "" {
+			if book_id := config.ExtractBookID(inputs[1]); book_id != "" {
 				current_download_book_function(book_id)
 			} else {
 				fmt.Println("book id is empty, please input again.")
