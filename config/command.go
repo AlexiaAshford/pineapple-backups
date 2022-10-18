@@ -1,13 +1,10 @@
 package config
 
 import (
-	"fmt"
 	"gopkg.in/urfave/cli.v1"
-	"log"
-	"os"
 )
 
-type Command struct {
+var CommandLines = struct {
 	BookId    string
 	Account   string
 	Password  string
@@ -19,88 +16,85 @@ type Command struct {
 	ShowInfo  bool
 	Update    bool
 	Epub      bool
+}{}
+
+var Args = []cli.Flag{
+	cli.StringFlag{
+		Name:        "a, app",
+		Value:       "cat",
+		Usage:       "cheng app type",
+		Destination: &CommandLines.AppType,
+	},
+	cli.StringFlag{
+		Name:        "d, download",
+		Value:       "",
+		Usage:       "book id",
+		Destination: &CommandLines.BookId,
+	},
+	cli.BoolFlag{
+		Name:        "t, token",
+		Usage:       "input hbooker token",
+		Destination: &CommandLines.Token,
+	},
+	cli.IntFlag{
+		Name:        "m, max",
+		Value:       16,
+		Usage:       "change max thread number",
+		Destination: &CommandLines.MaxThread,
+	},
+	cli.StringFlag{
+		Name:        "u, user",
+		Value:       "",
+		Usage:       "input account name",
+		Destination: &CommandLines.Account,
+	},
+	cli.StringFlag{
+		Name:        "p, password",
+		Value:       "",
+		Usage:       "input password",
+		Destination: &CommandLines.Password,
+	},
+	cli.BoolFlag{
+		Name:        "update",
+		Usage:       "update book",
+		Destination: &CommandLines.Update,
+	},
+	cli.StringFlag{
+		Name:        "s, search",
+		Value:       "",
+		Usage:       "show config",
+		Destination: &CommandLines.SearchKey,
+	},
+	cli.BoolFlag{
+		Name:        "l, login",
+		Usage:       "login local account",
+		Destination: &CommandLines.Login,
+	},
+	cli.BoolFlag{
+		Name:        "e, epub",
+		Usage:       "start epub",
+		Destination: &CommandLines.Epub,
+	},
 }
 
-var CommandLines = Command{}
-
-func InitCommand() Command {
-	app := cli.NewApp()
-	app.Name = "pineapple-backups"
-	app.Version = "V.1.5.2"
-	app.Usage = "https://github.com/VeronicaAlexia/pineapple-backups"
-	app.Flags = []cli.Flag{
-		cli.StringFlag{
-			Name:        "a, app",
-			Value:       "cat",
-			Usage:       "cheng app type",
-			Destination: &CommandLines.AppType,
-		},
-		cli.StringFlag{
-			Name:        "d, download",
-			Value:       "",
-			Usage:       "book id",
-			Destination: &CommandLines.BookId,
-		},
-		cli.BoolFlag{
-			Name:        "t, token",
-			Usage:       "input hbooker token",
-			Destination: &CommandLines.Token,
-		},
-		cli.IntFlag{
-			Name:        "m, max",
-			Value:       16,
-			Usage:       "change max thread number",
-			Destination: &CommandLines.MaxThread,
-		},
-		cli.StringFlag{
-			Name:        "u, user",
-			Value:       "",
-			Usage:       "input account name",
-			Destination: &CommandLines.Account,
-		},
-		cli.StringFlag{
-			Name:        "p, password",
-			Value:       "",
-			Usage:       "input password",
-			Destination: &CommandLines.Password,
-		},
-		cli.BoolFlag{
-			Name:        "update",
-			Usage:       "update book",
-			Destination: &CommandLines.Update,
-		},
-		cli.StringFlag{
-			Name:        "s, search",
-			Value:       "",
-			Usage:       "show config",
-			Destination: &CommandLines.SearchKey,
-		},
-		cli.BoolFlag{
-			Name:        "l, login",
-			Usage:       "login local account",
-			Destination: &CommandLines.Login,
-		},
-		cli.BoolFlag{
-			Name:        "e, epub",
-			Usage:       "start epub",
-			Destination: &CommandLines.Epub,
-		},
-	}
-	app.Action = func(c *cli.Context) {
-		fmt.Println("you can input -h and --help to see the command list.")
-		if CommandLines.AppType != "cat" && CommandLines.AppType != "sfacg" {
-			fmt.Println(CommandLines.AppType, "app type error, default app type is cat.")
-			CommandLines.AppType = "cat" // default app type is cat
-		}
-	}
-	if err := app.Run(os.Args); err != nil {
-		log.Fatal(err)
-		return Command{}
-	} else {
-		return CommandLines
-	}
-
-}
+//func InitCommand() {
+//	app := cli.NewApp()
+//	app.Name = "pineapple-backups"
+//	app.Version = "V.1.5.2"
+//	app.Usage = "https://github.com/VeronicaAlexia/pineapple-backups"
+//	app.Flags = Args
+//	app.Action = func(c *cli.Context) {
+//		fmt.Println("you can input -h and --help to see the command list.")
+//		if CommandLines.AppType != "cat" && CommandLines.AppType != "sfacg" {
+//			fmt.Println(CommandLines.AppType, "app type error, default app type is cat.")
+//			CommandLines.AppType = "cat" // default app type is cat
+//		}
+//	}
+//	if err := app.Run(os.Args); err != nil {
+//		log.Fatal(err)
+//	}
+//
+//}
 
 // delete cobra command line
 //func CommandInit() []string {

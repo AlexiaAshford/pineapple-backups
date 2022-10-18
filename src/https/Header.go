@@ -21,14 +21,11 @@ func Base64Bytes(UserName, Password string) string {
 
 }
 
-func SET_THE_HEADERS(req *http.Request, TestCookie bool) {
+func SET_THE_HEADERS(req *http.Request) {
 	HeaderCollection := make(map[string]string)
 	HeaderCollection["Content-Type"] = "application/json"
 	switch config.Vars.AppType {
 	case "sfacg":
-		if config.Apps.Sfacg.Cookie == "" && TestCookie == true {
-			fmt.Println("Cookie is empty, please login first!")
-		}
 		HeaderCollection["sf-minip-info"] = "minip_novel/1.0.70(android;11)/wxmp"
 		HeaderCollection["Authorization"] = Base64Bytes(config.Apps.Sfacg.UserName, config.Apps.Sfacg.Password)
 		HeaderCollection["Cookie"] = config.Apps.Sfacg.Cookie

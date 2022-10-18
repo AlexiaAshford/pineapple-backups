@@ -38,7 +38,7 @@ func Login(url string, dataJson []byte) (*sfacg_structs.Login, []*http.Cookie) {
 		fmt.Println(config.Error("Login session", err, 39))
 		return nil, nil
 	}
-	SET_THE_HEADERS(request, false)
+	SET_THE_HEADERS(request)
 	response, ok := http.DefaultClient.Do(request)
 	if ok != nil {
 		return nil, nil
@@ -55,7 +55,7 @@ func Request(url string) []byte {
 		}
 	}
 	request, _ := http.NewRequest(method, url, nil)
-	SET_THE_HEADERS(request, true)
+	SET_THE_HEADERS(request)
 	if response, ok := http.DefaultClient.Do(request); ok == nil {
 		result_body, _ := io.ReadAll(response.Body)
 		if config.Vars.AppType == "cat" && !strings.Contains(url, "jpg") {

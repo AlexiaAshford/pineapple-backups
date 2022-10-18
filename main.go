@@ -7,11 +7,11 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/config/file"
 	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app"
+	"gopkg.in/urfave/cli.v1"
+	"log"
 	"os"
 	"strings"
 )
-
-var commentLine config.Command
 
 func init() {
 	if !config.Exist("./config.json") || config_file.SizeFile("./config.json") == 0 {
@@ -22,10 +22,25 @@ func init() {
 	if config.UpdateConfig() {
 		config.SaveJson()
 	}
-	commentLine = config.InitCommand()
-	config.Vars.ThreadNum = commentLine.MaxThread
-	config.Vars.AppType = commentLine.AppType
-	config.Vars.Epub = commentLine.Epub
+
+	InitApp := cli.NewApp()
+	InitApp.Name = "pineapple-backups"
+	InitApp.Version = "V.1.5.2"
+	InitApp.Usage = "https://github.com/VeronicaAlexia/pineapple-backups"
+	InitApp.Flags = config.Args
+	InitApp.Action = func(c *cli.Context) {
+		fmt.Println("you can input -h and --help to see the command list.")
+		if config.CommandLines.AppType != "cat" && config.CommandLines.AppType != "sfacg" {
+			fmt.Println(config.CommandLines.AppType, "app type error, default app type is cat.")
+			config.CommandLines.AppType = "cat" // default app type is cat
+		}
+	}
+	if err := InitApp.Run(os.Args); err != nil {
+		log.Fatal(err)
+	}
+	config.Vars.ThreadNum = config.CommandLines.MaxThread
+	config.Vars.AppType = config.CommandLines.AppType
+	config.Vars.Epub = config.CommandLines.Epub
 	fmt.Println("current app type:", config.Vars.AppType)
 }
 
@@ -127,18 +142,18 @@ func shell_run_console_and_bookshelf() {
 
 func main() {
 	if len(os.Args) > 1 {
-		if commentLine.Account != "" && commentLine.Password != "" {
-			shell([]string{"login", commentLine.Account, commentLine.Password})
-		} else if commentLine.Login {
+		if config.CommandLines.Account != "" && config.CommandLines.Password != "" {
+			shell([]string{"login", config.CommandLines.Account, config.CommandLines.Password})
+		} else if config.CommandLines.Login {
 			app.TestAppTypeAndAccount()
-		} else if commentLine.BookId != "" {
-			current_download_book_function(commentLine.BookId)
-		} else if commentLine.SearchKey != "" {
-			s := app.Search{Keyword: commentLine.SearchKey, Page: 0}
+		} else if config.CommandLines.BookId != "" {
+			current_download_book_function(config.CommandLines.BookId)
+		} else if config.CommandLines.SearchKey != "" {
+			s := app.Search{Keyword: config.CommandLines.SearchKey, Page: 0}
 			current_download_book_function(s.SearchBook())
-		} else if commentLine.Update {
+		} else if config.CommandLines.Update {
 			update_local_booklist()
-		} else if commentLine.Token {
+		} else if config.CommandLines.Token {
 			app.InputAccountToken()
 		} else {
 			shell_run_console_and_bookshelf()
