@@ -96,12 +96,10 @@ func GET_BOOK_INFORMATION(bid string) error {
 	return fmt.Errorf(structs.Detail.Tip.(string))
 }
 
-func GET_SEARCH(KeyWord string, page int) *structs.SearchStruct {
-	s := new(structs.SearchStruct)
-	req.Get(new(req.Context).Init(BOOKCITY_GET_FILTER_LIST).Query("count", "10").
-		Query("page", strconv.Itoa(page)).Query("category_index", "0").Query("key", KeyWord).
-		QueryToString(), s)
-	return s
+func GET_SEARCH(KeyWord string, page int) {
+	req.NewHttpUtils(BOOKCITY_GET_FILTER_LIST, "POST").Add("count", "10").
+		Add("page", strconv.Itoa(page)).Add("category_index", "0").Add("key", KeyWord).NewRequests().Unmarshal(&structs.Search)
+
 }
 
 func Login(account, password string) {

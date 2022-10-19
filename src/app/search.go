@@ -6,6 +6,7 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
+	structs "github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs"
 	"strconv"
 )
 
@@ -17,14 +18,14 @@ type Search struct {
 
 func (s *Search) CatSearchDetailed() []string {
 	var searchResult []string
-	response := hbooker.GET_SEARCH(s.Keyword, s.Page)
-	if response.Code != "100000" || len(response.Data.BookList) == 0 {
-		fmt.Println("search failed, code:", response.Code)
+	hbooker.GET_SEARCH(s.Keyword, s.Page) // init search struct
+	if structs.Search.Code != "100000" || len(structs.Search.Data.BookList) == 0 {
+		fmt.Println("search failed, code:", structs.Search.Code)
 		return nil
 	} else {
-		fmt.Println("this page has", len(response.Data.BookList), "books")
+		fmt.Println("this page has", len(structs.Search.Data.BookList), "books")
 	}
-	for index, book_info := range response.Data.BookList {
+	for index, book_info := range structs.Search.Data.BookList {
 		fmt.Println("Index:", index, "\t\t\tBookName:", book_info.BookName)
 		searchResult = append(searchResult, book_info.BookID)
 	}

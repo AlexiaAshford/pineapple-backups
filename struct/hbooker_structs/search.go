@@ -1,9 +1,9 @@
 package hbooker_structs
 
-type SearchStruct struct {
+var Search = struct {
 	Code string     `json:"code"`
 	Data SearchData `json:"data"`
-}
+}{}
 
 type SearchData struct {
 	TagList  []SearchTagList `json:"tag_list"`
