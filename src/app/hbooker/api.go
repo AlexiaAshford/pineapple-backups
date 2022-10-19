@@ -101,8 +101,9 @@ func GET_SEARCH(KeyWord string, page int) {
 
 }
 
-func Login(account, password string) {
+func GET_LOGIN_TOKEN(account, password string) {
 	GET_USE_GEETEST()
+	TEST_GEETEST(account)
 	req.NewHttpUtils(MY_SIGN_LOGIN, "POST").Add("login_name", account).
 		Add("password", password).NewRequests().Unmarshal(&structs.Login)
 	if structs.Login.Code == "100000" {
@@ -123,8 +124,7 @@ func GET_GEETEST_REGISTER(UserID string) (string, string) {
 		Add("t", strconv.FormatInt(time.Now().UnixNano()/1e6, 10)).NewRequests().Unmarshal(&structs.Challenge)
 	return structs.Challenge.Challenge, structs.Challenge.Gt
 }
-func TestGeetest(userID string) {
-	GET_USE_GEETEST()
+func TEST_GEETEST(userID string) {
 	challenge, gt := GET_GEETEST_REGISTER(userID)
 	status, CaptchaType, errorDetail := encryption.GetFullBG(&encryption.Geetest{GT: gt, Challenge: challenge})
 	fmt.Println(status, CaptchaType, errorDetail)
@@ -133,7 +133,7 @@ func TestGeetest(userID string) {
 		encryption.Slide(&encryption.Geetest{GT: gt, Challenge: challenge})
 	} else {
 		color.Errorln("获取图片失败 Error: ", status, " ErrorDetail:", errorDetail)
-		TestGeetest(userID)
+		TEST_GEETEST(userID)
 	}
 }
 
