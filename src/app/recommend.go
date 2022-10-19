@@ -15,7 +15,7 @@ type RECOMMEND struct {
 	book_list_string string
 }
 
-func NEW_RECOMMEND() RECOMMEND {
+func NEW_RECOMMEND() *RECOMMEND {
 	var recommend_list [][]string
 	recommend := new(structs.RecommendStruct)
 	req.Get(new(req.Context).Init(hbooker.BOOKCITY_RECOMMEND_DATA).
@@ -31,7 +31,7 @@ func NEW_RECOMMEND() RECOMMEND {
 			}
 		}
 	}
-	return RECOMMEND{recommend_list: recommend_list}
+	return &RECOMMEND{recommend_list: recommend_list}
 
 }
 
@@ -57,7 +57,7 @@ func (is *RECOMMEND) CHANGE_NEW_RECOMMEND() {
 	}
 }
 
-func (is *RECOMMEND) GET_HBOOKER_RECOMMEND() {
+func (is *RECOMMEND) GET_HBOOKER_RECOMMEND() string {
 	is.InitBookIdList() // init book_list_string and print recommend_list
 	fmt.Println("y is next item recommendation, d is download recommend book, press any key to exit..")
 	InputChoice := tool.InputStr("do you want to next item recommendation:(y/d):")
@@ -65,9 +65,10 @@ func (is *RECOMMEND) GET_HBOOKER_RECOMMEND() {
 		is.CHANGE_NEW_RECOMMEND() // change recommend_list
 		is.GET_HBOOKER_RECOMMEND()
 	} else if InputChoice == "d" {
-		fmt.Println(is.book_list[tool.InputInt("input index:", len(is.book_list))])
+		return is.book_list[tool.InputInt("input index:", len(is.book_list))]
 		//current_download_book_function(book_list[tool.InputInt("input index:", len(book_list))])
 	} else {
 		fmt.Println("exit recommend book list...")
 	}
+	return ""
 }

@@ -158,9 +158,12 @@ func main() {
 			shell_run_console_and_bookshelf()
 		}
 	} else {
-		// add recommend list for hbooker app
-		recommend := app.NEW_RECOMMEND()
-		recommend.GET_HBOOKER_RECOMMEND()
+		if config.Vars.AppType == "cat" {
+			// recommend list for hbooker app
+			if book_id := app.NEW_RECOMMEND().GET_HBOOKER_RECOMMEND(); book_id != "" {
+				current_download_book_function(book_id)
+			}
+		}
 		for _, message := range config.HelpMessage {
 			fmt.Println("[info]", message)
 		}
