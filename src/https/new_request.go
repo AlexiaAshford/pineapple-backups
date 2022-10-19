@@ -14,19 +14,32 @@ import (
 )
 
 type HttpUtils struct {
-	url        string
-	method     string
-	response   *http.Request
-	AppType    string
-	query_data *url.Values
-	ResultBody []byte
+	url         string
+	method      string
+	cookie      []*http.Cookie
+	response    *http.Request
+	app_type    string
+	query_data  *url.Values
+	result_body []byte
 }
 
+func MustNewRequest(method, url string, data io.Reader) *http.Request {
+	if request, err := http.NewRequest(method, url, data); err != nil {
+		fmt.Println(config.Error("MustNewRequest", err, 93))
+		return nil
+	} else {
+		return request
+	}
+}
 func (is *HttpUtils) GetEncodeParams() *bytes.Reader {
 	return bytes.NewReader([]byte(is.query_data.Encode()))
 }
 func (is *HttpUtils) GetResultBody() string {
-	return string(is.ResultBody)
+	return string(is.result_body)
+}
+
+func (is *HttpUtils) GetCookie() []*http.Cookie {
+	return is.cookie
 }
 func (is *HttpUtils) GetValue(key string) string {
 	return is.query_data.Get(key)
@@ -43,29 +56,20 @@ func (is *HttpUtils) Add(key string, value string) *HttpUtils {
 
 func NewHttpUtils(api_url, method string) *HttpUtils {
 	req := &HttpUtils{method: method, query_data: &url.Values{}}
-	req.AppType = config.Vars.AppType
-	if req.AppType == "cat" {
+	req.app_type = config.Vars.AppType
+	if req.app_type == "cat" {
 		req.url = CatWebSite + strings.ReplaceAll(api_url, CatWebSite, "")
 		req.Add("login_token", config.Apps.Cat.Params.LoginToken).
 			Add("account", config.Apps.Cat.Params.Account).
 			Add("app_version", config.Apps.Cat.Params.AppVersion).
 			Add("device_token", config.Apps.Cat.Params.DeviceToken)
-	} else if req.AppType == "sfacg" {
+	} else if req.app_type == "sfacg" {
 		req.url = SFWebSite + strings.ReplaceAll(api_url, SFWebSite, "")
 	} else {
 		req.url = api_url
 	}
 
 	return req
-}
-
-func MustNewRequest(method, url string, data io.Reader) *http.Request {
-	if request, err := http.NewRequest(method, url, data); err != nil {
-		fmt.Println(config.Error("MustNewRequest", err, 93))
-		return nil
-	} else {
-		return request
-	}
 }
 
 func (is *HttpUtils) NEW_SET_THE_HEADERS() {
@@ -92,15 +96,16 @@ func (is *HttpUtils) NEW_SET_THE_HEADERS() {
 }
 
 func (is *HttpUtils) NewRequests() *HttpUtils {
-	is.ResultBody = nil
+	is.result_body = nil
 	is.response = MustNewRequest(is.method, is.url, is.GetEncodeParams())
 	is.NEW_SET_THE_HEADERS()
 	if response, ok := http.DefaultClient.Do(is.response); ok == nil {
+		is.cookie = response.Cookies()
 		result_body, _ := io.ReadAll(response.Body)
 		if config.Vars.AppType == "cat" && !strings.Contains(is.url, "jpg") {
-			is.ResultBody = encryption.Decode(string(result_body), "")
+			is.result_body = encryption.Decode(string(result_body), "")
 		} else {
-			is.ResultBody = result_body
+			is.result_body = result_body
 		}
 	} else {
 		fmt.Println(config.Error(is.method+":"+is.url, ok, 67))
@@ -109,7 +114,7 @@ func (is *HttpUtils) NewRequests() *HttpUtils {
 }
 
 func (is *HttpUtils) Unmarshal(s any) *HttpUtils {
-	err := json.Unmarshal(is.ResultBody, s)
+	err := json.Unmarshal(is.result_body, s)
 	if err != nil {
 		fmt.Println(config.Error("json unmarshal", err, 18))
 	}
