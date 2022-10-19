@@ -63,12 +63,11 @@ func (is *RECOMMEND) GET_HBOOKER_RECOMMEND() string {
 	InputChoice := tool.InputStr("do you want to next item recommendation:(y/d):")
 	if InputChoice == "y" {
 		is.CHANGE_NEW_RECOMMEND() // change recommend_list
-		is.GET_HBOOKER_RECOMMEND()
+		return is.GET_HBOOKER_RECOMMEND()
 	} else if InputChoice == "d" {
 		return is.book_list[tool.InputInt("input index:", len(is.book_list))]
 		//current_download_book_function(book_list[tool.InputInt("input index:", len(book_list))])
 	} else {
-		fmt.Println("exit recommend book list...")
+		return ""
 	}
-	return ""
 }
