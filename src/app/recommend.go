@@ -5,7 +5,7 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	req "github.com/VeronicaAlexia/pineapple-backups/src/https"
-	structs "github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs"
+	"github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs"
 	"strings"
 )
 
@@ -17,7 +17,7 @@ type RECOMMEND struct {
 
 func NEW_RECOMMEND() *RECOMMEND {
 	var recommend_list [][]string
-	recommend := new(structs.RecommendStruct)
+	recommend := new(hbooker_structs.RecommendStruct)
 	req.Get(new(req.Context).Init(hbooker.BOOKCITY_RECOMMEND_DATA).
 		Query("theme_type", "NORMAL").Query("tab_type", "200").QueryToString(), recommend)
 	if recommend.Code != "100000" {
@@ -45,7 +45,7 @@ func (is *RECOMMEND) InitBookIdList() {
 }
 
 func (is *RECOMMEND) CHANGE_NEW_RECOMMEND() {
-	s := new(structs.ChangeRecommendStruct)
+	s := new(hbooker_structs.ChangeRecommendStruct)
 	req.Get(new(req.Context).Init(hbooker.GET_CHANGE_RECOMMEND).
 		Query("book_id", is.book_list_string).Query("from_module_name", "长篇好书").QueryToString(), s)
 	is.recommend_list = nil

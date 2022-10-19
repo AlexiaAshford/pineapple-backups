@@ -24,7 +24,7 @@ func init() {
 
 	InitApp := cli.NewApp()
 	InitApp.Name = "pineapple-backups"
-	InitApp.Version = "V.1.5.2"
+	InitApp.Version = "V.1.6.2"
 	InitApp.Usage = "https://github.com/VeronicaAlexia/pineapple-backups"
 	InitApp.Flags = config.Args
 	InitApp.Action = func(c *cli.Context) {
@@ -91,7 +91,7 @@ func shell(inputs []string) {
 		}
 	case "d", "b", "book", "download":
 		if len(inputs) == 2 {
-			if book_id := config.ExtractBookID(inputs[1]); book_id != "" {
+			if book_id := config.FindID(inputs[1]); book_id != "" {
 				current_download_book_function(book_id)
 			} else {
 				fmt.Println("book id is empty, please input again.")
