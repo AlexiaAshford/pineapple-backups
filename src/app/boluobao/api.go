@@ -16,22 +16,22 @@ import (
 )
 
 func GET_BOOK_INFORMATION(NovelId string) error {
-	s := new(sfacg_structs.BookInfo)
-	req.Get(new(req.Context).Init("novels/"+NovelId).Query("expand", "intro,tags,sysTags").QueryToString(), s)
-	if s.Status.HTTPCode == 200 && s.Data.NovelName != "" {
+	req.NewHttpUtils("novels/"+NovelId, "GET").Add("expand", "intro,tags,sysTags").
+		NewRequests().Unmarshal(&sfacg_structs.BookInfo)
+	if sfacg_structs.BookInfo.Status.HTTPCode == 200 && sfacg_structs.BookInfo.Data.NovelName != "" {
 		config.Current.Book = _struct.Books{
-			NovelCover: s.Data.NovelCover,
-			AuthorName: s.Data.AuthorName,
-			SignStatus: s.Data.SignStatus,
-			NovelID:    strconv.Itoa(s.Data.NovelID),
-			CharCount:  strconv.Itoa(s.Data.CharCount),
-			MarkCount:  strconv.Itoa(s.Data.MarkCount),
-			NovelName:  tool.RegexpName(s.Data.NovelName),
+			NovelCover: sfacg_structs.BookInfo.Data.NovelCover,
+			AuthorName: sfacg_structs.BookInfo.Data.AuthorName,
+			SignStatus: sfacg_structs.BookInfo.Data.SignStatus,
+			NovelID:    strconv.Itoa(sfacg_structs.BookInfo.Data.NovelID),
+			CharCount:  strconv.Itoa(sfacg_structs.BookInfo.Data.CharCount),
+			MarkCount:  strconv.Itoa(sfacg_structs.BookInfo.Data.MarkCount),
+			NovelName:  tool.RegexpName(sfacg_structs.BookInfo.Data.NovelName),
 		}
 		return nil
 	} else {
-		if s.Status.Msg != nil {
-			return fmt.Errorf(s.Status.Msg.(string))
+		if sfacg_structs.BookInfo.Status.Msg != nil {
+			return fmt.Errorf(sfacg_structs.BookInfo.Status.Msg.(string))
 		}
 		return fmt.Errorf("book is not found")
 	}

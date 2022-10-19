@@ -19,7 +19,7 @@ type BookInfoData struct {
 	CategoryID     int     `json:"categoryId"`
 }
 
-type BookInfo struct {
+var BookInfo = struct {
 	Status struct {
 		HTTPCode  int         `json:"httpCode"`
 		ErrorCode int         `json:"errorCode"`
@@ -27,4 +27,4 @@ type BookInfo struct {
 		Msg       interface{} `json:"msg"`
 	} `json:"status"`
 	Data BookInfoData `json:"data"`
-}
+}{}
