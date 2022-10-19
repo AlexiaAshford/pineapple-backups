@@ -15,7 +15,7 @@ var GetShelfList = struct {
 	ScrollChests []interface{} `json:"scroll_chests"`
 }{}
 
-type GetShelfBookList struct {
+var BookList = struct {
 	Code string `json:"code"`
 	Tip  any    `json:"tip"`
 	Data struct {
@@ -58,4 +58,4 @@ type GetShelfBookList struct {
 		} `json:"book_list"`
 	} `json:"data"`
 	ScrollChests []interface{} `json:"scroll_chests"`
-}
+}{}

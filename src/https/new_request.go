@@ -22,19 +22,23 @@ type HttpUtils struct {
 	ResultBody []byte
 }
 
-func (is *HttpUtils) params() *bytes.Reader {
+func (is *HttpUtils) GetEncodeParams() *bytes.Reader {
 	return bytes.NewReader([]byte(is.query_data.Encode()))
 }
-func (is *HttpUtils) Add(key string, value string) *HttpUtils {
-	if key != "" {
-		is.query_data.Add(key, value)
-
-	}
-	return is
+func (is *HttpUtils) GetResultBody() string {
+	return string(is.ResultBody)
 }
-func (is *HttpUtils) Test() {
-	fmt.Println(is.query_data.Encode())
-	fmt.Println(string(is.ResultBody))
+func (is *HttpUtils) GetValue(key string) string {
+	return is.query_data.Get(key)
+}
+
+func (is *HttpUtils) GetUrl() string {
+	return is.url
+}
+
+func (is *HttpUtils) Add(key string, value string) *HttpUtils {
+	is.query_data.Add(key, value)
+	return is
 }
 
 func NewHttpUtils(api_url, method string) *HttpUtils {
@@ -84,13 +88,12 @@ func (is *HttpUtils) NEW_SET_THE_HEADERS() {
 	}
 	for HeaderKey, HeaderValue := range HeaderCollection {
 		is.response.Header.Set(HeaderKey, HeaderValue)
-
 	}
 }
 
 func (is *HttpUtils) NewRequests() *HttpUtils {
 	is.ResultBody = nil
-	is.response = MustNewRequest(is.method, is.url, is.params())
+	is.response = MustNewRequest(is.method, is.url, is.GetEncodeParams())
 	is.NEW_SET_THE_HEADERS()
 	if response, ok := http.DefaultClient.Do(is.response); ok == nil {
 		result_body, _ := io.ReadAll(response.Body)

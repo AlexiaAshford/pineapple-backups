@@ -43,25 +43,22 @@ func GET_DIVISION(BookId string) []map[string]string {
 }
 
 func GET_CATALOGUE(DivisionId string) []structs.ChapterList {
-	s := new(structs.ChapterStruct)
-	req.Get(new(req.Context).Init(GET_CHAPTER_UPDATE).Query("division_id", DivisionId).QueryToString(), s)
-	return s.Data.ChapterList
+	req.NewHttpUtils(GET_CHAPTER_UPDATE, "POST").Add("division_id", DivisionId).NewRequests().Unmarshal(&structs.Chapter)
+	return structs.Chapter.Data.ChapterList
 }
 
 func GET_BOOK_SHELF_INDEXES_INFORMATION(shelf_id string) ([]map[string]string, error) {
-	s := new(bookshelf.GetShelfBookList)
-	req.Get(new(req.Context).Init(BOOKSHELF_GET_SHELF_BOOK_LIST).Query("shelf_id", shelf_id).
-		Query("direction", "prev").Query("last_mod_time", "0").QueryToString(), s)
-	if s.Code != "100000" {
-		return nil, fmt.Errorf(s.Tip.(string))
+	req.NewHttpUtils(BOOKSHELF_GET_SHELF_BOOK_LIST, "POST").Add("shelf_id", shelf_id).Add("direction", "prev").
+		Add("last_mod_time", "0").NewRequests().Unmarshal(&bookshelf.BookList)
+	if bookshelf.BookList.Code != "100000" {
+		return nil, fmt.Errorf(bookshelf.BookList.Tip.(string))
 	}
 	var bookshelf_info_list []map[string]string
-	for _, book := range s.Data.BookList {
+	for _, book := range bookshelf.BookList.Data.BookList {
 		bookshelf_info_list = append(bookshelf_info_list,
 			map[string]string{"novel_name": book.BookInfo.BookName, "novel_id": book.BookInfo.BookID},
 		)
 	}
-
 	return bookshelf_info_list, nil
 }
 
