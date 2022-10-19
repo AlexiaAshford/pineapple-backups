@@ -36,6 +36,7 @@ func NEW_RECOMMEND() *RECOMMEND {
 }
 
 func (is *RECOMMEND) InitBookIdList() {
+	is.book_list = nil
 	for index, value := range is.recommend_list {
 		fmt.Println("index:", index, "\t\tbook id:", value[1], "\t\tbook name:", value[0])
 		is.book_list = append(is.book_list, value[1])
@@ -59,15 +60,14 @@ func (is *RECOMMEND) CHANGE_NEW_RECOMMEND() {
 
 func (is *RECOMMEND) GET_HBOOKER_RECOMMEND() string {
 	is.InitBookIdList() // init book_list_string and print recommend_list
-	fmt.Println("y is next item recommendation, d is download recommend book, press any key to exit..")
-	InputChoice := tool.InputStr("do you want to next item recommendation:(y/d):")
+	fmt.Println("y is next item recommendation\nd is download recommend book\npress any key to exit..")
+	InputChoice := tool.InputStr(">")
 	if InputChoice == "y" {
 		is.CHANGE_NEW_RECOMMEND() // change recommend_list
 		return is.GET_HBOOKER_RECOMMEND()
 	} else if InputChoice == "d" {
 		return is.book_list[tool.InputInt("input index:", len(is.book_list))]
-		//current_download_book_function(book_list[tool.InputInt("input index:", len(book_list))])
-	} else {
-		return ""
 	}
+	return ""
+
 }
