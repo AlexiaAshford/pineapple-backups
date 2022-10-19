@@ -5,7 +5,6 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	req "github.com/VeronicaAlexia/pineapple-backups/src/https"
-	"github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs"
 	"strings"
 )
 
@@ -17,9 +16,28 @@ type RECOMMEND struct {
 
 func NEW_RECOMMEND() *RECOMMEND {
 	var recommend_list [][]string
-	recommend := new(hbooker_structs.RecommendStruct)
+	recommend := struct {
+		Code string `json:"code"`
+		Data struct {
+			ModuleList []struct {
+				ModuleType string `json:"module_type"`
+				BossModule struct {
+					DesBookList []struct {
+						BookID          string `json:"book_id"`
+						BookName        string `json:"book_name"`
+						CategoryIndex   string `json:"category_index"`
+						Description     string `json:"description"`
+						AuthorName      string `json:"author_name"`
+						Cover           string `json:"cover"`
+						DiscountEndTime string `json:"discount_end_time"`
+					} `json:"des_book_list"`
+				} `json:"boss_module,omitempty"`
+			} `json:"module_list"`
+		} `json:"data"`
+		Tip any `json:"tip"`
+	}{}
 	req.Get(new(req.Context).Init(hbooker.BOOKCITY_RECOMMEND_DATA).
-		Query("theme_type", "NORMAL").Query("tab_type", "200").QueryToString(), recommend)
+		Query("theme_type", "NORMAL").Query("tab_type", "200").QueryToString(), &recommend)
 	if recommend.Code != "100000" {
 		fmt.Println(recommend.Tip.(string))
 	} else {
@@ -45,14 +63,30 @@ func (is *RECOMMEND) InitBookIdList() {
 }
 
 func (is *RECOMMEND) CHANGE_NEW_RECOMMEND() {
-	s := new(hbooker_structs.ChangeRecommendStruct)
-	req.Get(new(req.Context).Init(hbooker.GET_CHANGE_RECOMMEND).
-		Query("book_id", is.book_list_string).Query("from_module_name", "长篇好书").QueryToString(), s)
+	change_struct := struct {
+		Code string `json:"code"`
+		Tip  string `json:"tip"`
+		Data struct {
+			BookList []struct {
+				BookID          string `json:"book_id"`
+				BookName        string `json:"book_name"`
+				Description     string `json:"description"`
+				AuthorName      string `json:"author_name"`
+				Cover           string `json:"cover"`
+				DiscountEndTime string `json:"discount_end_time"`
+				UpStatus        string `json:"up_status"`
+				TotalWordCount  string `json:"total_word_count"`
+				Introduce       string `json:"introduce"`
+			} `json:"book_list"`
+		} `json:"data"`
+	}{}
+	req.Get(new(req.Context).Init(hbooker.GET_CHANGE_RECOMMEND).Query("book_id", is.book_list_string).
+		Query("from_module_name", "长篇好书").QueryToString(), &change_struct)
 	is.recommend_list = nil
-	if s.Code != "100000" {
-		fmt.Println(s.Tip)
+	if change_struct.Code != "100000" {
+		fmt.Println(change_struct.Tip)
 	} else {
-		for _, book := range s.Data.BookList {
+		for _, book := range change_struct.Data.BookList {
 			is.recommend_list = append(is.recommend_list, []string{book.BookName, book.BookID})
 		}
 	}
