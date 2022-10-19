@@ -6,7 +6,6 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/config/file"
 	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app"
-	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
@@ -122,26 +121,6 @@ func shell(inputs []string) {
 	}
 }
 
-func get_cat_recommend(recommend_list any) {
-	var book_list []string
-	if recommend_list == nil {
-		recommend_list = hbooker.GetRecommend()
-	}
-	for _, value := range recommend_list.([][]string) {
-		book_list = append(book_list, value[1])
-	}
-	for index, value := range recommend_list.([][]string) {
-		fmt.Println("index:", index, "\t\tbook id:", value[1], "\t\tbook name:", value[0])
-	}
-	if Input := tool.InputStr("do you want to next item recommendation:(y/n/d):"); Input == "y" {
-		get_cat_recommend(hbooker.GetChangeRecommend(strings.Join(book_list, ",")))
-	} else if Input == "n" {
-		fmt.Println("you can input book id to download.")
-	} else if Input == "d" {
-		current_download_book_function(book_list[tool.InputInt("input index:", len(book_list))])
-	}
-}
-
 func shell_run_console_and_bookshelf() {
 	bookshelf_book_index, book_shelf_bookcase := app.InitBookShelf() // init bookshelf information
 	for {
@@ -180,7 +159,8 @@ func main() {
 		}
 	} else {
 		// add recommend list for hbooker app
-		get_cat_recommend(nil)
+		recommend := app.NEW_RECOMMEND()
+		recommend.GET_HBOOKER_RECOMMEND()
 		for _, message := range config.HelpMessage {
 			fmt.Println("[info]", message)
 		}

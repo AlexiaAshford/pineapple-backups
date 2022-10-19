@@ -14,7 +14,6 @@ type ChangeRecommendStruct struct {
 type ChangeBookList struct {
 	BookID          string `json:"book_id"`
 	BookName        string `json:"book_name"`
-	CategoryIndex   string `json:"category_index"`
 	Description     string `json:"description"`
 	AuthorName      string `json:"author_name"`
 	Cover           string `json:"cover"`
@@ -40,7 +39,6 @@ type Header struct {
 	CiweicatImage string `json:"ciweicat_image,omitempty"`
 	InnerApp      string `json:"inner_app"`
 	Version       string `json:"version"`
-	CategoryIndex int    `json:"category_index,omitempty"`
 }
 type RankList struct {
 	Image         string   `json:"image"`
@@ -86,13 +84,10 @@ type PicBookList struct {
 	BookID          string `json:"book_id"`
 	BookName        string `json:"book_name"`
 	Cover           string `json:"cover"`
-	Discount        int    `json:"discount"`
 	DiscountEndTime string `json:"discount_end_time"`
-	IsOriginal      int    `json:"is_original"`
 	CategoryIndex   string `json:"category_index"`
 	Description     string `json:"description"`
 	TotalFavor      string `json:"total_favor"`
-	TotalClick      int    `json:"total_click"`
 	UpReaderID      string `json:"up_reader_id"`
 	AuthorName      string `json:"author_name"`
 }
@@ -103,7 +98,7 @@ type MoreBooklist struct {
 type ModuleList struct {
 	ModuleType          string         `json:"module_type"`
 	Header              []Header       `json:"header,omitempty"`
-	ModuleID            int            `json:"module_id"`
+	ModuleID            string         `json:"module_id"`
 	RankList            []RankList     `json:"rank_list,omitempty"`
 	BossModule          BossModule     `json:"boss_module,omitempty"`
 	ListID              string         `json:"list_id,omitempty"`
@@ -122,18 +117,14 @@ type ModuleList struct {
 type NewBookList struct {
 	BookID          string `json:"book_id"`
 	Cover           string `json:"cover"`
-	Discount        int    `json:"discount"`
 	DiscountEndTime string `json:"discount_end_time"`
 	BookName        string `json:"book_name"`
-	IsOriginal      int    `json:"is_original"`
 }
 type UpBookList struct {
 	BookID          string `json:"book_id"`
 	Cover           string `json:"cover"`
-	Discount        int    `json:"discount"`
 	DiscountEndTime string `json:"discount_end_time"`
 	BookName        string `json:"book_name"`
-	IsOriginal      int    `json:"is_original"`
 }
 
 type CiweicatNewBookList struct {
@@ -157,5 +148,4 @@ type Data struct {
 	UpBookList          []UpBookList        `json:"up_book_list"`
 	CiweicatNewBookList CiweicatNewBookList `json:"ciweicat_new_book_list"`
 	CiweicatUpBookList  CiweicatUpBookList  `json:"ciweicat_up_book_list"`
-	NewRecommend        int                 `json:"new_recommend"`
 }

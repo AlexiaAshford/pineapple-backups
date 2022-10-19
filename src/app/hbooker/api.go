@@ -146,40 +146,6 @@ func TestGeetest(userID string) {
 	}
 }
 
-func GetRecommend() [][]string {
-	var recommend_book_list [][]string
-	recommend := new(structs.RecommendStruct)
-	req.Get(new(req.Context).Init(BOOKCITY_RECOMMEND_DATA).Query("theme_type", "NORMAL").
-		Query("tab_type", "200").QueryToString(), recommend)
-	if recommend.Code != "100000" {
-		fmt.Println(recommend.Tip.(string))
-		return nil
-	}
-	for _, data := range recommend.Data.ModuleList {
-		if data.ModuleType == "1" {
-			for _, book := range data.BossModule.DesBookList {
-				recommend_book_list = append(recommend_book_list, []string{book.BookName, book.BookID})
-			}
-		}
-	}
-	return recommend_book_list
-}
-
-func GetChangeRecommend(BookIdList string) [][]string {
-	var recommend_book_list [][]string
-	s := new(structs.ChangeRecommendStruct)
-	req.Get(new(req.Context).Init(GET_CHANGE_RECOMMEND).
-		Query("book_id", BookIdList).Query("from_module_name", "长篇好书").QueryToString(), s)
-	if s.Code != "100000" {
-		fmt.Println(s.Tip)
-		return nil
-	}
-	for _, book := range s.Data.BookList {
-		recommend_book_list = append(recommend_book_list, []string{book.BookName, book.BookID})
-	}
-	return recommend_book_list
-}
-
 func GetKeyByCid(chapterId string) string {
 	s := new(structs.KeyStruct)
 	req.Get(new(req.Context).Init(GET_CHAPTER_KEY).Query("chapter_id", chapterId).QueryToString(), s)

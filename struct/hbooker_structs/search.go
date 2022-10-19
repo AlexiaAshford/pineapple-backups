@@ -15,7 +15,6 @@ type BookList struct {
 	BookName        string                `json:"book_name"`
 	Description     string                `json:"description"`
 	BookSrc         string                `json:"book_src"`
-	CategoryIndex   string                `json:"category_index"`
 	Tag             string                `json:"tag"`
 	TotalWordCount  string                `json:"total_word_count"`
 	UpStatus        string                `json:"up_status"`
