@@ -10,6 +10,7 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/struct/sfacg_structs"
 	"github.com/VeronicaAlexia/pineapple-backups/struct/sfacg_structs/bookshelf"
 	url_ "net/url"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -109,14 +110,24 @@ func GET_SEARCH(keyword string, page int) *sfacg_structs.Search {
 
 }
 
-func LOGIN_ACCOUNT(username, password string) *sfacg_structs.Login {
-	//s := new(sfacg_structs.Login)
-	//req.Get(new(req.Context).Init("sessions").Query("username", username).
-	//	Query("password", password).QueryToString(), s)
-	params := fmt.Sprintf(`{"username":"%s", "password": "%s"}`, username, password)
-	response, Cookie := req.Login(req.SET_URL("sessions"), []byte(params))
-	for _, cookie := range Cookie {
-		response.Cookie += cookie.Name + "=" + cookie.Value + ";"
+func LOGIN_ACCOUNT(username, password string) {
+	CookieJar := req.NewHttpUtils("sessions", "POST").Add("username", username).
+		Add("password", password).NewRequests().Unmarshal(&sfacg_structs.Login).GetCookie()
+	for _, cookie := range CookieJar {
+		sfacg_structs.Login.Cookie += cookie.Name + "=" + cookie.Value + ";"
 	}
-	return response
+
+	if sfacg_structs.Login.Status.HTTPCode == 200 {
+		config.Apps.Sfacg.Cookie = sfacg_structs.Login.Cookie
+		config.Apps.Sfacg.UserName = username
+		config.Apps.Sfacg.Password = password
+		config.SaveJson()
+	} else {
+		if message := sfacg_structs.Login.Status.Msg.(string); message == "用户名密码不匹配" {
+			fmt.Println(message)
+			os.Exit(0)
+		} else {
+			fmt.Println("login failed! error:", message)
+		}
+	}
 }

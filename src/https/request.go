@@ -1,12 +1,10 @@
 package https
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/src/encryption"
-	"github.com/VeronicaAlexia/pineapple-backups/struct/sfacg_structs"
 	"io"
 	"net/http"
 	"strings"
@@ -31,20 +29,6 @@ func SET_URL(url string) string {
 	default:
 		return url
 	}
-}
-func Login(url string, dataJson []byte) (*sfacg_structs.Login, []*http.Cookie) {
-	request, err := http.NewRequest("POST", SET_URL(url), bytes.NewBuffer(dataJson))
-	if err != nil {
-		fmt.Println(config.Error("Login session", err, 39))
-		return nil, nil
-	}
-	SET_THE_HEADERS(request)
-	response, ok := http.DefaultClient.Do(request)
-	if ok != nil {
-		return nil, nil
-	}
-	body, _ := io.ReadAll(response.Body)
-	return JsonUnmarshal(body, &sfacg_structs.Login{}).(*sfacg_structs.Login), response.Cookies()
 }
 
 func Request(url string) []byte {
@@ -76,3 +60,18 @@ func Get(url string, structural any) any {
 	}
 	return nil
 }
+
+//func Login(url string, dataJson []byte) (*sfacg_structs.Login, []*http.Cookie) {
+//	request, err := http.NewRequest("POST", SET_URL(url), bytes.NewBuffer(dataJson))
+//	if err != nil {
+//		fmt.Println(config.Error("Login session", err, 39))
+//		return nil, nil
+//	}
+//	SET_THE_HEADERS(request)
+//	response, ok := http.DefaultClient.Do(request)
+//	if ok != nil {
+//		return nil, nil
+//	}
+//	body, _ := io.ReadAll(response.Body)
+//	return JsonUnmarshal(body, &sfacg_structs.Login{}).(*sfacg_structs.Login), response.Cookies()
+//}

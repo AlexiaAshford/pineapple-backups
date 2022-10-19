@@ -21,23 +21,16 @@ func AccountDetailed() string {
 }
 
 func LoginAccount(username string, password string, retry int) {
-	LoginData := boluobao.LOGIN_ACCOUNT(username, password)
-	if LoginData.Status.HTTPCode == 200 {
-		config.Apps.Sfacg.Cookie, config.Apps.Sfacg.UserName, config.Apps.Sfacg.Password = LoginData.Cookie, username, password
-		config.SaveJson()
-		if AccountDetailed() == "需要登录才能访问该资源" {
-			fmt.Println("Your login attempt was not successful, try again retry:", retry+1)
-			LoginAccount(username, password, retry+1)
-		} else {
-			if retry == 0 {
-				fmt.Println("Login successful!\n" + AccountDetailed())
-			} else {
-				fmt.Println("Login again successful!\n" + AccountDetailed())
-			}
-		}
+	boluobao.LOGIN_ACCOUNT(username, password)
+	if AccountDetailed() == "需要登录才能访问该资源" {
+		fmt.Println("Your login attempt was not successful, try again retry:", retry+1)
+		LoginAccount(username, password, retry+1)
 	} else {
-		fmt.Println("Login failed:", LoginData.Status.Msg)
-		os.Exit(1)
+		if retry == 0 {
+			fmt.Println("Login successful!\n" + AccountDetailed())
+		} else {
+			fmt.Println("Login again successful!\n" + AccountDetailed())
+		}
 	}
 }
 

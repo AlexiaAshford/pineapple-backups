@@ -1,6 +1,6 @@
 package sfacg_structs
 
-type Login struct {
+var Login = struct {
 	Status struct {
 		HTTPCode  int         `json:"httpCode"`
 		ErrorCode int         `json:"errorCode"`
@@ -9,4 +9,4 @@ type Login struct {
 	} `json:"status"`
 	Cookie string
 	Data   interface{} `json:"data"`
-}
+}{}
