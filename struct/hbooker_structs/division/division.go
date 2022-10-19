@@ -1,9 +1,9 @@
 package division
 
-type DivisionList struct {
+var VolumeList = struct {
 	Code string       `json:"code"`
 	Data DivisionData `json:"data"`
-}
+}{}
 
 type DivisionData struct {
 	DivisionList []DivisionInfoList `json:"division_list"`

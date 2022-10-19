@@ -20,9 +20,8 @@ import (
 func GET_DIVISION(BookId string) []map[string]string {
 	var chapter_index int
 	var division_info_list []map[string]string
-	var s = new(division.DivisionList)
-	req.Get(new(req.Context).Init(GET_DIVISION_LIST).Query("book_id", BookId).QueryToString(), s)
-	for division_index, division_info := range s.Data.DivisionList {
+	req.NewHttpUtils(GET_DIVISION_LIST, "POST").Add("book_id", BookId).NewRequests().Unmarshal(&division.VolumeList)
+	for division_index, division_info := range division.VolumeList.Data.DivisionList {
 		fmt.Printf("第%v卷\t\t%v\n", division_index+1, division_info.DivisionName)
 		for _, chapter := range GET_CATALOGUE(division_info.DivisionID) {
 			chapter_index += 1
