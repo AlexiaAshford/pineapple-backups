@@ -36,8 +36,8 @@ func NEW_RECOMMEND() *RECOMMEND {
 		} `json:"data"`
 		Tip any `json:"tip"`
 	}{}
-	req.Get(new(req.Context).Init(hbooker.BOOKCITY_RECOMMEND_DATA).
-		Query("theme_type", "NORMAL").Query("tab_type", "200").QueryToString(), &recommend)
+	req.NewHttpUtils(hbooker.BOOKCITY_RECOMMEND_DATA, "POST").
+		Add("theme_type", "NORMAL").Add("tab_type", "200").NewRequests().Unmarshal(&recommend)
 	if recommend.Code != "100000" {
 		fmt.Println(recommend.Tip.(string))
 	} else {
@@ -80,8 +80,8 @@ func (is *RECOMMEND) CHANGE_NEW_RECOMMEND() {
 			} `json:"book_list"`
 		} `json:"data"`
 	}{}
-	req.Get(new(req.Context).Init(hbooker.GET_CHANGE_RECOMMEND).Query("book_id", is.book_list_string).
-		Query("from_module_name", "长篇好书").QueryToString(), &change_struct)
+	req.NewHttpUtils(hbooker.GET_CHANGE_RECOMMEND, "POST").
+		Add("book_id", is.book_list_string).Add("from_module_name", "长篇好书").NewRequests().Unmarshal(&change_struct)
 	is.recommend_list = nil
 	if change_struct.Code != "100000" {
 		fmt.Println(change_struct.Tip)
