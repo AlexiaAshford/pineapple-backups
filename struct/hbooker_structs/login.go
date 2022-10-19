@@ -1,9 +1,9 @@
 package hbooker_structs
 
-type LoginStruct struct {
+var Login = struct {
 	Code string    `json:"code"`
 	Data LoginData `json:"data"`
-}
+}{}
 
 type LoginData struct {
 	LoginToken string     `json:"login_token"`

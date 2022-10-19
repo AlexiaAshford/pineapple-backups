@@ -1,10 +1,11 @@
 package hbooker_structs
 
-type GeetestStruct struct {
+var Geetest = struct {
 	Code int         `json:"code"`
 	Tip  string      `json:"tip"`
 	Data GeetestData `json:"data"`
-}
+}{}
+
 type GeetestData struct {
 	NeedUseGeetest int `json:"need_use_geetest"`
 	CodeLen        int `json:"code_len"`

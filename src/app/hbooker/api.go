@@ -103,20 +103,20 @@ func GET_SEARCH(KeyWord string, page int) {
 }
 
 func Login(account, password string) {
-	s := new(structs.LoginStruct)
-	req.Get(new(req.Context).Init(MY_SIGN_LOGIN).Query("login_name", account).
-		Query("password", password).QueryToString(), s)
-	if s.Code == "100000" {
-		config.Apps.Cat.Params.LoginToken = s.Data.LoginToken
-		config.Apps.Cat.Params.Account = s.Data.ReaderInfo.Account
+	GET_USE_GEETEST()
+	req.NewHttpUtils(MY_SIGN_LOGIN, "POST").Add("login_name", account).
+		Add("password", password).NewRequests().Unmarshal(&structs.Login)
+	if structs.Login.Code == "100000" {
+		config.Apps.Cat.Params.LoginToken = structs.Login.Data.LoginToken
+		config.Apps.Cat.Params.Account = structs.Login.Data.ReaderInfo.Account
 		config.SaveJson()
 	} else {
 		fmt.Println("Login failed!")
 	}
 }
 
-func UseGeetest() *structs.GeetestStruct {
-	return req.Get("signup/use_geetest", &structs.GeetestStruct{}).(*structs.GeetestStruct)
+func GET_USE_GEETEST() {
+	req.NewHttpUtils(USE_GEETEST, "POST").NewRequests().Unmarshal(&structs.Geetest)
 }
 
 func GeetestRegister(userID string) (string, string) {
@@ -127,7 +127,7 @@ func GeetestRegister(userID string) (string, string) {
 	return s.Challenge, s.Gt
 }
 func TestGeetest(userID string) {
-	UseGeetest()
+	GET_USE_GEETEST()
 	challenge, gt := GeetestRegister(userID)
 	status, CaptchaType, errorDetail := encryption.GetFullBG(&encryption.Geetest{GT: gt, Challenge: challenge})
 	fmt.Println(status, CaptchaType, errorDetail)
