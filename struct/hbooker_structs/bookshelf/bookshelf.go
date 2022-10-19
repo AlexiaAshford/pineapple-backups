@@ -1,6 +1,6 @@
 package bookshelf
 
-type GetShelfList struct {
+var GetShelfList = struct {
 	Code string `json:"code"`
 	Tip  any    `json:"tip"`
 	Data struct {
@@ -13,7 +13,7 @@ type GetShelfList struct {
 		} `json:"shelf_list"`
 	} `json:"data"`
 	ScrollChests []interface{} `json:"scroll_chests"`
-}
+}{}
 
 type GetShelfBookList struct {
 	Code string `json:"code"`

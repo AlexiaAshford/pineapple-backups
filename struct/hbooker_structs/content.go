@@ -1,10 +1,10 @@
 package hbooker_structs
 
-type ContentStruct struct {
+var Content = struct {
 	Code string      `json:"code"`
 	Tip  interface{} `json:"tip"`
 	Data ContentData `json:"data"`
-}
+}{}
 
 type ContentData struct {
 	ChapterInfo ChapterInfo `json:"chapter_info"`

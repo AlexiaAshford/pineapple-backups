@@ -1,11 +1,11 @@
 package hbooker_structs
 
-type DetailStruct struct {
+var Detail = struct {
 	Code         string        `json:"code"`
 	Tip          any           `json:"tip"`
 	Data         DetailData    `json:"data"`
 	ScrollChests []ScrollChest `json:"scroll_chests"`
-}
+}{}
 
 type DetailData struct {
 	BookInfo    BookInfo   `json:"book_info"`

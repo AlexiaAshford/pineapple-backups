@@ -66,13 +66,12 @@ func GET_BOOK_SHELF_INDEXES_INFORMATION(shelf_id string) ([]map[string]string, e
 }
 
 func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
-	s := new(bookshelf.GetShelfList)
 	bookshelf_info := make(map[int][]map[string]string)
-	req.Get(new(req.Context).Init(BOOKSHELF_GET_SHELF_LIST).QueryToString(), s)
-	if s.Code != "100000" {
-		return nil, fmt.Errorf(s.Tip.(string))
+	req.NewHttpUtils(BOOKSHELF_GET_SHELF_LIST, "POST").NewRequests().Unmarshal(&bookshelf.GetShelfList)
+	if bookshelf.GetShelfList.Code != "100000" {
+		return nil, fmt.Errorf(bookshelf.GetShelfList.Tip.(string))
 	}
-	for index, value := range s.Data.ShelfList {
+	for index, value := range bookshelf.GetShelfList.Data.ShelfList {
 		fmt.Println("书架号:", index, "\t\t\t书架名:", value.ShelfName)
 		if bookshelf_info_list, err := GET_BOOK_SHELF_INDEXES_INFORMATION(value.ShelfID); err == nil {
 			bookshelf_info[index] = bookshelf_info_list
@@ -83,21 +82,21 @@ func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 	return bookshelf_info, nil
 }
 func GET_BOOK_INFORMATION(bid string) error {
-	s := new(structs.DetailStruct)
-	req.Get(new(req.Context).Init(BOOK_GET_INFO_BY_ID).Query("book_id", bid).QueryToString(), s)
-	if s.Code == "100000" {
+	req.NewHttpUtils(BOOK_GET_INFO_BY_ID, "POST").
+		Add("book_id", bid).NewRequests().Unmarshal(&structs.Detail)
+	if structs.Detail.Code == "100000" {
 		config.Current.Book = _struct.Books{
-			NovelName:  tool.RegexpName(s.Data.BookInfo.BookName),
-			NovelID:    s.Data.BookInfo.BookID,
-			NovelCover: s.Data.BookInfo.Cover,
-			AuthorName: s.Data.BookInfo.AuthorName,
-			CharCount:  s.Data.BookInfo.TotalWordCount,
-			MarkCount:  s.Data.BookInfo.UpdateStatus,
-			SignStatus: s.Data.BookInfo.IsPaid,
+			NovelName:  tool.RegexpName(structs.Detail.Data.BookInfo.BookName),
+			NovelID:    structs.Detail.Data.BookInfo.BookID,
+			NovelCover: structs.Detail.Data.BookInfo.Cover,
+			AuthorName: structs.Detail.Data.BookInfo.AuthorName,
+			CharCount:  structs.Detail.Data.BookInfo.TotalWordCount,
+			MarkCount:  structs.Detail.Data.BookInfo.UpdateStatus,
+			SignStatus: structs.Detail.Data.BookInfo.IsPaid,
 		}
 		return nil
 	}
-	return fmt.Errorf(s.Tip.(string))
+	return fmt.Errorf(structs.Detail.Tip.(string))
 }
 
 func GET_SEARCH(KeyWord string, page int) *structs.SearchStruct {
@@ -147,22 +146,20 @@ func TestGeetest(userID string) {
 }
 
 func GetKeyByCid(chapterId string) string {
-	s := new(structs.KeyStruct)
-	req.Get(new(req.Context).Init(GET_CHAPTER_KEY).Query("chapter_id", chapterId).QueryToString(), s)
-	return s.Data.Command
+	req.NewHttpUtils(GET_CHAPTER_KEY, "POST").Add("chapter_id", chapterId).NewRequests().Unmarshal(&structs.Key)
+	return structs.Key.Data.Command
 }
 
 func GET_CHAPTER_CONTENT(chapterId, chapter_key string) string {
-	s := new(structs.ContentStruct)
-	req.Get(new(req.Context).Init(GET_CPT_IFM).Query("chapter_id", chapterId).
-		Query("chapter_command", chapter_key).QueryToString(), s)
-	if s != nil && s.Code == "100000" {
-		chapter_info := s.Data.ChapterInfo
+	req.NewHttpUtils(GET_CPT_IFM, "POST").Add("chapter_id", chapterId).
+		Add("chapter_command", chapter_key).NewRequests().Unmarshal(&structs.Content)
+	if structs.Content.Code == "100000" {
+		chapter_info := structs.Content.Data.ChapterInfo
 		content := string(encryption.Decode(chapter_info.TxtContent, chapter_key))
 		content_title := fmt.Sprintf("%v: %v", chapter_info.ChapterTitle, chapter_info.Uptime)
 		return content_title + "\n\n" + tool.StandardContent(strings.Split(content, "\n"))
 	} else {
-		fmt.Println("download failed! chapterId:", chapterId, "error:", s.Tip)
+		fmt.Println("download failed! chapterId:", chapterId, "error:", structs.Content.Tip)
 	}
 	return ""
 }

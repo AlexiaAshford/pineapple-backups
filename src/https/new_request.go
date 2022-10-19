@@ -14,12 +14,12 @@ import (
 )
 
 type HttpUtils struct {
-	url         string
-	method      string
-	response    *http.Request
-	AppType     string
-	query_data  *url.Values
-	result_body []byte
+	url        string
+	method     string
+	response   *http.Request
+	AppType    string
+	query_data *url.Values
+	ResultBody []byte
 }
 
 func (is *HttpUtils) params() *bytes.Reader {
@@ -31,6 +31,10 @@ func (is *HttpUtils) Add(key string, value string) *HttpUtils {
 
 	}
 	return is
+}
+func (is *HttpUtils) Test() {
+	fmt.Println(is.query_data.Encode())
+	fmt.Println(string(is.ResultBody))
 }
 
 func NewHttpUtils(api_url, method string) *HttpUtils {
@@ -85,15 +89,15 @@ func (is *HttpUtils) NEW_SET_THE_HEADERS() {
 }
 
 func (is *HttpUtils) NewRequests() *HttpUtils {
-	is.result_body = nil
+	is.ResultBody = nil
 	is.response = MustNewRequest(is.method, is.url, is.params())
 	is.NEW_SET_THE_HEADERS()
 	if response, ok := http.DefaultClient.Do(is.response); ok == nil {
 		result_body, _ := io.ReadAll(response.Body)
 		if config.Vars.AppType == "cat" && !strings.Contains(is.url, "jpg") {
-			is.result_body = encryption.Decode(string(result_body), "")
+			is.ResultBody = encryption.Decode(string(result_body), "")
 		} else {
-			is.result_body = result_body
+			is.ResultBody = result_body
 		}
 	} else {
 		fmt.Println(config.Error(is.method+":"+is.url, ok, 67))
@@ -101,10 +105,10 @@ func (is *HttpUtils) NewRequests() *HttpUtils {
 	return is
 }
 
-func (is *HttpUtils) Unmarshal(s any) any {
-	err := json.Unmarshal(is.result_body, s)
+func (is *HttpUtils) Unmarshal(s any) *HttpUtils {
+	err := json.Unmarshal(is.ResultBody, s)
 	if err != nil {
 		fmt.Println(config.Error("json unmarshal", err, 18))
 	}
-	return s
+	return is
 }
