@@ -3,9 +3,10 @@ package hbooker_structs
 type RecommendStruct struct {
 	Code string `json:"code"`
 	Data Data   `json:"data"`
+	Tip  any    `json:"tip"`
 }
 type ChangeRecommendStruct struct {
-	Code int        `json:"code"`
+	Code string     `json:"code"`
 	Tip  string     `json:"tip"`
 	Data ChangeData `json:"data"`
 }
@@ -20,7 +21,6 @@ type ChangeBookList struct {
 	DiscountEndTime string `json:"discount_end_time"`
 	UpStatus        string `json:"up_status"`
 	TotalWordCount  string `json:"total_word_count"`
-	IsOriginal      int    `json:"is_original"`
 	Introduce       string `json:"introduce"`
 }
 
@@ -58,11 +58,7 @@ type DesBookList struct {
 	Description     string `json:"description"`
 	AuthorName      string `json:"author_name"`
 	Cover           string `json:"cover"`
-	Discount        int    `json:"discount"`
 	DiscountEndTime string `json:"discount_end_time"`
-	TotalClick      int    `json:"total_click"`
-	IsOriginal      int    `json:"is_original"`
-	Introduce       string `json:"introduce"`
 }
 type BossModule struct {
 	ModuleImage         string        `json:"module_image"`
@@ -105,7 +101,7 @@ type MoreBooklist struct {
 	ListCover string `json:"list_cover"`
 }
 type ModuleList struct {
-	ModuleType          int            `json:"module_type"`
+	ModuleType          string         `json:"module_type"`
 	Header              []Header       `json:"header,omitempty"`
 	ModuleID            int            `json:"module_id"`
 	RankList            []RankList     `json:"rank_list,omitempty"`
