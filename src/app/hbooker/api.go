@@ -119,16 +119,14 @@ func GET_USE_GEETEST() {
 	req.NewHttpUtils(USE_GEETEST, "POST").NewRequests().Unmarshal(&structs.Geetest)
 }
 
-func GeetestRegister(userID string) (string, string) {
-	s := new(structs.GeetestChallenge)
-	req.JsonUnmarshal(req.Request(new(req.Context).Init("signup/geetest_register").
-		Query("t", strconv.FormatInt(time.Now().UnixNano()/1e6, 10)).
-		Query("user_id", userID).QueryToString()), s)
-	return s.Challenge, s.Gt
+func GET_GEETEST_REGISTER(UserID string) (string, string) {
+	req.NewHttpUtils(GEETEST_REGISTER, "POST").Add("user_id", UserID).
+		Add("t", strconv.FormatInt(time.Now().UnixNano()/1e6, 10)).NewRequests().Unmarshal(&structs.Challenge)
+	return structs.Challenge.Challenge, structs.Challenge.Gt
 }
 func TestGeetest(userID string) {
 	GET_USE_GEETEST()
-	challenge, gt := GeetestRegister(userID)
+	challenge, gt := GET_GEETEST_REGISTER(userID)
 	status, CaptchaType, errorDetail := encryption.GetFullBG(&encryption.Geetest{GT: gt, Challenge: challenge})
 	fmt.Println(status, CaptchaType, errorDetail)
 	if status == "success" {
@@ -140,7 +138,7 @@ func TestGeetest(userID string) {
 	}
 }
 
-func GetKeyByCid(chapterId string) string {
+func GET_KET_BY_CHAPTER_ID(chapterId string) string {
 	req.NewHttpUtils(GET_CHAPTER_KEY, "POST").Add("chapter_id", chapterId).NewRequests().Unmarshal(&structs.Key)
 	return structs.Key.Data.Command
 }

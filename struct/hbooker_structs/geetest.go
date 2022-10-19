@@ -10,9 +10,10 @@ type GeetestData struct {
 	NeedUseGeetest int `json:"need_use_geetest"`
 	CodeLen        int `json:"code_len"`
 }
-type GeetestChallenge struct {
+
+var Challenge = struct {
 	Success    int    `json:"success"`
 	Gt         string `json:"gt"`
 	Challenge  string `json:"challenge"`
 	NewCaptcha bool   `json:"new_captcha"`
-}
+}{}

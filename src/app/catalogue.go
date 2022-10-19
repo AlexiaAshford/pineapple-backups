@@ -57,7 +57,7 @@ func (catalogue *Catalogue) DownloadContent(threading *config.GoLimit, file_name
 		if config.Vars.AppType == "sfacg" {
 			content_text = boluobao.GET_CHAPTER_CONTENT(chapter_id)
 		} else if config.Vars.AppType == "cat" {
-			content_text = hbooker.GET_CHAPTER_CONTENT(chapter_id, hbooker.GetKeyByCid(chapter_id))
+			content_text = hbooker.GET_CHAPTER_CONTENT(chapter_id, hbooker.GET_KET_BY_CHAPTER_ID(chapter_id))
 		}
 		if content_text != "" {
 			config_file.Open(path.Join(config.Current.ConfigPath, file_name), content_text, "w")
