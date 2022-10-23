@@ -36,19 +36,32 @@
 ## **Example**
 
 ```
+NAME:
+   pineapple-backups - https://github.com/VeronicaAlexia/pineapple-backups
+
+USAGE:
+   main.exe [global options] command [command options] [arguments...]
+
+VERSION:
+   V.1.6.2
+
+COMMANDS:
+     help, h  Shows a list of commands or help for one command
+
 GLOBAL OPTIONS:
    -a value, --app value       cheng app type (default: "cat")
-   -d value, --download value  book id or url
-   -t, --token                 input hbooker token 
+   -d value, --download value  book id
+   -t, --token                 input hbooker token
    -m value, --max value       change max thread number (default: 16)
-   -u value, --user value      input account name (you must enter a user name and password to use this function.)
-   -p value, --password value  input password (you must enter a user name and password to use this function.)
+   -u value, --user value      input account name
+   -p value, --password value  input password
    --update                    update book
-   -s value, --search value    search book by keyword
+   -s value, --search value    show config
    -l, --login                 login local account
-   -e, --epub                  start epub(default: false)
-   --help, -h                  show help (default: false)
-   --version, -v               print the version 
+   -e, --epub                  start epub
+   --help, -h                  show help
+   --version, -v               print the version
+
 ```
 
 ## **Disclaimers**
