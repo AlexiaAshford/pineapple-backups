@@ -6,6 +6,7 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/config/file"
 	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app"
+	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
@@ -106,15 +107,18 @@ func shell(inputs []string) {
 		} else {
 			fmt.Println("input search keyword, like:search <keyword>")
 		}
-	case "l", "t", "token", "login":
-		if config.Vars.AppType == "cat" {
-			if ok := app.InputAccountToken(); !ok {
-				fmt.Println("you must input account and token.")
-			}
-		} else if len(inputs) >= 3 {
+
+	case "l", "login":
+		if config.Vars.AppType == "cat" && len(inputs) >= 3 {
+			hbooker.GET_LOGIN_TOKEN(inputs[1], inputs[2])
+		} else if config.Vars.AppType == "sfacg" && len(inputs) >= 3 {
 			app.LoginAccount(inputs[1], inputs[2], 0)
 		} else {
-			fmt.Println("you must input account and password, like: sf account password")
+			fmt.Println("you must input account and password, like: -login account password")
+		}
+	case "t", "token":
+		if ok := app.InputAccountToken(); !ok {
+			fmt.Println("you must input account and token.")
 		}
 	default:
 		fmt.Println("command not found,please input help to see the command list:", inputs[0])

@@ -16,8 +16,7 @@ import (
 )
 
 func GET_BOOK_INFORMATION(NovelId string) error {
-	req.NewHttpUtils("novels/"+NovelId, "GET").Add("expand", "intro,tags,sysTags").
-		NewRequests().Unmarshal(&sfacg_structs.BookInfo)
+	req.NewHttpUtils("novels/"+NovelId, "GET").Add("expand", "intro,tags,sysTags").NewRequests().Unmarshal(&sfacg_structs.BookInfo)
 	if sfacg_structs.BookInfo.Status.HTTPCode == 200 && sfacg_structs.BookInfo.Data.NovelName != "" {
 		config.Current.Book = _struct.Books{
 			NovelCover: sfacg_structs.BookInfo.Data.NovelCover,

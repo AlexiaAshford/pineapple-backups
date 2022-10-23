@@ -20,6 +20,19 @@
 - Search books by keyword,and download the search result
 - [ **warning** ] New version book cache is incompatible with older book cache.
 
+## Sign in to your ciweimao Account 
+- **Login your account to get your `token` to use this script**
+  - hbooker new version add GEETEST verification, if you enter the wrong information or log in multiple times, GEETEST verification will be triggered.
+  - IP address may need to log in again after a few hours to avoid triggering verification, you can try to change the IP to avoid triggering verification.
+
+
+## API access is achieved through token.
+- **Adopt token to access api, bypass login**
+  - third party captcha geetest has been adding to the ciweimao official server.
+  - ciweimao login is protected by geetest, which seems impossible to circumvent.
+  - you can **`Packet Capture`** of the `ciweimao Android App` to get the `account` and `login_token` login.
+
+
 ## **Example**
 
 ```

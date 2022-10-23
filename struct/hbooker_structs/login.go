@@ -1,8 +1,9 @@
 package hbooker_structs
 
 var Login = struct {
-	Code string    `json:"code"`
-	Data LoginData `json:"data"`
+	Code string      `json:"code"`
+	Data LoginData   `json:"data"`
+	Tip  interface{} `json:"tip"`
 }{}
 
 type LoginData struct {

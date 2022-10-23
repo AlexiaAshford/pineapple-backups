@@ -102,8 +102,9 @@ func GET_SEARCH(KeyWord string, page int) {
 }
 
 func GET_LOGIN_TOKEN(account, password string) {
+	// hbooker new version add GEETEST verification, if you enter the wrong information or log in multiple times, GEETEST verification will be triggered.
+	// IP address may need to log in again after a few hours to avoid triggering verification, you can try to change the IP to avoid triggering verification.
 	GET_USE_GEETEST()
-	TEST_GEETEST(account)
 	req.NewHttpUtils(MY_SIGN_LOGIN, "POST").Add("login_name", account).
 		Add("password", password).NewRequests().Unmarshal(&structs.Login)
 	if structs.Login.Code == "100000" {
@@ -111,7 +112,7 @@ func GET_LOGIN_TOKEN(account, password string) {
 		config.Apps.Cat.Params.Account = structs.Login.Data.ReaderInfo.Account
 		config.SaveJson()
 	} else {
-		fmt.Println("Login failed!")
+		fmt.Println("Login failed!", structs.Login.Tip)
 	}
 }
 
@@ -125,6 +126,7 @@ func GET_GEETEST_REGISTER(UserID string) (string, string) {
 	return structs.Challenge.Challenge, structs.Challenge.Gt
 }
 func TEST_GEETEST(userID string) {
+	GET_USE_GEETEST()
 	challenge, gt := GET_GEETEST_REGISTER(userID)
 	status, CaptchaType, errorDetail := encryption.GetFullBG(&encryption.Geetest{GT: gt, Challenge: challenge})
 	fmt.Println(status, CaptchaType, errorDetail)
