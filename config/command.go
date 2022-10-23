@@ -62,7 +62,7 @@ var Args = []cli.Flag{
 	cli.StringFlag{
 		Name:        "s, search",
 		Value:       "",
-		Usage:       "show config",
+		Usage:       "search book by keyword",
 		Destination: &CommandLines.SearchKey,
 	},
 	cli.BoolFlag{

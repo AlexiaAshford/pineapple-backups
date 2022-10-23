@@ -56,7 +56,7 @@ GLOBAL OPTIONS:
    -u value, --user value      input account name
    -p value, --password value  input password
    --update                    update book
-   -s value, --search value    show config
+   -s value, --search value    search book by keyword
    -l, --login                 login local account
    -e, --epub                  start epub
    --help, -h                  show help

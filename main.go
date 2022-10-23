@@ -25,7 +25,7 @@ func init() {
 
 	InitApp := cli.NewApp()
 	InitApp.Name = "pineapple-backups"
-	InitApp.Version = "V.1.6.2"
+	InitApp.Version = "V.1.6.9"
 	InitApp.Usage = "https://github.com/VeronicaAlexia/pineapple-backups"
 	InitApp.Flags = config.Args
 	InitApp.Action = func(c *cli.Context) {
