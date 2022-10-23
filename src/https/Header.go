@@ -27,11 +27,10 @@ func SET_THE_HEADERS(req *http.Request) {
 	switch config.Vars.AppType {
 	case "sfacg":
 		HeaderCollection["sf-minip-info"] = "minip_novel/1.0.70(android;11)/wxmp"
-		HeaderCollection["Authorization"] = Base64Bytes(config.Apps.Sfacg.UserName, config.Apps.Sfacg.Password)
 		HeaderCollection["Cookie"] = config.Apps.Sfacg.Cookie
-		HeaderCollection["account-sfacg"] = config.Apps.Sfacg.UserName + "&" + config.Apps.Sfacg.Password
+		HeaderCollection["Authorization"] = Base64Bytes(config.Apps.Sfacg.UserName, config.Apps.Sfacg.Password)
 	case "cat":
-		HeaderCollection["User-Agent"] = "Android com.kuangxiangciweimao.novel 2.9.291"
+		HeaderCollection["User-Agent"] = "Android  com.kuangxiangciweimao.novel  2.9.291, Google, Pixel5"
 		HeaderCollection["Cookie"] = "Account:" + config.Apps.Cat.Params.Account + ";" + config.Apps.Cat.Params.LoginToken
 		HeaderCollection["Authorization"] = Base64Bytes(config.Apps.Cat.Params.Account, config.Apps.Cat.Params.LoginToken)
 
