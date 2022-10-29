@@ -3,7 +3,7 @@ package app
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
-	"github.com/VeronicaAlexia/pineapple-backups/epub"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/boluobao"

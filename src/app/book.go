@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
-	"github.com/VeronicaAlexia/pineapple-backups/epub"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/request"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
