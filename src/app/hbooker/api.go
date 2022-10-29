@@ -5,8 +5,8 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	config_file "github.com/VeronicaAlexia/pineapple-backups/config/file"
 	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
+	encryption2 "github.com/VeronicaAlexia/pineapple-backups/pkg/encryption"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/request"
-	"github.com/VeronicaAlexia/pineapple-backups/src/encryption"
 	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
 	structs "github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs"
 	"github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs/bookshelf"
@@ -128,11 +128,11 @@ func GET_GEETEST_REGISTER(UserID string) (string, string) {
 func TEST_GEETEST(userID string) {
 	GET_USE_GEETEST()
 	challenge, gt := GET_GEETEST_REGISTER(userID)
-	status, CaptchaType, errorDetail := encryption.GetFullBG(&encryption.Geetest{GT: gt, Challenge: challenge})
+	status, CaptchaType, errorDetail := encryption2.GetFullBG(&encryption2.Geetest{GT: gt, Challenge: challenge})
 	fmt.Println(status, CaptchaType, errorDetail)
 	if status == "success" {
 		color.Infoln("验证码类型：", CaptchaType, "")
-		encryption.Slide(&encryption.Geetest{GT: gt, Challenge: challenge})
+		encryption2.Slide(&encryption2.Geetest{GT: gt, Challenge: challenge})
 	} else {
 		color.Errorln("获取图片失败 Error: ", status, " ErrorDetail:", errorDetail)
 		TEST_GEETEST(userID)
@@ -149,7 +149,7 @@ func GET_CHAPTER_CONTENT(chapterId, chapter_key string) string {
 		Add("chapter_command", chapter_key).NewRequests().Unmarshal(&structs.Content)
 	if structs.Content.Code == "100000" {
 		chapter_info := structs.Content.Data.ChapterInfo
-		content := string(encryption.Decode(chapter_info.TxtContent, chapter_key))
+		content := string(encryption2.Decode(chapter_info.TxtContent, chapter_key))
 		content_title := fmt.Sprintf("%v: %v", chapter_info.ChapterTitle, chapter_info.Uptime)
 		return content_title + "\n\n" + tool.StandardContent(strings.Split(content, "\n"))
 	} else {

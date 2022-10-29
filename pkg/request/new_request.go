@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
-	"github.com/VeronicaAlexia/pineapple-backups/src/encryption"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/encryption"
 	"io"
 	"net/http"
 	"net/url"
