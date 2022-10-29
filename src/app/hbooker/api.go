@@ -5,7 +5,7 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	config_file "github.com/VeronicaAlexia/pineapple-backups/config/file"
 	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
-	req "github.com/VeronicaAlexia/pineapple-backups/pkg/request"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/request"
 	"github.com/VeronicaAlexia/pineapple-backups/src/encryption"
 	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
 	structs "github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs"
@@ -20,7 +20,7 @@ import (
 func GET_DIVISION(BookId string) []map[string]string {
 	var chapter_index int
 	var division_info_list []map[string]string
-	req.NewHttpUtils(GET_DIVISION_LIST, "POST").Add("book_id", BookId).NewRequests().Unmarshal(&division.VolumeList)
+	request.NewHttpUtils(GET_DIVISION_LIST, "POST").Add("book_id", BookId).NewRequests().Unmarshal(&division.VolumeList)
 	for division_index, division_info := range division.VolumeList.Data.DivisionList {
 		fmt.Printf("第%v卷\t\t%v\n", division_index+1, division_info.DivisionName)
 		for _, chapter := range GET_CATALOGUE(division_info.DivisionID) {
@@ -42,12 +42,12 @@ func GET_DIVISION(BookId string) []map[string]string {
 }
 
 func GET_CATALOGUE(DivisionId string) []structs.ChapterList {
-	req.NewHttpUtils(GET_CHAPTER_UPDATE, "POST").Add("division_id", DivisionId).NewRequests().Unmarshal(&structs.Chapter)
+	request.NewHttpUtils(GET_CHAPTER_UPDATE, "POST").Add("division_id", DivisionId).NewRequests().Unmarshal(&structs.Chapter)
 	return structs.Chapter.Data.ChapterList
 }
 
 func GET_BOOK_SHELF_INDEXES_INFORMATION(shelf_id string) ([]map[string]string, error) {
-	req.NewHttpUtils(BOOKSHELF_GET_SHELF_BOOK_LIST, "POST").Add("shelf_id", shelf_id).Add("direction", "prev").
+	request.NewHttpUtils(BOOKSHELF_GET_SHELF_BOOK_LIST, "POST").Add("shelf_id", shelf_id).Add("direction", "prev").
 		Add("last_mod_time", "0").NewRequests().Unmarshal(&bookshelf.BookList)
 	if bookshelf.BookList.Code != "100000" {
 		return nil, fmt.Errorf(bookshelf.BookList.Tip.(string))
@@ -63,7 +63,7 @@ func GET_BOOK_SHELF_INDEXES_INFORMATION(shelf_id string) ([]map[string]string, e
 
 func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 	bookshelf_info := make(map[int][]map[string]string)
-	req.NewHttpUtils(BOOKSHELF_GET_SHELF_LIST, "POST").NewRequests().Unmarshal(&bookshelf.GetShelfList)
+	request.NewHttpUtils(BOOKSHELF_GET_SHELF_LIST, "POST").NewRequests().Unmarshal(&bookshelf.GetShelfList)
 	if bookshelf.GetShelfList.Code != "100000" {
 		return nil, fmt.Errorf(bookshelf.GetShelfList.Tip.(string))
 	}
@@ -78,7 +78,7 @@ func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 	return bookshelf_info, nil
 }
 func GET_BOOK_INFORMATION(bid string) error {
-	req.NewHttpUtils(BOOK_GET_INFO_BY_ID, "POST").
+	request.NewHttpUtils(BOOK_GET_INFO_BY_ID, "POST").
 		Add("book_id", bid).NewRequests().Unmarshal(&structs.Detail)
 	if structs.Detail.Code == "100000" {
 		config.Current.Book = _struct.Books{
@@ -96,7 +96,7 @@ func GET_BOOK_INFORMATION(bid string) error {
 }
 
 func GET_SEARCH(KeyWord string, page int) {
-	req.NewHttpUtils(BOOKCITY_GET_FILTER_LIST, "POST").Add("count", "10").
+	request.NewHttpUtils(BOOKCITY_GET_FILTER_LIST, "POST").Add("count", "10").
 		Add("page", strconv.Itoa(page)).Add("category_index", "0").Add("key", KeyWord).NewRequests().Unmarshal(&structs.Search)
 
 }
@@ -105,7 +105,7 @@ func GET_LOGIN_TOKEN(account, password string) {
 	// hbooker new version add GEETEST verification, if you enter the wrong information or log in multiple times, GEETEST verification will be triggered.
 	// IP address may need to log in again after a few hours to avoid triggering verification, you can try to change the IP to avoid triggering verification.
 	GET_USE_GEETEST()
-	req.NewHttpUtils(MY_SIGN_LOGIN, "POST").Add("login_name", account).
+	request.NewHttpUtils(MY_SIGN_LOGIN, "POST").Add("login_name", account).
 		Add("password", password).NewRequests().Unmarshal(&structs.Login)
 	if structs.Login.Code == "100000" {
 		config.Apps.Cat.Params.LoginToken = structs.Login.Data.LoginToken
@@ -117,11 +117,11 @@ func GET_LOGIN_TOKEN(account, password string) {
 }
 
 func GET_USE_GEETEST() {
-	req.NewHttpUtils(USE_GEETEST, "POST").NewRequests().Unmarshal(&structs.Geetest)
+	request.NewHttpUtils(USE_GEETEST, "POST").NewRequests().Unmarshal(&structs.Geetest)
 }
 
 func GET_GEETEST_REGISTER(UserID string) (string, string) {
-	req.NewHttpUtils(GEETEST_REGISTER, "POST").Add("user_id", UserID).
+	request.NewHttpUtils(GEETEST_REGISTER, "POST").Add("user_id", UserID).
 		Add("t", strconv.FormatInt(time.Now().UnixNano()/1e6, 10)).NewRequests().Unmarshal(&structs.Challenge)
 	return structs.Challenge.Challenge, structs.Challenge.Gt
 }
@@ -140,12 +140,12 @@ func TEST_GEETEST(userID string) {
 }
 
 func GET_KET_BY_CHAPTER_ID(chapterId string) string {
-	req.NewHttpUtils(GET_CHAPTER_KEY, "POST").Add("chapter_id", chapterId).NewRequests().Unmarshal(&structs.Key)
+	request.NewHttpUtils(GET_CHAPTER_KEY, "POST").Add("chapter_id", chapterId).NewRequests().Unmarshal(&structs.Key)
 	return structs.Key.Data.Command
 }
 
 func GET_CHAPTER_CONTENT(chapterId, chapter_key string) string {
-	req.NewHttpUtils(GET_CPT_IFM, "POST").Add("chapter_id", chapterId).
+	request.NewHttpUtils(GET_CPT_IFM, "POST").Add("chapter_id", chapterId).
 		Add("chapter_command", chapter_key).NewRequests().Unmarshal(&structs.Content)
 	if structs.Content.Code == "100000" {
 		chapter_info := structs.Content.Data.ChapterInfo
