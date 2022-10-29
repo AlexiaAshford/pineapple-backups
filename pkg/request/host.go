@@ -1,4 +1,4 @@
-package https
+package request
 
 var CatWebSite = "https://app.hbooker.com/"
 var SFWebSite = "https://minipapi.sfacg.com/pas/mpapi/"

@@ -1,4 +1,4 @@
-package https
+package request
 
 import (
 	"bytes"

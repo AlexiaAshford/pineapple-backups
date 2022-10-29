@@ -2,14 +2,14 @@ package boluobao
 
 import (
 	"fmt"
-	req "github.com/VeronicaAlexia/pineapple-backups/src/https"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/request"
 	"github.com/VeronicaAlexia/pineapple-backups/struct/sfacg_structs/task"
 )
 
 // "https://api.sfacg.com/"
 func GET_TASK_LIST() string {
 	s := new(task.Task)
-	req.Get(new(req.Context).Init("user/tasks/").Query(
+	request.Get(new(request.Context).Init("user/tasks/").Query(
 		"taskCategory", "1").Query(
 		"package", "com.sfacg").Query(
 		"deviceToken", "").Query(
