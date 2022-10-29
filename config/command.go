@@ -1,7 +1,7 @@
 package config
 
 import (
-	"gopkg.in/urfave/cli.v1"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/cil"
 )
 
 var CommandLines = struct {
