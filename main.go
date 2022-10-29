@@ -5,6 +5,7 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/cil"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/src"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
@@ -53,15 +54,15 @@ func current_download_book_function(book_id string) {
 		catalogue.GetDownloadsList()
 	}
 	if len(config.Current.DownloadList) > 0 {
-		threading := config.NewGoLimit(uint(config.Vars.MaxRetry))
+		thread := threading.NewGoLimit(uint(config.Vars.MaxRetry))
 		fmt.Println(len(config.Current.DownloadList), " chapters will be downloaded.")
 		catalogue.ChapterBar = src.New(len(config.Current.DownloadList))
 		catalogue.ChapterBar.Describe("working...")
 		for _, file_name := range config.Current.DownloadList {
-			threading.Add()
-			go catalogue.DownloadContent(threading, file_name)
+			thread.Add()
+			go catalogue.DownloadContent(thread, file_name)
 		}
-		threading.WaitZero()
+		thread.WaitZero()
 		fmt.Printf("\nNovel:%v download complete!\n", config.Current.Book.NovelName)
 	} else {
 		fmt.Println(config.Current.Book.NovelName + " No chapter need to download!\n")

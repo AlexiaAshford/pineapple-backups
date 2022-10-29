@@ -5,6 +5,7 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
@@ -49,7 +50,7 @@ func (catalogue *Catalogue) GetDownloadsList() {
 	}
 }
 
-func (catalogue *Catalogue) DownloadContent(threading *config.GoLimit, file_name string) {
+func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, file_name string) {
 	defer threading.Done()
 	chapter_id := catalogue.speed_progress(file_name)
 	var content_text string
