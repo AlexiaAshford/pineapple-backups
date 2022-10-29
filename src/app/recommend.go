@@ -2,8 +2,8 @@ package app
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	req "github.com/VeronicaAlexia/pineapple-backups/pkg/request"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	"strings"
 )
@@ -95,12 +95,12 @@ func (is *RECOMMEND) CHANGE_NEW_RECOMMEND() {
 func (is *RECOMMEND) GET_HBOOKER_RECOMMEND() string {
 	is.InitBookIdList() // init book_list_string and print recommend_list
 	fmt.Println("y is next item recommendation\nd is download recommend book\npress any key to exit..")
-	InputChoice := tool.InputStr(">")
+	InputChoice := tools.InputStr(">")
 	if InputChoice == "y" {
 		is.CHANGE_NEW_RECOMMEND() // change recommend_list
 		return is.GET_HBOOKER_RECOMMEND()
 	} else if InputChoice == "d" {
-		return is.book_list[tool.InputInt("input index:", len(is.book_list))]
+		return is.book_list[tools.InputInt("input index:", len(is.book_list))]
 	}
 	return ""
 

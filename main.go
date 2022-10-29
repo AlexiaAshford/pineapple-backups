@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/config/file"
-	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	"gopkg.in/urfave/cli.v1"
@@ -85,7 +85,7 @@ func shell(inputs []string) {
 	case "up", "update":
 		update_local_booklist()
 	case "a", "app":
-		if tool.TestList([]string{"sfacg", "cat"}, inputs[1]) {
+		if tools.TestList([]string{"sfacg", "cat"}, inputs[1]) {
 			config.Vars.AppType = inputs[1]
 		} else {
 			fmt.Println("app type error, please input again.")
@@ -128,9 +128,9 @@ func shell(inputs []string) {
 func shell_run_console_and_bookshelf() {
 	bookshelf_book_index, book_shelf_bookcase := app.InitBookShelf() // init bookshelf information
 	for {
-		if comment := tool.GET(">"); comment != nil {
-			if tool.TestIntList(bookshelf_book_index, comment[0]) {
-				current_download_book_function(book_shelf_bookcase[tool.StrToInt(comment[0])]["novel_id"])
+		if comment := tools.GET(">"); comment != nil {
+			if tools.TestIntList(bookshelf_book_index, comment[0]) {
+				current_download_book_function(book_shelf_bookcase[tools.StrToInt(comment[0])]["novel_id"])
 			} else if comment[0] == "load" || comment[0] == "bookshelf" {
 				bookshelf_book_index, book_shelf_bookcase = app.InitBookShelf() // load bookshelf information
 			} else if comment[0] == "quit" || comment[0] == "exit" {

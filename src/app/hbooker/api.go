@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	config_file "github.com/VeronicaAlexia/pineapple-backups/config/file"
-	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	encryption2 "github.com/VeronicaAlexia/pineapple-backups/pkg/encryption"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/request"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
 	structs "github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs"
 	"github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs/bookshelf"
@@ -82,7 +82,7 @@ func GET_BOOK_INFORMATION(bid string) error {
 		Add("book_id", bid).NewRequests().Unmarshal(&structs.Detail)
 	if structs.Detail.Code == "100000" {
 		config.Current.Book = _struct.Books{
-			NovelName:  tool.RegexpName(structs.Detail.Data.BookInfo.BookName),
+			NovelName:  tools.RegexpName(structs.Detail.Data.BookInfo.BookName),
 			NovelID:    structs.Detail.Data.BookInfo.BookID,
 			NovelCover: structs.Detail.Data.BookInfo.Cover,
 			AuthorName: structs.Detail.Data.BookInfo.AuthorName,
@@ -151,7 +151,7 @@ func GET_CHAPTER_CONTENT(chapterId, chapter_key string) string {
 		chapter_info := structs.Content.Data.ChapterInfo
 		content := string(encryption2.Decode(chapter_info.TxtContent, chapter_key))
 		content_title := fmt.Sprintf("%v: %v", chapter_info.ChapterTitle, chapter_info.Uptime)
-		return content_title + "\n\n" + tool.StandardContent(strings.Split(content, "\n"))
+		return content_title + "\n\n" + tools.StandardContent(strings.Split(content, "\n"))
 	} else {
 		fmt.Println("download failed! chapterId:", chapterId, "error:", structs.Content.Tip)
 	}

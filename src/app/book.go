@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/config/file"
-	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/request"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	"os"
@@ -46,7 +46,7 @@ func SettingBooks(book_id string) Catalogue {
 	config.Current.BackupsPath = path.Join("backups", book_id+".json")
 	if !config.Exist(config.Current.BackupsPath) {
 		fmt.Println("book info is not exist, request book info...")
-		tool.Mkdir("backups")
+		tools.Mkdir("backups")
 		switch config.Vars.AppType {
 		case "sfacg":
 			err = boluobao.GET_BOOK_INFORMATION(book_id)
@@ -54,13 +54,13 @@ func SettingBooks(book_id string) Catalogue {
 			err = hbooker.GET_BOOK_INFORMATION(book_id)
 		}
 		if err == nil {
-			config_file.Open(config.Current.BackupsPath, tool.JsonString(config.Current.Book), "w")
+			config_file.Open(config.Current.BackupsPath, tools.JsonString(config.Current.Book), "w")
 		} else {
 			return Catalogue{Test: false, BookMessage: fmt.Sprintf("book_id:%v is invalid:%v", book_id, err)}
 		}
 	}
 	_ = json.Unmarshal([]byte(config_file.ReadFile(config.Current.BackupsPath)), &config.Current.Book)
-	OutputPath := tool.Mkdir(path.Join(config.Vars.OutputName, config.Current.Book.NovelName))
+	OutputPath := tools.Mkdir(path.Join(config.Vars.OutputName, config.Current.Book.NovelName))
 	config.Current.ConfigPath = path.Join(config.Vars.ConfigName, config.Current.Book.NovelName)
 	config.Current.OutputPath = path.Join(OutputPath, config.Current.Book.NovelName+".txt")
 	config.Current.CoverPath = path.Join("cover", config.Current.Book.NovelName+".jpg")

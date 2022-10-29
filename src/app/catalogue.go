@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/config/file"
-	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/epub"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	"path"
@@ -23,10 +23,10 @@ type Catalogue struct {
 
 func (catalogue *Catalogue) ReadChapterConfig() {
 	if !config.Exist(config.Current.ConfigPath) {
-		tool.Mkdir(config.Current.ConfigPath)
+		tools.Mkdir(config.Current.ConfigPath)
 		catalogue.ChapterCfg = []string{}
 	} else {
-		catalogue.ChapterCfg = tool.GetFileName(config.Current.ConfigPath)
+		catalogue.ChapterCfg = tools.GetFileName(config.Current.ConfigPath)
 	}
 }
 
@@ -39,7 +39,7 @@ func (catalogue *Catalogue) GetDownloadsList() {
 		chapter_info_list = hbooker.GET_DIVISION(config.Current.Book.NovelID)
 	}
 	for _, chapter_info := range chapter_info_list {
-		if !tool.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {
+		if !tools.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {
 			if chapter_info["money"] == "0" || chapter_info["money"] == "1" {
 				config.Current.DownloadList = append(config.Current.DownloadList, chapter_info["file_name"])
 			} else {
@@ -67,7 +67,7 @@ func (catalogue *Catalogue) DownloadContent(threading *config.GoLimit, file_name
 }
 
 func (catalogue *Catalogue) MergeTextAndEpubFiles() {
-	for _, local_file_name := range tool.GetFileName(config.Current.ConfigPath) {
+	for _, local_file_name := range tools.GetFileName(config.Current.ConfigPath) {
 		content := config_file.Open(config.Current.ConfigPath+"/"+local_file_name, "", "r")
 		config_file.Open(config.Current.OutputPath, "\n\n\n"+content, "a")
 		if config.Vars.Epub {

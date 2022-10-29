@@ -3,7 +3,7 @@ package app
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
-	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	structs "github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs"
@@ -74,14 +74,14 @@ func (s *Search) add() {
 func (s *Search) SearchBook() string {
 	s.load_search_list()
 	for {
-		keyword := tool.InputStr("lease input search keyword:")
+		keyword := tools.InputStr("lease input search keyword:")
 		if keyword == "next" || keyword == "n" {
 			s.add()
 		} else if keyword == "previous" || keyword == "p" {
 			s.subtraction()
 		}
-		if tool.IsNum(keyword) && tool.StrToInt(keyword) < len(s.SearchResult) {
-			if BookID := s.SearchResult[tool.StrToInt(keyword)]; BookID != "" {
+		if tools.IsNum(keyword) && tools.StrToInt(keyword) < len(s.SearchResult) {
+			if BookID := s.SearchResult[tools.StrToInt(keyword)]; BookID != "" {
 				return BookID // if the input is a number (book id)
 			} else {
 				fmt.Println("No found search book, please input again:")

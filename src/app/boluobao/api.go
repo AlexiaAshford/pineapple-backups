@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	config_file "github.com/VeronicaAlexia/pineapple-backups/config/file"
-	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/request"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
 	"github.com/VeronicaAlexia/pineapple-backups/struct/sfacg_structs"
 	"github.com/VeronicaAlexia/pineapple-backups/struct/sfacg_structs/bookshelf"
@@ -25,7 +25,7 @@ func GET_BOOK_INFORMATION(NovelId string) error {
 			NovelID:    strconv.Itoa(sfacg_structs.BookInfo.Data.NovelID),
 			CharCount:  strconv.Itoa(sfacg_structs.BookInfo.Data.CharCount),
 			MarkCount:  strconv.Itoa(sfacg_structs.BookInfo.Data.MarkCount),
-			NovelName:  tool.RegexpName(sfacg_structs.BookInfo.Data.NovelName),
+			NovelName:  tools.RegexpName(sfacg_structs.BookInfo.Data.NovelName),
 		}
 		return nil
 	} else {
@@ -93,7 +93,7 @@ func GET_CHAPTER_CONTENT(chapter_id string) string {
 	request.Get(new(request.Context).Init("Chaps/"+chapter_id).Query("expand", "content").QueryToString(), s)
 	if s != nil && s.Status.HTTPCode == 200 {
 		content_title := fmt.Sprintf("%v: %v", s.Data.Title, s.Data.AddTime)
-		return content_title + "\n" + tool.StandardContent(strings.Split(s.Data.Expand.Content, "\n"))
+		return content_title + "\n" + tools.StandardContent(strings.Split(s.Data.Expand.Content, "\n"))
 
 	} else {
 		fmt.Println("download failed! chapterId:", chapter_id, "error:", s.Status.Msg)

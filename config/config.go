@@ -3,7 +3,7 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/VeronicaAlexia/pineapple-backups/config/tool"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/struct"
 	"os"
 	"sync"
@@ -54,7 +54,7 @@ func Exist(fileName any) bool {
 	case []string:
 		for _, v := range fileName.([]string) {
 			if !Exist(v) {
-				tool.Mkdir(v)
+				tools.Mkdir(v)
 			}
 		}
 	}
