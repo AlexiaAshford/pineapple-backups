@@ -1,8 +1,7 @@
-package config_file
+package file
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"io"
 	"os"
 )
@@ -18,7 +17,7 @@ func Open(Path string, content string, permMode string) string {
 	} else {
 		panic("permMode error")
 	}
-	for i := 0; i < config.Vars.MaxRetry; i++ {
+	for i := 0; i < 5; i++ {
 		if WriteFile(Path, content, perm) == nil {
 			break
 		} else {

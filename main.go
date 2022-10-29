@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
-	"github.com/VeronicaAlexia/pineapple-backups/config/file"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
@@ -14,7 +14,7 @@ import (
 )
 
 func init() {
-	if !config.Exist("./config.json") || config_file.SizeFile("./config.json") == 0 {
+	if !config.Exist("./config.json") || file.SizeFile("./config.json") == 0 {
 		fmt.Println("config.json not exist, create a new one!")
 	} else {
 		config.LoadJson()
@@ -71,7 +71,7 @@ func current_download_book_function(book_id string) {
 
 func update_local_booklist() {
 	if config.Exist("./bookList.txt") {
-		for _, i := range strings.ReplaceAll(config_file.Open("./bookList.json", "", "r"), "\n", "") {
+		for _, i := range strings.ReplaceAll(file.Open("./bookList.json", "", "r"), "\n", "") {
 			if !strings.Contains(string(i), "#") {
 				current_download_book_function(string(i))
 			}

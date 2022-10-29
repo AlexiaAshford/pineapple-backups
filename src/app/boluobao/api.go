@@ -3,7 +3,7 @@ package boluobao
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
-	config_file "github.com/VeronicaAlexia/pineapple-backups/config/file"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/request"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
@@ -80,7 +80,7 @@ func GET_CATALOGUE(NovelID string) []map[string]string {
 				"chapter_id":     strconv.Itoa(chapter.ChapID),
 				"chapter_index":  strconv.Itoa(chapter_index),
 				"money":          strconv.Itoa(chapter.OriginNeedFireMoney),
-				"file_name":      config_file.NameSetting(chapter.VolumeID, chapter.ChapOrder, chapter.ChapID),
+				"file_name":      file.NameSetting(chapter.VolumeID, chapter.ChapOrder, chapter.ChapID),
 			})
 		}
 	}

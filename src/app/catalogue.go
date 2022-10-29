@@ -3,8 +3,8 @@ package app
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
-	"github.com/VeronicaAlexia/pineapple-backups/config/file"
 	"github.com/VeronicaAlexia/pineapple-backups/epub"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
@@ -60,7 +60,7 @@ func (catalogue *Catalogue) DownloadContent(threading *config.GoLimit, file_name
 			content_text = hbooker.GET_CHAPTER_CONTENT(chapter_id, hbooker.GET_KET_BY_CHAPTER_ID(chapter_id))
 		}
 		if content_text != "" {
-			config_file.Open(path.Join(config.Current.ConfigPath, file_name), content_text, "w")
+			file.Open(path.Join(config.Current.ConfigPath, file_name), content_text, "w")
 			break
 		}
 	}
@@ -68,8 +68,8 @@ func (catalogue *Catalogue) DownloadContent(threading *config.GoLimit, file_name
 
 func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	for _, local_file_name := range tools.GetFileName(config.Current.ConfigPath) {
-		content := config_file.Open(config.Current.ConfigPath+"/"+local_file_name, "", "r")
-		config_file.Open(config.Current.OutputPath, "\n\n\n"+content, "a")
+		content := file.Open(config.Current.ConfigPath+"/"+local_file_name, "", "r")
+		file.Open(config.Current.OutputPath, "\n\n\n"+content, "a")
 		if config.Vars.Epub {
 			catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content+"</p>")
 		} // save to epub file if epub is true

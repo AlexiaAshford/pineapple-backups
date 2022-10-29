@@ -3,8 +3,8 @@ package hbooker
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
-	config_file "github.com/VeronicaAlexia/pineapple-backups/config/file"
 	encryption2 "github.com/VeronicaAlexia/pineapple-backups/pkg/encryption"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/request"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
@@ -34,7 +34,7 @@ func GET_DIVISION(BookId string) []map[string]string {
 				"division_id":    division_info.DivisionID,
 				"division_index": strconv.Itoa(division_index),
 				"chapter_index":  strconv.Itoa(chapter_index),
-				"file_name":      config_file.FileCacheName(division_index, chapter_index, chapter.ChapterID),
+				"file_name":      file.FileCacheName(division_index, chapter_index, chapter.ChapterID),
 			})
 		}
 	}
