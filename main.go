@@ -6,7 +6,7 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/cil"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
-	"github.com/VeronicaAlexia/pineapple-backups/src/app"
+	"github.com/VeronicaAlexia/pineapple-backups/src"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	"log"
 	"os"
@@ -45,7 +45,7 @@ func init() {
 }
 
 func current_download_book_function(book_id string) {
-	catalogue := app.SettingBooks(book_id) // get book catalogues
+	catalogue := src.SettingBooks(book_id) // get book catalogues
 	if !catalogue.Test {
 		fmt.Println(catalogue.BookMessage)
 		os.Exit(1)
@@ -55,7 +55,7 @@ func current_download_book_function(book_id string) {
 	if len(config.Current.DownloadList) > 0 {
 		threading := config.NewGoLimit(uint(config.Vars.MaxRetry))
 		fmt.Println(len(config.Current.DownloadList), " chapters will be downloaded.")
-		catalogue.ChapterBar = app.New(len(config.Current.DownloadList))
+		catalogue.ChapterBar = src.New(len(config.Current.DownloadList))
 		catalogue.ChapterBar.Describe("working...")
 		for _, file_name := range config.Current.DownloadList {
 			threading.Add()
@@ -102,7 +102,7 @@ func shell(inputs []string) {
 		}
 	case "s", "search":
 		if len(inputs) == 2 && inputs[1] != "" {
-			s := app.Search{Keyword: inputs[1], Page: 0}
+			s := src.Search{Keyword: inputs[1], Page: 0}
 			current_download_book_function(s.SearchBook())
 		} else {
 			fmt.Println("input search keyword, like:search <keyword>")
@@ -112,12 +112,12 @@ func shell(inputs []string) {
 		if config.Vars.AppType == "cat" && len(inputs) >= 3 {
 			hbooker.GET_LOGIN_TOKEN(inputs[1], inputs[2])
 		} else if config.Vars.AppType == "sfacg" && len(inputs) >= 3 {
-			app.LoginAccount(inputs[1], inputs[2], 0)
+			src.LoginAccount(inputs[1], inputs[2], 0)
 		} else {
 			fmt.Println("you must input account and password, like: -login account password")
 		}
 	case "t", "token":
-		if ok := app.InputAccountToken(); !ok {
+		if ok := src.InputAccountToken(); !ok {
 			fmt.Println("you must input account and token.")
 		}
 	default:
@@ -126,13 +126,13 @@ func shell(inputs []string) {
 }
 
 func shell_run_console_and_bookshelf() {
-	bookshelf_book_index, book_shelf_bookcase := app.InitBookShelf() // init bookshelf information
+	bookshelf_book_index, book_shelf_bookcase := src.InitBookShelf() // init bookshelf information
 	for {
 		if comment := tools.GET(">"); comment != nil {
 			if tools.TestIntList(bookshelf_book_index, comment[0]) {
 				current_download_book_function(book_shelf_bookcase[tools.StrToInt(comment[0])]["novel_id"])
 			} else if comment[0] == "load" || comment[0] == "bookshelf" {
-				bookshelf_book_index, book_shelf_bookcase = app.InitBookShelf() // load bookshelf information
+				bookshelf_book_index, book_shelf_bookcase = src.InitBookShelf() // load bookshelf information
 			} else if comment[0] == "quit" || comment[0] == "exit" {
 				fmt.Println("exit the program!")
 				os.Exit(0)
@@ -148,23 +148,23 @@ func main() {
 		if config.CommandLines.Account != "" && config.CommandLines.Password != "" {
 			shell([]string{"login", config.CommandLines.Account, config.CommandLines.Password})
 		} else if config.CommandLines.Login {
-			app.TestAppTypeAndAccount()
+			src.TestAppTypeAndAccount()
 		} else if config.CommandLines.BookId != "" {
 			current_download_book_function(config.CommandLines.BookId)
 		} else if config.CommandLines.SearchKey != "" {
-			s := app.Search{Keyword: config.CommandLines.SearchKey, Page: 0}
+			s := src.Search{Keyword: config.CommandLines.SearchKey, Page: 0}
 			current_download_book_function(s.SearchBook())
 		} else if config.CommandLines.Update {
 			update_local_booklist()
 		} else if config.CommandLines.Token {
-			app.InputAccountToken()
+			src.InputAccountToken()
 		} else {
 			shell_run_console_and_bookshelf()
 		}
 	} else {
 		if config.Vars.AppType == "cat" {
 			// recommend list for hbooker app
-			if book_id := app.NEW_RECOMMEND().GET_HBOOKER_RECOMMEND(); book_id != "" {
+			if book_id := src.NEW_RECOMMEND().GET_HBOOKER_RECOMMEND(); book_id != "" {
 				current_download_book_function(book_id)
 			}
 		}
