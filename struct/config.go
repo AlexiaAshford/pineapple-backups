@@ -40,11 +40,12 @@ type CatApp struct {
 	} `json:"common_params"`
 }
 type MyBookInfoJsonPro struct {
-	Book         Books
-	OutputPath   string
-	ConfigPath   string
-	CoverPath    string
-	BackupsPath  string
+	Book       Books
+	NewBooks   map[string]string
+	OutputPath string
+	ConfigPath string
+	CoverPath  string
+	//BackupsPath  string
 	BookInfoList []Books
 	DownloadList []string
 }

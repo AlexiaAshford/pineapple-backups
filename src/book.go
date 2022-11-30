@@ -1,7 +1,6 @@
 package src
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/book"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
@@ -11,8 +10,6 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
-	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
-	structs "github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs"
 	"os"
 	"path"
 	"strconv"
@@ -25,13 +22,23 @@ type BookInits struct {
 	Locks       *threading.GoLimit
 	EpubSetting *epub.Epub
 }
+type Books struct {
+	NovelName  string
+	NovelID    string
+	IsFinish   bool
+	MarkCount  string
+	NovelCover string
+	AuthorName string
+	CharCount  string
+	SignStatus string
+}
 
 func (books *BookInits) InitEpubFile() {
-	AddImage := true                                                // add image to epub file
-	books.EpubSetting = epub.NewEpub(config.Current.Book.NovelName) // set epub setting and add section
-	books.EpubSetting.SetAuthor(config.Current.Book.AuthorName)     // set author
+	AddImage := true                                                        // add image to epub file
+	books.EpubSetting = epub.NewEpub(config.Current.NewBooks["novel_name"]) // set epub setting and add section
+	books.EpubSetting.SetAuthor(config.Current.NewBooks["author_name"])     // set author
 	if !config.Exist(config.Current.CoverPath) {
-		if reader := request.Request(config.Current.Book.NovelCover); reader == nil {
+		if reader := request.Request(config.Current.NewBooks["novel_cover"]); reader == nil {
 			fmt.Println("download cover failed!")
 			AddImage = false
 		} else {
@@ -47,40 +54,33 @@ func (books *BookInits) InitEpubFile() {
 
 func SettingBooks(book_id string) Catalogue {
 	var err error
-	config.Current.BackupsPath = path.Join("backups", book_id+".json")
-	if !config.Exist(config.Current.BackupsPath) {
-		fmt.Println("book info is not exist, request book info...")
-		tools.Mkdir("backups")
-		switch config.Vars.AppType {
-		case "sfacg":
-			BookInfo := book.GET_BOOK_INFORMATION(book_id)
-			if BookInfo.Status.HTTPCode == 200 {
-				config.Current.Book = _struct.Books{
-					NovelName:  tools.RegexpName(structs.Detail.Data.BookInfo.BookName),
-					NovelID:    strconv.Itoa(BookInfo.Data.NovelID),
-					NovelCover: BookInfo.Data.NovelCover,
-					AuthorName: BookInfo.Data.AuthorName,
-					CharCount:  strconv.Itoa(BookInfo.Data.CharCount),
-					MarkCount:  strconv.Itoa(BookInfo.Data.MarkCount),
-				}
-				err = nil
-			} else {
-				err = fmt.Errorf(BookInfo.Status.Msg.(string))
+	switch config.Vars.AppType {
+	case "sfacg":
+		BookInfo := book.GET_BOOK_INFORMATION(book_id)
+		if BookInfo.Status.HTTPCode == 200 {
+			config.Current.NewBooks = map[string]string{
+				"novel_name":  tools.RegexpName(BookInfo.Data.NovelName),
+				"novel_id":    strconv.Itoa(BookInfo.Data.NovelID),
+				"novel_cover": BookInfo.Data.NovelCover,
+				"author_name": BookInfo.Data.AuthorName,
+				"char_count":  strconv.Itoa(BookInfo.Data.CharCount),
+				"mark_count":  strconv.Itoa(BookInfo.Data.MarkCount),
 			}
-		case "cat":
-			err = hbooker.GET_BOOK_INFORMATION(book_id)
-		}
-		if err == nil {
-			file.Open(config.Current.BackupsPath, tools.JsonString(config.Current.Book), "w")
+			err = nil
 		} else {
-			return Catalogue{Test: false, BookMessage: fmt.Sprintf("book_id:%v is invalid:%v", book_id, err)}
+			err = fmt.Errorf(BookInfo.Status.Msg.(string))
 		}
+	case "cat":
+		err = hbooker.GET_BOOK_INFORMATION(book_id)
 	}
-	_ = json.Unmarshal([]byte(file.ReadFile(config.Current.BackupsPath)), &config.Current.Book)
-	OutputPath := tools.Mkdir(path.Join(config.Vars.OutputName, config.Current.Book.NovelName))
-	config.Current.ConfigPath = path.Join(config.Vars.ConfigName, config.Current.Book.NovelName)
-	config.Current.OutputPath = path.Join(OutputPath, config.Current.Book.NovelName+".txt")
-	config.Current.CoverPath = path.Join("cover", config.Current.Book.NovelName+".jpg")
+	if err != nil {
+		return Catalogue{Test: false, BookMessage: fmt.Sprintf("book_id:%v is invalid:%v", book_id, err)}
+	}
+	fmt.Println(config.Current.NewBooks)
+	OutputPath := tools.Mkdir(path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"]))
+	config.Current.ConfigPath = path.Join(config.Vars.ConfigName, config.Current.NewBooks["novel_name"])
+	config.Current.OutputPath = path.Join(OutputPath, config.Current.NewBooks["novel_name"]+".txt")
+	config.Current.CoverPath = path.Join("cover", config.Current.NewBooks["novel_name"]+".jpg")
 	books := BookInits{BookID: book_id, Locks: nil, ShowBook: true}
 	return books.BookDetailed()
 
@@ -89,7 +89,8 @@ func SettingBooks(book_id string) Catalogue {
 func (books *BookInits) BookDetailed() Catalogue {
 	books.InitEpubFile()
 	briefIntroduction := fmt.Sprintf("Name: %v\nBookID: %v\nAuthor: %v\nCount: %v\n\n\n",
-		config.Current.Book.NovelName, config.Current.Book.NovelID, config.Current.Book.AuthorName, config.Current.Book.CharCount,
+		config.Current.NewBooks["novel_name"], config.Current.NewBooks["novel_id"], config.Current.NewBooks["author_name"],
+		config.Current.NewBooks["char_count"],
 	)
 	if books.ShowBook {
 		fmt.Println(briefIntroduction)

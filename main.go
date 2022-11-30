@@ -65,9 +65,9 @@ func current_download_book_function(book_id string) {
 			go catalogue.DownloadContent(thread, file_name)
 		}
 		thread.WaitZero()
-		fmt.Printf("\nNovel:%v download complete!\n", config.Current.Book.NovelName)
+		fmt.Printf("\nNovel:%v download complete!\n", config.Current.NewBooks["novel_name"])
 	} else {
-		fmt.Println(config.Current.Book.NovelName + " No chapter need to download!\n")
+		fmt.Println(config.Current.NewBooks["novel_name"] + " No chapter need to download!\n")
 	}
 	catalogue.MergeTextAndEpubFiles()
 }

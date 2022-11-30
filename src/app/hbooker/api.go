@@ -7,7 +7,6 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/request"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
-	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
 	structs "github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs"
 	"github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs/bookshelf"
 	"github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs/division"
@@ -81,14 +80,13 @@ func GET_BOOK_INFORMATION(bid string) error {
 	request.NewHttpUtils(BOOK_GET_INFO_BY_ID, "POST").
 		Add("book_id", bid).NewRequests().Unmarshal(&structs.Detail)
 	if structs.Detail.Code == "100000" {
-		config.Current.Book = _struct.Books{
-			NovelName:  tools.RegexpName(structs.Detail.Data.BookInfo.BookName),
-			NovelID:    structs.Detail.Data.BookInfo.BookID,
-			NovelCover: structs.Detail.Data.BookInfo.Cover,
-			AuthorName: structs.Detail.Data.BookInfo.AuthorName,
-			CharCount:  structs.Detail.Data.BookInfo.TotalWordCount,
-			MarkCount:  structs.Detail.Data.BookInfo.UpdateStatus,
-			SignStatus: structs.Detail.Data.BookInfo.IsPaid,
+		config.Current.NewBooks = map[string]string{
+			"novel_name":  tools.RegexpName(structs.Detail.Data.BookInfo.BookName),
+			"novel_id":    structs.Detail.Data.BookInfo.BookID,
+			"novel_cover": structs.Detail.Data.BookInfo.Cover,
+			"author_name": structs.Detail.Data.BookInfo.AuthorName,
+			"char_count":  structs.Detail.Data.BookInfo.TotalWordCount,
+			"mark_count":  structs.Detail.Data.BookInfo.UpdateStatus,
 		}
 		return nil
 	}

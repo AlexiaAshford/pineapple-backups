@@ -58,9 +58,9 @@ func (catalogue *Catalogue) GetDownloadsList() {
 	catalogue.ReadChapterConfig()
 	var chapter_info_list []map[string]string
 	if config.Vars.AppType == "sfacg" {
-		chapter_info_list = GET_CATALOGUE(config.Current.Book.NovelID)
+		chapter_info_list = GET_CATALOGUE(config.Current.NewBooks["novel_id"])
 	} else if config.Vars.AppType == "cat" {
-		chapter_info_list = hbooker.GET_DIVISION(config.Current.Book.NovelID)
+		chapter_info_list = hbooker.GET_DIVISION(config.Current.NewBooks["novel_id"])
 	}
 	for _, chapter_info := range chapter_info_list {
 		if !tools.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {
