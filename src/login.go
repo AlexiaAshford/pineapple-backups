@@ -2,26 +2,29 @@ package src
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/account"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
-	"github.com/VeronicaAlexia/pineapple-backups/src/app/boluobao"
 	"os"
 )
 
 func AccountDetailed() string {
-	response := boluobao.GET_ACCOUNT_INFORMATION()
+	response := account.GET_ACCOUNT_INFORMATION()
 	if response.Status.HTTPCode == 200 {
 		return fmt.Sprintf("account name:%v\taccount id:%v",
 			response.Data.NickName, response.Data.AccountID,
 		)
 	} else {
-		return response.Status.Msg
+		return response.Status.Msg.(string)
 	}
 
 }
 
 func LoginAccount(username string, password string, retry int) {
-	boluobao.LOGIN_ACCOUNT(username, password)
+	config.Apps.Sfacg.Cookie = account.LOGIN_ACCOUNT(username, password)
+	config.Apps.Sfacg.UserName = username
+	config.Apps.Sfacg.Password = password
+	config.SaveJson()
 	if AccountDetailed() == "需要登录才能访问该资源" {
 		fmt.Println("Your login attempt was not successful, try again retry:", retry+1)
 		LoginAccount(username, password, retry+1)

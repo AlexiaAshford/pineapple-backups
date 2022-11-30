@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/BoluobaoAPI/request"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/cil"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
@@ -23,7 +24,8 @@ func init() {
 	if config.UpdateConfig() {
 		config.SaveJson()
 	}
-
+	App := request.AppRequest{App: false}
+	App.SetApiHost()
 	InitApp := cli.NewApp()
 	InitApp.Name = "pineapple-backups"
 	InitApp.Version = "V.1.6.9"

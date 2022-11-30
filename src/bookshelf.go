@@ -2,16 +2,36 @@ package src
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/bookshelf"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
-	"github.com/VeronicaAlexia/pineapple-backups/src/app/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
+	"strconv"
 	"strings"
 )
 
+func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
+	response := bookshelf.GET_BOOK_SHELF_INFORMATION()
+	bookshelf_info := make(map[int][]map[string]string)
+	if response.Status.HTTPCode != 200 {
+		return nil, fmt.Errorf(response.Status.Msg.(string))
+	}
+	for index, value := range response.Data {
+		fmt.Println("书架号:", index, "\t\t\t书架名:", value.Name)
+		var bookshelf_info_list []map[string]string
+		for _, book := range value.Expand.Novels {
+			bookshelf_info_list = append(bookshelf_info_list,
+				map[string]string{"novel_name": book.NovelName, "novel_id": strconv.Itoa(book.NovelID)},
+			)
+		}
+		bookshelf_info[index] = bookshelf_info_list
+	}
+	return bookshelf_info, nil
+}
+
 func request_bookshelf_book_list() (map[int][]map[string]string, error) {
 	if config.Vars.AppType == "sfacg" {
-		return boluobao.GET_BOOK_SHELF_INFORMATION()
+		return GET_BOOK_SHELF_INFORMATION()
 	} else if config.Vars.AppType == "cat" {
 		return hbooker.GET_BOOK_SHELF_INFORMATION()
 	} else {

@@ -2,14 +2,15 @@ package src
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/book"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
-	"github.com/VeronicaAlexia/pineapple-backups/src/app/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -31,11 +32,33 @@ func (catalogue *Catalogue) ReadChapterConfig() {
 	}
 }
 
+func GET_CATALOGUE(NovelID string) []map[string]string {
+	var chapter_index int
+	var division_info []map[string]string
+	response := book.GET_CATALOGUE(NovelID)
+	for division_index, division := range response.Data.VolumeList {
+		fmt.Printf("第%v卷\t\t%v\n", division_index+1, division.Title)
+		for _, chapter := range division.ChapterList {
+			chapter_index += 1
+			division_info = append(division_info, map[string]string{
+				"division_name":  division.Title,
+				"division_id":    strconv.Itoa(division.VolumeID),
+				"division_index": strconv.Itoa(division_index),
+				"chapter_name":   chapter.Title,
+				"chapter_id":     strconv.Itoa(chapter.ChapID),
+				"chapter_index":  strconv.Itoa(chapter_index),
+				"money":          strconv.Itoa(chapter.OriginNeedFireMoney),
+				"file_name":      file.NameSetting(chapter.VolumeID, chapter.ChapOrder, chapter.ChapID),
+			})
+		}
+	}
+	return division_info
+}
 func (catalogue *Catalogue) GetDownloadsList() {
 	catalogue.ReadChapterConfig()
 	var chapter_info_list []map[string]string
 	if config.Vars.AppType == "sfacg" {
-		chapter_info_list = boluobao.GET_CATALOGUE(config.Current.Book.NovelID)
+		chapter_info_list = GET_CATALOGUE(config.Current.Book.NovelID)
 	} else if config.Vars.AppType == "cat" {
 		chapter_info_list = hbooker.GET_DIVISION(config.Current.Book.NovelID)
 	}
@@ -50,13 +73,26 @@ func (catalogue *Catalogue) GetDownloadsList() {
 	}
 }
 
+func GET_CHAPTER_CONTENT(chapter_id string) string {
+	response := book.GET_CHAPTER_CONTENT(chapter_id)
+	fmt.Println(response)
+	if response.Status.HTTPCode == 200 {
+		content_title := fmt.Sprintf("%v: %v", response.Data.Title, response.Data.AddTime)
+		return content_title + "\n" + tools.StandardContent(strings.Split(response.Data.Expand.Content, "\n"))
+
+	} else {
+		fmt.Println("download failed! chapterId:", chapter_id, "error:", response.Status.Msg)
+	}
+	return ""
+}
+
 func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, file_name string) {
 	defer threading.Done()
 	chapter_id := catalogue.speed_progress(file_name)
 	var content_text string
 	for i := 0; i < 5; i++ {
 		if config.Vars.AppType == "sfacg" {
-			content_text = boluobao.GET_CHAPTER_CONTENT(chapter_id)
+			content_text = GET_CHAPTER_CONTENT(chapter_id)
 		} else if config.Vars.AppType == "cat" {
 			content_text = hbooker.GET_CHAPTER_CONTENT(chapter_id, hbooker.GET_KET_BY_CHAPTER_ID(chapter_id))
 		}

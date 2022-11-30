@@ -3,16 +3,19 @@ package src
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/book"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/request"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
-	"github.com/VeronicaAlexia/pineapple-backups/src/app/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
+	_struct "github.com/VeronicaAlexia/pineapple-backups/struct"
+	structs "github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 )
 
@@ -50,7 +53,20 @@ func SettingBooks(book_id string) Catalogue {
 		tools.Mkdir("backups")
 		switch config.Vars.AppType {
 		case "sfacg":
-			err = boluobao.GET_BOOK_INFORMATION(book_id)
+			BookInfo := book.GET_BOOK_INFORMATION(book_id)
+			if BookInfo.Status.HTTPCode == 200 {
+				config.Current.Book = _struct.Books{
+					NovelName:  tools.RegexpName(structs.Detail.Data.BookInfo.BookName),
+					NovelID:    strconv.Itoa(BookInfo.Data.NovelID),
+					NovelCover: BookInfo.Data.NovelCover,
+					AuthorName: BookInfo.Data.AuthorName,
+					CharCount:  strconv.Itoa(BookInfo.Data.CharCount),
+					MarkCount:  strconv.Itoa(BookInfo.Data.MarkCount),
+				}
+				err = nil
+			} else {
+				err = fmt.Errorf(BookInfo.Status.Msg.(string))
+			}
 		case "cat":
 			err = hbooker.GET_BOOK_INFORMATION(book_id)
 		}

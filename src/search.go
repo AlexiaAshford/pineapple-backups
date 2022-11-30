@@ -2,9 +2,9 @@ package src
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/search"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
-	"github.com/VeronicaAlexia/pineapple-backups/src/app/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	structs "github.com/VeronicaAlexia/pineapple-backups/struct/hbooker_structs"
 	"strconv"
@@ -34,7 +34,7 @@ func (s *Search) CatSearchDetailed() []string {
 
 func (s *Search) SfacgSearchDetailed() []string {
 	var searchResult []string
-	response := boluobao.GET_SEARCH(s.Keyword, s.Page)
+	response := search.GET_SEARCH(s.Keyword, s.Page)
 	if response.Status.HTTPCode != 200 || len(response.Data.Novels) == 0 {
 		return nil // if the search result is empty
 	} else {
