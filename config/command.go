@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/VeronicaAlexia/pineapple-backups/pkg/cil"
+	"github.com/urfave/cli"
 )
 
 var CommandLines = struct {
