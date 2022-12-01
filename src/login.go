@@ -21,6 +21,10 @@ func AccountDetailed() string {
 }
 
 func LoginAccount(username string, password string, retry int) {
+	if retry > 3 {
+		fmt.Println("login max retry, login failed!")
+		os.Exit(1)
+	}
 	config.Apps.Sfacg.Cookie = account.LOGIN_ACCOUNT(username, password)
 	config.Apps.Sfacg.UserName = username
 	config.Apps.Sfacg.Password = password
