@@ -3,14 +3,14 @@ package src
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/bookshelf"
+	"github.com/VeronicaAlexia/HbookerAPI/HbookerAPI"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
-	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	"strconv"
 	"strings"
 )
 
-func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
+func sfacg_bookshelf() (map[int][]map[string]string, error) {
 	response := bookshelf.GET_BOOK_SHELF_INFORMATION()
 	bookshelf_info := make(map[int][]map[string]string)
 	if response.Status.HTTPCode != 200 {
@@ -29,11 +29,35 @@ func GET_BOOK_SHELF_INFORMATION() (map[int][]map[string]string, error) {
 	return bookshelf_info, nil
 }
 
+func hbooker_bookshelf() (map[int][]map[string]string, error) {
+	bookshelf_info := make(map[int][]map[string]string)
+	shelf := HbookerAPI.GET_BOOK_SHELF_INFORMATION()
+
+	if shelf.Code != "100000" {
+		return nil, fmt.Errorf(shelf.Tip.(string))
+	}
+	for index, value := range shelf.Data.ShelfList {
+		fmt.Println("书架号:", index, "\t\t\t书架名:", value.ShelfName)
+		bookshelf_index := HbookerAPI.GET_BOOK_SHELF_INDEXES_INFORMATION(value.ShelfID)
+		if bookshelf_index.Code != "100000" {
+			return nil, fmt.Errorf(bookshelf_index.Tip.(string))
+		}
+		var bookshelf_info_list []map[string]string
+		for _, book := range bookshelf_index.Data.BookList {
+			bookshelf_info_list = append(bookshelf_info_list,
+				map[string]string{"novel_name": book.BookInfo.BookName, "novel_id": book.BookInfo.BookID},
+			)
+		}
+		bookshelf_info[index] = bookshelf_info_list
+	}
+	return bookshelf_info, nil
+}
+
 func request_bookshelf_book_list() (map[int][]map[string]string, error) {
 	if config.Vars.AppType == "sfacg" {
-		return GET_BOOK_SHELF_INFORMATION()
+		return sfacg_bookshelf()
 	} else if config.Vars.AppType == "cat" {
-		return hbooker.GET_BOOK_SHELF_INFORMATION()
+		return hbooker_bookshelf()
 	} else {
 		return nil, fmt.Errorf("app type error")
 	}
