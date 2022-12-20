@@ -3,13 +3,13 @@ package src
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/book"
+	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/HbookerAPI/book"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/request"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
-	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	"os"
 	"path"
 	"strconv"
@@ -71,12 +71,20 @@ func SettingBooks(book_id string) Catalogue {
 			err = fmt.Errorf(BookInfo.Status.Msg.(string))
 		}
 	case "cat":
-		err = hbooker.GET_BOOK_INFORMATION(book_id)
+		BookInfo := HbookerAPI.GET_BOOK_INFORMATION(book_id)
+		config.Current.NewBooks = map[string]string{
+			"novel_name":  tools.RegexpName(BookInfo.Data.BookInfo.BookName),
+			"novel_id":    BookInfo.Data.BookInfo.BookID,
+			"novel_cover": BookInfo.Data.BookInfo.Cover,
+			"author_name": BookInfo.Data.BookInfo.AuthorName,
+			"char_count":  BookInfo.Data.BookInfo.TotalWordCount,
+		}
+		err = nil
 	}
 	if err != nil {
 		return Catalogue{Test: false, BookMessage: fmt.Sprintf("book_id:%v is invalid:%v", book_id, err)}
 	}
-	fmt.Println(config.Current.NewBooks)
+	//fmt.Println(config.Current.NewBooks)
 	OutputPath := tools.Mkdir(path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"]))
 	config.Current.ConfigPath = path.Join(config.Vars.ConfigName, config.Current.NewBooks["novel_name"])
 	config.Current.OutputPath = path.Join(OutputPath, config.Current.NewBooks["novel_name"]+".txt")
