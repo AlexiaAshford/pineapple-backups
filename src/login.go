@@ -3,6 +3,7 @@ package src
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/account"
+	BoluobaoConfig "github.com/VeronicaAlexia/BoluobaoAPI/pkg/config"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"os"
@@ -25,9 +26,10 @@ func LoginAccount(username string, password string, retry int) {
 		fmt.Println("login max retry, login failed!")
 		os.Exit(1)
 	}
-	config.Apps.Sfacg.Cookie = account.LOGIN_ACCOUNT(username, password)
 	config.Apps.Sfacg.UserName = username
 	config.Apps.Sfacg.Password = password
+	config.Apps.Sfacg.Cookie = account.LOGIN_ACCOUNT(username, password)
+	BoluobaoConfig.AppConfig.Cookie = config.Apps.Sfacg.Cookie
 	config.SaveJson()
 	if AccountDetailed() == "需要登录才能访问该资源" {
 		fmt.Println("Your login attempt was not successful, try again retry:", retry+1)
