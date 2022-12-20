@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/account"
+	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/task"
 	BoluobaoConfig "github.com/VeronicaAlexia/BoluobaoAPI/pkg/config"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
@@ -12,6 +14,7 @@ import (
 	"github.com/urfave/cli"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -30,7 +33,8 @@ func init() {
 	BoluobaoConfig.AppConfig.App = true
 	BoluobaoConfig.AppConfig.AppKey = config.Vars.AppKey
 	BoluobaoConfig.AppConfig.DeviceId = "240a90cc-4c40-32c7-b44e-d4cf9e670605"
-	//fmt.Println(BoluobaoConfig.AppConfig)
+	BoluobaoConfig.AppConfig.Cookie = config.Apps.Sfacg.Cookie
+
 	InitApp.Action = func(c *cli.Context) {
 		fmt.Println("you can input -h and --help to see the command list.")
 		if config.CommandLines.AppType != "cat" && config.CommandLines.AppType != "sfacg" {
@@ -169,6 +173,14 @@ func main() {
 			// recommend list for hbooker app
 			if book_id := src.NEW_RECOMMEND().GET_HBOOKER_RECOMMEND(); book_id != "" {
 				current_download_book_function(book_id)
+			}
+		} else if config.Vars.AppType == "sfacg" {
+			accounts := account.GET_ACCOUNT_INFORMATION()
+			if accounts.Data.AccountID > 0 {
+				Tasks := task.Task{AccountId: strconv.Itoa(accounts.Data.AccountID)}
+				Tasks.COMPLETE_ALL()
+			} else {
+				fmt.Println("you need to login to use the automatic sign-in and task function")
 			}
 		}
 		for _, message := range config.HelpMessage {
