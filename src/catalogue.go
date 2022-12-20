@@ -73,26 +73,13 @@ func (catalogue *Catalogue) GetDownloadsList() {
 	}
 }
 
-func GET_CHAPTER_CONTENT(chapter_id string) string {
-	response := book.GET_CHAPTER_CONTENT(chapter_id)
-	fmt.Println(response)
-	if response.Status.HTTPCode == 200 {
-		content_title := fmt.Sprintf("%v: %v", response.Data.Title, response.Data.AddTime)
-		return content_title + "\n" + tools.StandardContent(strings.Split(response.Data.Expand.Content, "\n"))
-
-	} else {
-		fmt.Println("download failed! chapterId:", chapter_id, "error:", response.Status.Msg)
-	}
-	return ""
-}
-
 func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, file_name string) {
 	defer threading.Done()
 	chapter_id := catalogue.speed_progress(file_name)
 	var content_text string
 	for i := 0; i < 5; i++ {
 		if config.Vars.AppType == "sfacg" {
-			content_text = GET_CHAPTER_CONTENT(chapter_id)
+			content_text = book.Content(chapter_id).Data.Expand.Content
 		} else if config.Vars.AppType == "cat" {
 			content_text = hbooker.GET_CHAPTER_CONTENT(chapter_id, hbooker.GET_KET_BY_CHAPTER_ID(chapter_id))
 		}
