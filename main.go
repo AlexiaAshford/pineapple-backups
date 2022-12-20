@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/BoluobaoAPI/request"
+	BoluobaoConfig "github.com/VeronicaAlexia/BoluobaoAPI/pkg/config"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
@@ -21,16 +21,16 @@ func init() {
 	} else {
 		config.LoadJson()
 	}
-	if config.UpdateConfig() {
-		config.SaveJson()
-	}
-	App := request.AppRequest{App: false}
-	App.SetApiHost()
+	config.UpdateConfig()
 	InitApp := cli.NewApp()
 	InitApp.Name = "pineapple-backups"
 	InitApp.Version = "V.1.6.9"
 	InitApp.Usage = "https://github.com/VeronicaAlexia/pineapple-backups"
 	InitApp.Flags = config.Args
+	BoluobaoConfig.AppConfig.App = true
+	BoluobaoConfig.AppConfig.AppKey = config.Vars.AppKey
+	BoluobaoConfig.AppConfig.DeviceId = "240a90cc-4c40-32c7-b44e-d4cf9e670605"
+	//fmt.Println(BoluobaoConfig.AppConfig)
 	InitApp.Action = func(c *cli.Context) {
 		fmt.Println("you can input -h and --help to see the command list.")
 		if config.CommandLines.AppType != "cat" && config.CommandLines.AppType != "sfacg" {

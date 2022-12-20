@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/struct"
+	"github.com/google/uuid"
 	"os"
 	"sync"
 )
@@ -15,7 +16,7 @@ var (
 	Current = _struct.MyBookInfoJsonPro{}
 )
 
-func UpdateConfig() bool { // update config.json if necessary
+func UpdateConfig() { // update config.json if necessary
 	changeVar := false
 	if Vars.ThreadNum == 0 || Vars.ThreadNum >= 64 {
 		Vars.ThreadNum = 32 // default value is 32 thread
@@ -30,6 +31,14 @@ func UpdateConfig() bool { // update config.json if necessary
 		Vars.AppType = "cat"
 		changeVar = true
 	}
+	if Vars.AppKey == "" {
+		Vars.AppKey = "FMLxgOdsfxmN!Dt4"
+		changeVar = true
+	}
+	if Vars.DeviceId == "" {
+		Vars.DeviceId = uuid.New().String()
+		changeVar = true
+	}
 	if Vars.ConfigName == "" || Vars.OutputName == "" || Vars.CoverFile == "" {
 		Vars.ConfigName, Vars.OutputName, Vars.CoverFile = "cache", "save", "cover"
 		changeVar = true
@@ -39,7 +48,9 @@ func UpdateConfig() bool { // update config.json if necessary
 		changeVar = true
 	}
 	Exist([]string{Vars.ConfigName, Vars.OutputName, Vars.CoverFile})
-	return changeVar
+	if changeVar {
+		SaveJson()
+	}
 }
 
 func Exist(fileName any) bool {
@@ -86,6 +97,7 @@ func LoadJson() {
 }
 
 func SaveJson() {
+	Apps.Config = Vars
 	if save, ok := json.MarshalIndent(Apps, "", "    "); ok == nil {
 		// del ioutil and use os
 		if err := os.WriteFile("config.json", save, 0777); err != nil {

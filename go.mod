@@ -3,7 +3,7 @@ module github.com/VeronicaAlexia/pineapple-backups
 go 1.19
 
 require (
-	github.com/VeronicaAlexia/BoluobaoAPI v0.0.0-20221130024940-07f9cef8d14c
+	github.com/VeronicaAlexia/BoluobaoAPI v0.0.0-20221215163929-271b6d267a63
 	github.com/gabriel-vasile/mimetype v1.4.1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gofrs/uuid v4.3.1+incompatible
@@ -19,6 +19,7 @@ require (
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect

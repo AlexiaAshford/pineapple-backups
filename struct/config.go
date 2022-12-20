@@ -14,6 +14,8 @@ type MyConfigPro struct {
 	ConfigName string
 	OutputName string
 	CoverFile  string
+	AppKey     string
+	DeviceId   string
 	AppType    string
 	ThreadNum  int
 	MaxRetry   int
@@ -21,8 +23,9 @@ type MyConfigPro struct {
 }
 
 type MyAppPro struct {
-	Sfacg SfacgApp `json:"sfacg"`
-	Cat   CatApp   `json:"cat"`
+	Sfacg  SfacgApp    `json:"sfacg"`
+	Cat    CatApp      `json:"cat"`
+	Config MyConfigPro `json:"config"`
 }
 
 type SfacgApp struct {
