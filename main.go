@@ -37,7 +37,7 @@ func init() {
 	HbookerConfig.AppConfig.LoginToken = config.Apps.Cat.Params.LoginToken
 	HbookerConfig.AppConfig.DeviceToken = config.Apps.Cat.Params.DeviceToken
 
-	BoluobaoConfig.AppConfig.App = true
+	BoluobaoConfig.AppConfig.App = false
 	BoluobaoConfig.AppConfig.AppKey = config.Vars.AppKey
 	BoluobaoConfig.AppConfig.DeviceId = "240a90cc-4c40-32c7-b44e-d4cf9e670605"
 	BoluobaoConfig.AppConfig.Cookie = config.Apps.Sfacg.Cookie
