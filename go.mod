@@ -4,9 +4,11 @@ go 1.19
 
 require (
 	github.com/VeronicaAlexia/BoluobaoAPI v0.0.0-20221215163929-271b6d267a63
+	github.com/VeronicaAlexia/HbookerAPI v0.0.0-20221201124500-d647a8a16f37
 	github.com/gabriel-vasile/mimetype v1.4.1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gofrs/uuid v4.3.1+incompatible
+	github.com/google/uuid v1.3.0
 	github.com/gookit/color v1.5.2
 	github.com/mattn/go-runewidth v0.0.14
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
@@ -19,7 +21,6 @@ require (
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
