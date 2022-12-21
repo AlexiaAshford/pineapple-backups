@@ -97,7 +97,7 @@ func LoadJson() {
 }
 
 func SaveJson() {
-	Apps.Config = Vars
+	//Apps.Config = Vars
 	if save, ok := json.MarshalIndent(Apps, "", "    "); ok == nil {
 		// del ioutil and use os
 		if err := os.WriteFile("config.json", save, 0777); err != nil {

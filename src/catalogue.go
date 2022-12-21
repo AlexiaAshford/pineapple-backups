@@ -107,9 +107,17 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, file_n
 		if config.Vars.AppType == "sfacg" {
 			content_text = book.Content(chapter_id).Data.Expand.Content
 		} else if config.Vars.AppType == "cat" {
-			chapterKey := HbookerAPI.GET_KET_BY_CHAPTER_ID(chapter_id).Data.Command
-			ChapterInfo := HbookerAPI.GET_CHAPTER_CONTENT(chapter_id, chapterKey)
-			content_text = string(ciweimao_config.Decode(ChapterInfo.Data.ChapterInfo.TxtContent, chapterKey))
+			chapterKey := HbookerAPI.GET_KET_BY_CHAPTER_ID(chapter_id)
+			if chapterKey.Code == "100000" {
+				ChapterInfo := HbookerAPI.GET_CHAPTER_CONTENT(chapter_id, chapterKey.Data.Command)
+				if ChapterInfo.Code == "100000" {
+					content_text = string(ciweimao_config.Decode(ChapterInfo.Data.ChapterInfo.TxtContent, chapterKey.Data.Command))
+				} else {
+					fmt.Println("ChapterInfo", ChapterInfo.Tip)
+				}
+			} else {
+				fmt.Println("chapterKey", chapterKey.Tip)
+			}
 		}
 		if content_text != "" {
 			file.Open(path.Join(config.Current.ConfigPath, file_name), content_text, "w")

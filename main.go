@@ -180,9 +180,9 @@ func main() {
 	} else {
 		if config.Vars.AppType == "cat" {
 			// recommend list for hbooker app
-			if book_id := src.NEW_RECOMMEND().GET_HBOOKER_RECOMMEND(); book_id != "" {
-				current_download_book_function(book_id)
-			}
+			//if book_id := recommend.NEW_RECOMMEND().CHANGE_NEW_RECOMMEND(); book_id != "" {
+			//	current_download_book_function(book_id)
+			//}
 		} else if config.Vars.AppType == "sfacg" {
 			accounts := account.GET_ACCOUNT_INFORMATION()
 			if accounts.Data.AccountID > 0 {
