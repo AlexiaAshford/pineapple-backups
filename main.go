@@ -148,11 +148,12 @@ func shell_run_console_and_bookshelf() {
 				current_download_book_function(book_shelf_bookcase[tools.StrToInt(comment[0])]["novel_id"])
 			} else if comment[0] == "load" || comment[0] == "bookshelf" {
 				bookshelf_book_index, book_shelf_bookcase = src.InitBookShelf() // load bookshelf information
-			} else if comment[0] == "quit" || comment[0] == "exit" {
-				fmt.Println("exit the program!")
-				os.Exit(0)
-			} else {
+			} else if comment[0] == "q" || comment[0] == "quit" {
 				shell(comment)
+			} else {
+				fmt.Println("input book index to download book")
+				fmt.Println("input load to reload bookshelf")
+				fmt.Println("input quit to exit bookshelf")
 			}
 		}
 	}
