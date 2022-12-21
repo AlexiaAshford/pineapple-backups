@@ -11,7 +11,6 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/src"
-	"github.com/VeronicaAlexia/pineapple-backups/src/app/hbooker"
 	"github.com/urfave/cli"
 	"log"
 	"os"
@@ -125,7 +124,8 @@ func shell(inputs []string) {
 
 	case "l", "login":
 		if config.Vars.AppType == "cat" && len(inputs) >= 3 {
-			hbooker.GET_LOGIN_TOKEN(inputs[1], inputs[2])
+			//hbooker.GET_LOGIN_TOKEN(inputs[1], inputs[2])
+			fmt.Println("hbooker login function is not available now.")
 		} else if config.Vars.AppType == "sfacg" && len(inputs) >= 3 {
 			src.LoginAccount(inputs[1], inputs[2], 0)
 		} else {
