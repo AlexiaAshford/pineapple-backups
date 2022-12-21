@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/VeronicaAlexia/BoluobaoAPI v0.0.0-20221215163929-271b6d267a63
-	github.com/VeronicaAlexia/HbookerAPI v0.0.0-20221221123627-cd2e64dd5dd5
+	github.com/VeronicaAlexia/HbookerAPI v0.0.0-20221221130743-3cb73290e20d
 	github.com/gabriel-vasile/mimetype v1.4.1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gofrs/uuid v4.3.1+incompatible

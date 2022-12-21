@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/book"
 	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/ciweimao/book"
-	ciweimao_config "github.com/VeronicaAlexia/HbookerAPI/pkg/config"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
@@ -107,17 +106,7 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, file_n
 		if config.Vars.AppType == "sfacg" {
 			content_text = book.Content(chapter_id).Data.Expand.Content
 		} else if config.Vars.AppType == "cat" {
-			chapterKey := HbookerAPI.GET_KET_BY_CHAPTER_ID(chapter_id)
-			if chapterKey.Code == "100000" {
-				ChapterInfo := HbookerAPI.GET_CHAPTER_CONTENT(chapter_id, chapterKey.Data.Command)
-				if ChapterInfo.Code == "100000" {
-					content_text = string(ciweimao_config.Decode(ChapterInfo.Data.ChapterInfo.TxtContent, chapterKey.Data.Command))
-				} else {
-					fmt.Println("ChapterInfo", ChapterInfo.Tip)
-				}
-			} else {
-				fmt.Println("chapterKey", chapterKey.Tip)
-			}
+			content_text = HbookerAPI.GetContent(chapter_id)
 		}
 		if content_text != "" {
 			file.Open(path.Join(config.Current.ConfigPath, file_name), content_text, "w")
