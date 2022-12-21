@@ -3,7 +3,7 @@ package src
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/bookshelf"
-	"github.com/VeronicaAlexia/HbookerAPI/HbookerAPI"
+	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/ciweimao/bookshelf"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"strconv"

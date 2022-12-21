@@ -3,7 +3,7 @@ package src
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/book"
-	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/HbookerAPI/book"
+	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/ciweimao/book"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"

@@ -3,6 +3,7 @@ package src
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/book"
+	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/ciweimao/book"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
@@ -54,13 +55,38 @@ func GET_CATALOGUE(NovelID string) []map[string]string {
 	}
 	return division_info
 }
+
+func GET_DIVISION_Hbooker(BookId string) []map[string]string {
+	var chapter_index int
+	var division_info_list []map[string]string
+	VolumeList := HbookerAPI.GET_DIVISION_LIST_BY_BOOKID(BookId)
+	for division_index, division_info := range VolumeList.Data.ChapterList {
+		fmt.Printf("第%v卷\t\t%v\n", division_index+1, division_info.DivisionName)
+		for _, chapter := range division_info.ChapterList {
+			chapter_index += 1
+			division_info_list = append(division_info_list, map[string]string{
+				"is_valid":       chapter.IsValid,
+				"chapter_id":     chapter.ChapterID,
+				"money":          chapter.AuthAccess,
+				"chapter_name":   chapter.ChapterTitle,
+				"division_name":  division_info.DivisionName,
+				"division_id":    division_info.DivisionID,
+				"division_index": strconv.Itoa(division_index),
+				"chapter_index":  strconv.Itoa(chapter_index),
+				"file_name":      file.FileCacheName(division_index, chapter_index, chapter.ChapterID),
+			})
+		}
+	}
+	return division_info_list
+}
+
 func (catalogue *Catalogue) GetDownloadsList() {
 	catalogue.ReadChapterConfig()
 	var chapter_info_list []map[string]string
 	if config.Vars.AppType == "sfacg" {
 		chapter_info_list = GET_CATALOGUE(config.Current.NewBooks["novel_id"])
 	} else if config.Vars.AppType == "cat" {
-		chapter_info_list = hbooker.GET_DIVISION(config.Current.NewBooks["novel_id"])
+		chapter_info_list = GET_DIVISION_Hbooker(config.Current.NewBooks["novel_id"])
 	}
 	for _, chapter_info := range chapter_info_list {
 		if !tools.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {

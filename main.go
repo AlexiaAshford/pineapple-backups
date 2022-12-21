@@ -5,7 +5,7 @@ import (
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/account"
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/task"
 	BoluobaoConfig "github.com/VeronicaAlexia/BoluobaoAPI/pkg/config"
-	HbookerConfig "github.com/VeronicaAlexia/HbookerAPI/config"
+	HbookerConfig "github.com/VeronicaAlexia/HbookerAPI/pkg/config"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
