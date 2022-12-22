@@ -10,17 +10,6 @@ type Books struct {
 	CharCount  string
 	SignStatus string
 }
-type MyConfigPro struct {
-	ConfigName string
-	OutputName string
-	CoverFile  string
-	AppKey     string
-	DeviceId   string
-	AppType    string
-	ThreadNum  int
-	MaxRetry   int
-	Epub       bool
-}
 type MyBookInfoJsonPro struct {
 	Book       Books
 	NewBooks   map[string]string

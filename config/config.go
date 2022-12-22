@@ -11,8 +11,7 @@ import (
 )
 
 var (
-	Vars    = _struct.MyConfigPro{}
-	Apps    = AppConfig{}
+	Vars    = &Apps.Config
 	Current = _struct.MyBookInfoJsonPro{}
 )
 

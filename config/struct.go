@@ -1,12 +1,14 @@
 package config
 
+var Apps = AppConfig{}
+
 type AppConfig struct {
 	Hbooker HbookerCommonParams `json:"common_params"`
 	Sfacg   BoluobaoConfig      `json:"sfacg_config"`
-	Config  AccountConfig       `json:"account_config"`
+	Config  ScriptConfig        `json:"script_config"`
 }
 
-type AccountConfig struct {
+type ScriptConfig struct {
 	ConfigName string
 	OutputName string
 	CoverFile  string
