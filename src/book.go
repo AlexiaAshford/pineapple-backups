@@ -13,7 +13,6 @@ import (
 	"os"
 	"path"
 	"strconv"
-	"strings"
 )
 
 type BookInits struct {
@@ -47,7 +46,7 @@ func (books *BookInits) InitEpubFile() {
 	}
 	if AddImage {
 		_, _ = books.EpubSetting.AddImage(config.Current.CoverPath, "")
-		books.EpubSetting.SetCover(strings.ReplaceAll(config.Current.CoverPath, "cover", "../images"), "")
+		books.EpubSetting.SetCover(path.Join("../images", config.Current.NewBooks["novel_name"]+".jpg"), "")
 	}
 
 }
@@ -88,13 +87,17 @@ func SettingBooks(book_id string) Catalogue {
 	tools.Mkdir(path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"]))
 	config.Current.ConfigPath = path.Join(config.Vars.ConfigName, config.Current.NewBooks["novel_name"])
 	//config.Current.OutputPath = path.Join(OutputPath, config.Current.NewBooks["novel_name"]+".txt")
-	config.Current.CoverPath = path.Join("cover", config.Current.NewBooks["novel_name"]+".jpg")
+	config.Current.CoverPath = path.Join(config.Vars.CoverFile, config.Vars.CoverFile, config.Current.NewBooks["novel_name"]+".jpg")
 	books := BookInits{BookID: book_id, Locks: nil, ShowBook: true}
 	return books.BookDetailed()
 
 }
 
 func (books *BookInits) BookDetailed() Catalogue {
+	if config.Current.NewBooks["novel_name"] == "" {
+		fmt.Println("下载失败")
+		return Catalogue{Test: false}
+	}
 	books.InitEpubFile()
 	briefIntroduction := fmt.Sprintf("Name: %v\nBookID: %v\nAuthor: %v\nCount: %v\n\n\n",
 		config.Current.NewBooks["novel_name"], config.Current.NewBooks["novel_id"], config.Current.NewBooks["author_name"],

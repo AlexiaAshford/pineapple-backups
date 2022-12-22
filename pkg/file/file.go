@@ -74,7 +74,7 @@ func ReadFile(filePath string) string {
 	if content, err := os.ReadFile(filePath); err == nil {
 		return string(content)
 	} else {
-		fmt.Println("ReadFile:", err)
+		fmt.Println("ReadFile:", err, "Path:", filePath)
 	}
 	return ""
 }

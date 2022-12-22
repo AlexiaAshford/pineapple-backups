@@ -7,6 +7,7 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/struct"
 	"github.com/google/uuid"
 	"os"
+	"path"
 	"sync"
 )
 
@@ -42,7 +43,7 @@ func UpdateConfig() { // update config.json if necessary
 		Apps.Hbooker.DeviceToken, Apps.Hbooker.AppVersion = "ciweimao_", "2.9.291"
 		changeVar = true
 	}
-	Exist([]string{Vars.ConfigName, Vars.OutputName, Vars.CoverFile})
+	Exist([]string{Vars.ConfigName, Vars.OutputName, path.Join(Vars.ConfigName, Vars.CoverFile)})
 	if changeVar {
 		SaveJson()
 	}
