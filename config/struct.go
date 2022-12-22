@@ -1,6 +1,8 @@
 package config
 
 var Apps = AppConfig{}
+var Vars = &Apps.Config
+var Current = &BookInfo{}
 
 type AppConfig struct {
 	Hbooker HbookerCommonParams `json:"common_params"`

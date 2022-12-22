@@ -10,11 +10,6 @@ import (
 	"sync"
 )
 
-var (
-	Vars    = &Apps.Config
-	Current = &BookInfo{}
-)
-
 func UpdateConfig() { // update config.json if necessary
 	changeVar := false
 	if Vars.ThreadNum == 0 || Vars.ThreadNum >= 64 {
