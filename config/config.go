@@ -30,10 +30,6 @@ func UpdateConfig() { // update config.json if necessary
 		Vars.AppType = "cat"
 		changeVar = true
 	}
-	if Vars.AppKey == "" {
-		Vars.AppKey = "FMLxgOdsfxmN!Dt4"
-		changeVar = true
-	}
 	if Vars.DeviceId == "" {
 		Vars.DeviceId = uuid.New().String()
 		changeVar = true

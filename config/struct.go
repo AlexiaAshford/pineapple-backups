@@ -9,15 +9,14 @@ type AppConfig struct {
 }
 
 type ScriptConfig struct {
-	ConfigName string
-	OutputName string
-	CoverFile  string
-	AppKey     string
-	DeviceId   string
-	AppType    string
-	ThreadNum  int
-	MaxRetry   int
-	Epub       bool
+	ConfigName string `json:"config_name"`
+	OutputName string `json:"output_name"`
+	CoverFile  string `json:"cover_file"`
+	DeviceId   string `json:"device_id"`
+	AppType    string `json:"app_type"`
+	ThreadNum  int    `json:"thread_num"`
+	MaxRetry   int    `json:"max_retry"`
+	Epub       bool   `json:"epub"`
 }
 
 type BoluobaoConfig struct {
