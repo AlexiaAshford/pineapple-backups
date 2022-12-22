@@ -87,7 +87,7 @@ func SettingBooks(book_id string) Catalogue {
 	tools.Mkdir(path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"]))
 	config.Current.ConfigPath = path.Join(config.Vars.ConfigName, config.Current.NewBooks["novel_name"])
 	//config.Current.OutputPath = path.Join(OutputPath, config.Current.NewBooks["novel_name"]+".txt")
-	config.Current.CoverPath = path.Join(config.Vars.CoverFile, config.Vars.CoverFile, config.Current.NewBooks["novel_name"]+".jpg")
+	config.Current.CoverPath = path.Join(config.Vars.ConfigName, config.Vars.CoverFile, config.Current.NewBooks["novel_name"]+".jpg")
 	books := BookInits{BookID: book_id, Locks: nil, ShowBook: true}
 	return books.BookDetailed()
 
