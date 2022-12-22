@@ -59,10 +59,10 @@ func NewHttpUtils(api_url, method string) *HttpUtils {
 	req.app_type = config.Vars.AppType
 	if req.app_type == "cat" {
 		req.url = CatWebSite + strings.ReplaceAll(api_url, CatWebSite, "")
-		req.Add("login_token", config.Apps.Cat.Params.LoginToken).
-			Add("account", config.Apps.Cat.Params.Account).
-			Add("app_version", config.Apps.Cat.Params.AppVersion).
-			Add("device_token", config.Apps.Cat.Params.DeviceToken)
+		req.Add("login_token", config.Apps.Hbooker.LoginToken).
+			Add("account", config.Apps.Hbooker.Account).
+			Add("app_version", config.Apps.Hbooker.AppVersion).
+			Add("device_token", config.Apps.Hbooker.DeviceToken)
 	} else if req.app_type == "sfacg" {
 		req.url = SFWebSite + strings.ReplaceAll(api_url, SFWebSite, "")
 	} else {
@@ -83,8 +83,8 @@ func (is *HttpUtils) NEW_SET_THE_HEADERS() {
 		HeaderCollection["account-sfacg"] = config.Apps.Sfacg.UserName + "&" + config.Apps.Sfacg.Password
 	case "cat":
 		HeaderCollection["User-Agent"] = "Android com.kuangxiangciweimao.novel 2.9.291"
-		HeaderCollection["Cookie"] = "Account:" + config.Apps.Cat.Params.Account + ";" + config.Apps.Cat.Params.LoginToken
-		HeaderCollection["Authorization"] = Base64Bytes(config.Apps.Cat.Params.Account, config.Apps.Cat.Params.LoginToken)
+		HeaderCollection["Cookie"] = "Account:" + config.Apps.Hbooker.Account + ";" + config.Apps.Hbooker.LoginToken
+		HeaderCollection["Authorization"] = Base64Bytes(config.Apps.Hbooker.Account, config.Apps.Hbooker.LoginToken)
 
 	default:
 		fmt.Println(config.Vars.AppType, "AppType is invalid, please check config file")

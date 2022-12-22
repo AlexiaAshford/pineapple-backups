@@ -32,10 +32,10 @@ func init() {
 	InitApp.Usage = "https://github.com/VeronicaAlexia/pineapple-backups"
 	InitApp.Flags = config.Args
 
-	HbookerConfig.AppConfig.AppVersion = config.Apps.Cat.Params.AppVersion
-	HbookerConfig.AppConfig.Account = config.Apps.Cat.Params.Account
-	HbookerConfig.AppConfig.LoginToken = config.Apps.Cat.Params.LoginToken
-	HbookerConfig.AppConfig.DeviceToken = config.Apps.Cat.Params.DeviceToken
+	HbookerConfig.AppConfig.AppVersion = config.Apps.Hbooker.AppVersion
+	HbookerConfig.AppConfig.Account = config.Apps.Hbooker.Account
+	HbookerConfig.AppConfig.LoginToken = config.Apps.Hbooker.LoginToken
+	HbookerConfig.AppConfig.DeviceToken = config.Apps.Hbooker.DeviceToken
 
 	BoluobaoConfig.AppConfig.App = false
 	BoluobaoConfig.AppConfig.AppKey = config.Vars.AppKey

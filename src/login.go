@@ -44,7 +44,7 @@ func LoginAccount(username string, password string, retry int) {
 }
 
 func TestCatAccount() bool {
-	if config.Apps.Cat.Params.Account != "" && config.Apps.Cat.Params.LoginToken != "" {
+	if config.Apps.Hbooker.Account != "" && config.Apps.Hbooker.LoginToken != "" {
 		return true
 	} else {
 		if ok := InputAccountToken(); !ok {
@@ -77,8 +77,8 @@ func InputAccountToken() bool {
 		if len(LoginToken) != 32 {
 			fmt.Println("Login token is 32 characters, please input again:")
 		} else {
-			config.Apps.Cat.Params.LoginToken = LoginToken
-			config.Apps.Cat.Params.Account = tools.InputStr("you must input account:")
+			config.Apps.Hbooker.LoginToken = LoginToken
+			config.Apps.Hbooker.Account = tools.InputStr("you must input account:")
 			config.SaveJson()
 			return true
 		}

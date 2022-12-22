@@ -12,7 +12,7 @@ import (
 
 var (
 	Vars    = _struct.MyConfigPro{}
-	Apps    = _struct.MyAppPro{}
+	Apps    = AppConfig{}
 	Current = _struct.MyBookInfoJsonPro{}
 )
 
@@ -43,8 +43,8 @@ func UpdateConfig() { // update config.json if necessary
 		Vars.ConfigName, Vars.OutputName, Vars.CoverFile = "cache", "save", "cover"
 		changeVar = true
 	}
-	if Apps.Cat.Params.DeviceToken == "" || Apps.Cat.Params.AppVersion == "" {
-		Apps.Cat.Params.DeviceToken, Apps.Cat.Params.AppVersion = "ciweimao_", "2.9.291"
+	if Apps.Hbooker.DeviceToken == "" || Apps.Hbooker.AppVersion == "" {
+		Apps.Hbooker.DeviceToken, Apps.Hbooker.AppVersion = "ciweimao_", "2.9.291"
 		changeVar = true
 	}
 	Exist([]string{Vars.ConfigName, Vars.OutputName, Vars.CoverFile})

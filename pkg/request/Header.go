@@ -31,8 +31,8 @@ func SET_THE_HEADERS(req *http.Request) {
 		HeaderCollection["Authorization"] = Base64Bytes(config.Apps.Sfacg.UserName, config.Apps.Sfacg.Password)
 	case "cat":
 		HeaderCollection["User-Agent"] = "Android  com.kuangxiangciweimao.novel  2.9.291, Google, Pixel5"
-		HeaderCollection["Cookie"] = "Account:" + config.Apps.Cat.Params.Account + ";" + config.Apps.Cat.Params.LoginToken
-		HeaderCollection["Authorization"] = Base64Bytes(config.Apps.Cat.Params.Account, config.Apps.Cat.Params.LoginToken)
+		HeaderCollection["Cookie"] = "Account:" + config.Apps.Hbooker.Account + ";" + config.Apps.Hbooker.LoginToken
+		HeaderCollection["Authorization"] = Base64Bytes(config.Apps.Hbooker.Account, config.Apps.Hbooker.LoginToken)
 
 	default:
 		fmt.Println(config.Vars.AppType, "AppType is invalid, please check config file")

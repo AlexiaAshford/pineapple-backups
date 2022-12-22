@@ -30,10 +30,10 @@ func (c *Context) Init(url string) *Context {
 
 func (c *Context) AddCatToken() {
 	if config.Vars.AppType == "cat" {
-		c.Query("login_token", config.Apps.Cat.Params.LoginToken).
-			Query("account", config.Apps.Cat.Params.Account).
-			Query("app_version", config.Apps.Cat.Params.AppVersion).
-			Query("device_token", config.Apps.Cat.Params.DeviceToken)
+		c.Query("login_token", config.Apps.Hbooker.LoginToken).
+			Query("account", config.Apps.Hbooker.Account).
+			Query("app_version", config.Apps.Hbooker.AppVersion).
+			Query("device_token", config.Apps.Hbooker.DeviceToken)
 	}
 }
 func (c *Context) QueryToString() string {
