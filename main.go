@@ -5,6 +5,7 @@ import (
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/account"
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/task"
 	BoluobaoConfig "github.com/VeronicaAlexia/BoluobaoAPI/pkg/config"
+	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/ciweimao/book"
 	HbookerConfig "github.com/VeronicaAlexia/HbookerAPI/pkg/config"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
@@ -178,23 +179,30 @@ func main() {
 			shell_run_console_and_bookshelf()
 		}
 	} else {
+		for _, message := range config.HelpMessage {
+			fmt.Println("[info]", message)
+		}
 		if config.Vars.AppType == "cat" {
 			// recommend list for hbooker app
 			//if book_id := recommend.NEW_RECOMMEND().CHANGE_NEW_RECOMMEND(); book_id != "" {
 			//	current_download_book_function(book_id)
 			//}
+			response := HbookerAPI.GET_BOOK_INFORMATION("100280239")
+			//fmt.Println(response)
+			if response.Code == "100000" {
+				shell_run_console_and_bookshelf()
+			} else {
+				fmt.Println("hbooker error:", response.Tip)
+			}
 		} else if config.Vars.AppType == "sfacg" {
 			accounts := account.GET_ACCOUNT_INFORMATION()
 			if accounts.Data.AccountID > 0 {
 				Tasks := task.Task{AccountId: strconv.Itoa(accounts.Data.AccountID)}
 				Tasks.COMPLETE_ALL()
+				shell_run_console_and_bookshelf()
 			} else {
 				fmt.Println("you need to login to use the automatic sign-in and task function")
 			}
 		}
-		for _, message := range config.HelpMessage {
-			fmt.Println("[info]", message)
-		}
-		shell_run_console_and_bookshelf()
 	}
 }
