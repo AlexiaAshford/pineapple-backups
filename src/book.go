@@ -85,9 +85,9 @@ func SettingBooks(book_id string) Catalogue {
 		return Catalogue{Test: false, BookMessage: fmt.Sprintf("book_id:%v is invalid:%v", book_id, err)}
 	}
 	//fmt.Println(config.Current.NewBooks)
-	OutputPath := tools.Mkdir(path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"]))
+	tools.Mkdir(path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"]))
 	config.Current.ConfigPath = path.Join(config.Vars.ConfigName, config.Current.NewBooks["novel_name"])
-	config.Current.OutputPath = path.Join(OutputPath, config.Current.NewBooks["novel_name"]+".txt")
+	//config.Current.OutputPath = path.Join(OutputPath, config.Current.NewBooks["novel_name"]+".txt")
 	config.Current.CoverPath = path.Join("cover", config.Current.NewBooks["novel_name"]+".jpg")
 	books := BookInits{BookID: book_id, Locks: nil, ShowBook: true}
 	return books.BookDetailed()
@@ -103,6 +103,11 @@ func (books *BookInits) BookDetailed() Catalogue {
 	if books.ShowBook {
 		fmt.Println(briefIntroduction)
 	}
-	file.Open(config.Current.OutputPath, briefIntroduction, "w")
+
+	file.Open(
+		path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"], config.Current.NewBooks["novel_name"]+".txt"),
+		briefIntroduction,
+		"w",
+	)
 	return Catalogue{Test: true, EpubSetting: books.EpubSetting}
 }

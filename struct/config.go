@@ -21,34 +21,11 @@ type MyConfigPro struct {
 	MaxRetry   int
 	Epub       bool
 }
-
-type MyAppPro struct {
-	Sfacg  SfacgApp    `json:"sfacg"`
-	Cat    CatApp      `json:"cat"`
-	Config MyConfigPro `json:"config"`
-}
-
-type SfacgApp struct {
-	UserName string `json:"account"`
-	Password string `json:"password"`
-	Cookie   string `json:"Cookie"`
-}
-
-type CatApp struct {
-	Params struct {
-		LoginToken  string `json:"login_token"`
-		Account     string `json:"account"`
-		AppVersion  string `json:"app_version"`
-		DeviceToken string `json:"device_token"`
-	} `json:"common_params"`
-}
 type MyBookInfoJsonPro struct {
 	Book       Books
 	NewBooks   map[string]string
-	OutputPath string
 	ConfigPath string
 	CoverPath  string
 	//BackupsPath  string
-	BookInfoList []Books
 	DownloadList []string
 }

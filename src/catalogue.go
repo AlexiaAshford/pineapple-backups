@@ -116,16 +116,17 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, file_n
 }
 
 func (catalogue *Catalogue) MergeTextAndEpubFiles() {
+	savePath := path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"], config.Current.NewBooks["novel_name"])
 	for _, local_file_name := range tools.GetFileName(config.Current.ConfigPath) {
 		content := file.Open(config.Current.ConfigPath+"/"+local_file_name, "", "r")
-		file.Open(config.Current.OutputPath, "\n\n\n"+content, "a")
+		file.Open(savePath+".txt", "\n\n\n"+content, "a")
 		if config.Vars.Epub {
 			catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content+"</p>")
 		} // save to epub file if epub is true
 	}
 	if config.Vars.Epub { // output epub file
 		out_put_epub_now := time.Now() // start time
-		if err := catalogue.EpubSetting.Write(strings.ReplaceAll(config.Current.OutputPath, ".txt", ".epub")); err != nil {
+		if err := catalogue.EpubSetting.Write(savePath + ".epub"); err != nil {
 			fmt.Println("output epub error:", err)
 		}
 		fmt.Println("output epub file success, time:", time.Since(out_put_epub_now))

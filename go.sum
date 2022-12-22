@@ -1,8 +1,8 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/VeronicaAlexia/BoluobaoAPI v0.0.0-20221215163929-271b6d267a63 h1:Q26qA/MtZyyyOYkDa9tucssXE+p1gxBryA0FN/Y6jxU=
 github.com/VeronicaAlexia/BoluobaoAPI v0.0.0-20221215163929-271b6d267a63/go.mod h1:A8OeeqVYSvshH9o8UADO9W4kRbH6fqr6RZsD/raffBE=
-github.com/VeronicaAlexia/HbookerAPI v0.0.0-20221221130743-3cb73290e20d h1:YNpL0FOq4yGzkjXfSk2nmIfBLGBhU3aLdYOIhwBgq8k=
-github.com/VeronicaAlexia/HbookerAPI v0.0.0-20221221130743-3cb73290e20d/go.mod h1:1rsPiBq9GMwdLNGBcMljAsMHDLaFALZ7LoRulPJ2q+M=
+github.com/VeronicaAlexia/HbookerAPI v0.0.0-20221222050523-a529e61558cb h1:wHpv/U71IU3Z5xwt4n63F8OTYt4bk+lHPPIdlgtZhOs=
+github.com/VeronicaAlexia/HbookerAPI v0.0.0-20221222050523-a529e61558cb/go.mod h1:1rsPiBq9GMwdLNGBcMljAsMHDLaFALZ7LoRulPJ2q+M=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d h1:U+s90UTSYgptZMwQh2aRr3LuazLJIa+Pg3Kc1ylSYVY=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
