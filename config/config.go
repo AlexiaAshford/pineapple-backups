@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
-	"github.com/VeronicaAlexia/pineapple-backups/struct"
 	"github.com/google/uuid"
 	"os"
 	"path"
@@ -13,7 +12,7 @@ import (
 
 var (
 	Vars    = &Apps.Config
-	Current = _struct.MyBookInfoJsonPro{}
+	Current = &BookInfo{}
 )
 
 func UpdateConfig() { // update config.json if necessary

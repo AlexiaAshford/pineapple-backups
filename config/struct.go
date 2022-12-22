@@ -43,7 +43,7 @@ type Books struct {
 	CharCount  string
 	SignStatus string
 }
-type MyBookInfoJsonPro struct {
+type BookInfo struct {
 	Book       Books
 	NewBooks   map[string]string
 	OutputPath string
