@@ -42,25 +42,36 @@ func (bs *Bookshelf) ShowBookshelf(shelf Template.InfoData) {
 
 }
 
-func (bs *Bookshelf) ChoiceBookshelf(shelf Template.InfoData) {
-	for _, book := range shelf.Data[bs.ShelfIndex].Expand.Novels {
+func (bs *Bookshelf) ChoiceBookshelf(BookInfoData []Template.BookInfoData) *Template.BookInfoData {
+	for _, book := range BookInfoData {
 		fmt.Println("小说名:", book.NovelName, "\t\t\t小说ID:", book.NovelID)
 	}
-	choice := tools.InputStr("是继续进行书架下载?[y/a/enter]")
+	choice := tools.InputStr(">")
+	if strings.Contains(choice, "d ") {
+		book_id := strings.Replace(choice, "d ", "", 1)
+		res := sfbook.GET_BOOK_INFORMATION(book_id)
+		if res.Status.HTTPCode == 200 {
+			fmt.Println(res.Data.NovelName, res.Data.NovelID)
+			return &res.Data
+		} else {
+			fmt.Println("get book info error:", res.Status.Msg)
+		}
+
+	}
 	if strings.ToLower(choice) == "y" {
-		BookIndex := tools.InputInt(">", len(shelf.Data[bs.ShelfIndex].Expand.Novels))
-		sfbook.GET_BOOK_INFORMATION(strconv.Itoa(shelf.Data[bs.ShelfIndex].Expand.Novels[BookIndex].NovelID))
+		BookIndex := tools.InputInt(">", len(BookInfoData))
+		sfbook.GET_BOOK_INFORMATION(strconv.Itoa(BookInfoData[BookIndex].NovelID))
 	} else if strings.ToLower(choice) == "a" {
-		for _, book := range shelf.Data[bs.ShelfIndex].Expand.Novels {
+		for _, book := range BookInfoData {
 			sfbook.GET_BOOK_INFORMATION(strconv.Itoa(book.NovelID))
 		}
 	} else {
 		fmt.Println("已退出书架下载")
 	}
-
+	return nil
 }
 
-func (bs *Bookshelf) NewSfacgBookshelf() {
+func (bs *Bookshelf) NewSfacgBookshelf() *Template.BookInfoData {
 	response := bookshelf.GET_BOOK_SHELF_INFORMATION()
 	if response.Status.HTTPCode == 200 {
 		if len(response.Data) == 1 {
@@ -69,13 +80,21 @@ func (bs *Bookshelf) NewSfacgBookshelf() {
 			bs.ShowBookshelf(response)
 
 		} else {
+			fmt.Println("检测到多个书架，需要选择书架")
 			bs.ShelfIndex = tools.InputInt(">", len(response.Data))
 			bs.ShowBookshelf(response)
 		}
-		bs.ChoiceBookshelf(response)
+		for i := 0; i < 5; i++ {
+
+			result := bs.ChoiceBookshelf(response.Data[bs.ShelfIndex].Expand.Novels)
+			if result != nil {
+				return result
+			}
+		}
 	} else {
 		fmt.Println("get bookshelf error:", response.Status.Msg)
 	}
+	return nil
 }
 
 func hbooker_bookshelf() (map[int][]map[string]string, error) {
