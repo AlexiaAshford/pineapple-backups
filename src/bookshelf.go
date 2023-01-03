@@ -2,6 +2,8 @@ package src
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/BoluobaoAPI/Template"
+	sfbook "github.com/VeronicaAlexia/BoluobaoAPI/boluobao/book"
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/bookshelf"
 	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/ciweimao/bookshelf"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
@@ -27,6 +29,53 @@ func sfacg_bookshelf() (map[int][]map[string]string, error) {
 		bookshelf_info[index] = bookshelf_info_list
 	}
 	return bookshelf_info, nil
+}
+
+type Bookshelf struct {
+	ShelfIndex int
+}
+
+func (bs *Bookshelf) ShowBookshelf(shelf Template.InfoData) {
+	for index, value := range shelf.Data {
+		fmt.Println("书架号:", index, "\t\t\t书架名:", value.Name)
+	}
+
+}
+
+func (bs *Bookshelf) ChoiceBookshelf(shelf Template.InfoData) {
+	for _, book := range shelf.Data[bs.ShelfIndex].Expand.Novels {
+		fmt.Println("小说名:", book.NovelName, "\t\t\t小说ID:", book.NovelID)
+	}
+	choice := tools.InputStr("是继续进行书架下载?[y/a/enter]")
+	if strings.ToLower(choice) == "y" {
+		BookIndex := tools.InputInt(">", len(shelf.Data[bs.ShelfIndex].Expand.Novels))
+		sfbook.GET_BOOK_INFORMATION(strconv.Itoa(shelf.Data[bs.ShelfIndex].Expand.Novels[BookIndex].NovelID))
+	} else if strings.ToLower(choice) == "a" {
+		for _, book := range shelf.Data[bs.ShelfIndex].Expand.Novels {
+			sfbook.GET_BOOK_INFORMATION(strconv.Itoa(book.NovelID))
+		}
+	} else {
+		fmt.Println("已退出书架下载")
+	}
+
+}
+
+func (bs *Bookshelf) NewSfacgBookshelf() {
+	response := bookshelf.GET_BOOK_SHELF_INFORMATION()
+	if response.Status.HTTPCode == 200 {
+		if len(response.Data) == 1 {
+			fmt.Println("检测到只有一个书架，无需选择书架")
+			bs.ShelfIndex = 0
+			bs.ShowBookshelf(response)
+
+		} else {
+			bs.ShelfIndex = tools.InputInt(">", len(response.Data))
+			bs.ShowBookshelf(response)
+		}
+		bs.ChoiceBookshelf(response)
+	} else {
+		fmt.Println("get bookshelf error:", response.Status.Msg)
+	}
 }
 
 func hbooker_bookshelf() (map[int][]map[string]string, error) {
