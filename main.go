@@ -44,17 +44,17 @@ func init() {
 	InitApp.Action = func(c *cli.Context) {
 
 		fmt.Println("you can input -h and --help to see the command list.")
-		if config.CommandLines.AppType != "cat" && config.CommandLines.AppType != "sfacg" {
-			fmt.Println(config.CommandLines.AppType, "app type error, default app type is sfacg.")
-			config.CommandLines.AppType = "sfacg" // default app type is sfacg
+		if config.Command.AppType != "cat" && config.Command.AppType != "sfacg" {
+			fmt.Println(config.Command.AppType, "app type error")
+			os.Exit(1)
 		}
 	}
 	if err := InitApp.Run(os.Args); err != nil {
 		log.Fatal(err)
 	}
-	config.Vars.ThreadNum = config.CommandLines.MaxThread
-	config.Vars.AppType = config.CommandLines.AppType
-	config.Vars.Epub = config.CommandLines.Epub
+	config.Vars.ThreadNum = config.Command.MaxThread
+	config.Vars.AppType = config.Command.AppType
+	config.Vars.Epub = config.Command.Epub
 
 	fmt.Println("current app type:", config.Vars.AppType)
 }
@@ -162,18 +162,18 @@ func shell_run_console_and_bookshelf() {
 
 func main() {
 	if len(os.Args) > 1 {
-		if config.CommandLines.Account != "" && config.CommandLines.Password != "" {
-			shell([]string{"login", config.CommandLines.Account, config.CommandLines.Password})
-		} else if config.CommandLines.Login {
+		if config.Command.Account != "" && config.Command.Password != "" {
+			shell([]string{"login", config.Command.Account, config.Command.Password})
+		} else if config.Command.Login {
 			src.TestAppTypeAndAccount()
-		} else if config.CommandLines.BookId != "" {
-			current_download_book_function(config.CommandLines.BookId)
-		} else if config.CommandLines.SearchKey != "" {
-			s := src.Search{Keyword: config.CommandLines.SearchKey, Page: 0}
+		} else if config.Command.BookId != "" {
+			current_download_book_function(config.Command.BookId)
+		} else if config.Command.SearchKey != "" {
+			s := src.Search{Keyword: config.Command.SearchKey, Page: 0}
 			current_download_book_function(s.SearchBook())
-		} else if config.CommandLines.Update {
+		} else if config.Command.Update {
 			update_local_booklist()
-		} else if config.CommandLines.Token {
+		} else if config.Command.Token {
 			src.InputAccountToken()
 		} else {
 			shell_run_console_and_bookshelf()

@@ -4,7 +4,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-var CommandLines = CommandLinesType{}
+var Command = CommandLinesType{}
 
 type CommandLinesType struct {
 	BookId    string
@@ -25,57 +25,57 @@ var Args = []cli.Flag{
 		Name:        "a, app",
 		Value:       "sfacg",
 		Usage:       "cheng app type",
-		Destination: &CommandLines.AppType,
+		Destination: &Command.AppType,
 	},
 	cli.StringFlag{
 		Name:        "d, download",
 		Value:       "",
 		Usage:       "book id",
-		Destination: &CommandLines.BookId,
+		Destination: &Command.BookId,
 	},
 	cli.BoolFlag{
 		Name:        "t, token",
 		Usage:       "input hbooker token",
-		Destination: &CommandLines.Token,
+		Destination: &Command.Token,
 	},
 	cli.IntFlag{
 		Name:        "m, max",
 		Value:       16,
 		Usage:       "change max thread number",
-		Destination: &CommandLines.MaxThread,
+		Destination: &Command.MaxThread,
 	},
 	cli.StringFlag{
 		Name:        "u, user",
 		Value:       "",
 		Usage:       "input account name",
-		Destination: &CommandLines.Account,
+		Destination: &Command.Account,
 	},
 	cli.StringFlag{
 		Name:        "p, password",
 		Value:       "",
 		Usage:       "input password",
-		Destination: &CommandLines.Password,
+		Destination: &Command.Password,
 	},
 	cli.BoolFlag{
 		Name:        "update",
 		Usage:       "update book",
-		Destination: &CommandLines.Update,
+		Destination: &Command.Update,
 	},
 	cli.StringFlag{
 		Name:        "s, search",
 		Value:       "",
 		Usage:       "search book by keyword",
-		Destination: &CommandLines.SearchKey,
+		Destination: &Command.SearchKey,
 	},
 	cli.BoolFlag{
 		Name:        "l, login",
 		Usage:       "login local account",
-		Destination: &CommandLines.Login,
+		Destination: &Command.Login,
 	},
 	cli.BoolFlag{
 		Name:        "e, epub",
 		Usage:       "start epub",
-		Destination: &CommandLines.Epub,
+		Destination: &Command.Epub,
 	},
 }
 
