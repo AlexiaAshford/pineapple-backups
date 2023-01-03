@@ -15,16 +15,15 @@
 <br>
  
 
-## **About download sfacg vip books**    
-- - -
+## **About download sfacg vip books**     
 - Wechat API can't download vip chapters, because the sfacg programmer updates the chapter api return value, the new api can't get the text, only get the picture, so you can't download vip chapters.
 - you need to enable sfacg Android API to implement vip chapter download, you can modify the `App` variable in the `main.go` file and set `false` to `true` to implement the api switch. 
 
 
 <br><br>
 
-## **Functions**
 - - -
+## **Functions** 
 - Download function is implemented for sfacg [`Android`/`WeChat`] Api and hbooker Android API 
 - Login your account and save cookies to a ```config.json```
 - Input the book id or url and download the book to the local directory
@@ -36,8 +35,8 @@
 <br><br>
 
 
-## Sign in to your ciweimao Account 
 - - -
+## Sign in to your ciweimao Account  
   - Login your account to get your `token` to use this script
   - hbooker new version add GEETEST verification, if you enter the wrong information or log in multiple times, GEETEST verification will be triggered.
   - IP address may need to log in again after a few hours to avoid triggering verification, you can try to change the IP to avoid triggering verification.
@@ -45,8 +44,8 @@
 <br><br>
 
 
-## API access is achieved through token.
 - - -
+## API access is achieved through token. 
   - **Adopt token to access api, bypass login**
   - third party captcha geetest has been adding to the ciweimao official server.
   - ciweimao login is protected by geetest, which seems impossible to circumvent.
@@ -54,8 +53,8 @@
 
 <br><br>
 
-## **Example**
 - - -
+## **Example** 
 ``` bash
 NAME:
    pineapple-backups - https://github.com/VeronicaAlexia/pineapple-backups

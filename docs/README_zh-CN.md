@@ -6,144 +6,111 @@
     下载 <a href="https://book.sfacg.com/">菠萝包</a> 和 
     <a href="https://app.hbooker.com/">刺猬猫</a> 的小说到本地阅读. 
 
-</h3> 
+</h3>
+
+## 关于下载sfacg vip书籍 
+
+---
+
+- 微信API无法下载vip章节，因为sfacg程序员更新了章节API返回值，新的API无法获取文本，只能获取图片，因此无法下载vip章节。
+
+- 您需要启用sfacg Android API来实现vip章节下载，您可以修改`main.go`文件中的`App`变量，并将`false`设置为`true`以实现API切换。
+
+
+
+<br><br>
+
 
 ## **功能**
 
-- 通过 sfacg wechat Api 和 刺猬猫 Android Api实现下载功能
-- 登录菠萝包帐户并将cookies保存到本地文件 ```config.json```
-- 输入图书id或url，并将图书下载到本地目录
-- 输入url，并从url提取书籍id下载书籍文本
-- 支持从菠萝包和刺猬猫下载epub电子书
+
+
+- 菠萝包[`Android`/`WeChat`]刺猬猫安卓接口实现了下载功能
+
+- 登录您的帐户并将cookie保存到`config.json`
+
+- 输入图书id或url并将图书下载到本地目录
+
+- 输入url并从url下载书籍文本
+
+- 支持从sfacg和hbooker下载epub
+
 - 按关键字搜索书籍，并下载搜索结果
-- [ **警告** ] 新版本图书缓存与旧版本图书缓存不兼容。
 
-## **示例**
+- [**警告**]新版本图书缓存与旧版本图书缓存不兼容。
 
-- --app=```<type[sfacg / cat]>```
-- --account=```<account>```
-- --password=```<password>```
-- --download=```<type[bid / url]>```
-- --search=```<关键词>```
-- --show  < 查看 config.json 文件 >
 
-## **免责声明**
+<br><br>
 
-- 此工具仅用于学习。请在下载后24小时内将其从计算机中删除。
-- 请尊重版权，请勿自行传播爬虫图书，在任何情况下，作者或版权持有人均不对任何索赔负责
-- 损害赔偿或其他责任，无论是在合同诉讼中，因软件或软件的使用或其他交易而产生的侵权行为或其他行为，作者均不承担责任。
 
-## **文件树**
 
-``` 
-C:.
-│  .gitignore
-│  config.json
-│  go.mod
-│  go.sum
-│  LICENSE
-│  main.go
-│  README.md
-│  
-├─.idea
-│      workspace.xml
-│
-├─cache
-├─config
-│      command.go
-│      config.go
-│      file.go
-│      msg.go
-│      thread.go
-│      tool.go
-│ 
-├─docs
-│      81841388.png
-│      84782349.png
-│      README_zh-CN.md
-│      README_zh-TW.md
-│
-├─epub
-│  │  dirinfo.go
-│  │  epub.go
-│  │  fetchmedia.go
-│  │  fs.go
-│  │  pkg.go
-│  │  toc.go
-│  │  write.go
-│  │  xhtml.go
-│  │
-│  └─internal
-│      └─storage
-│          │  storage.go
-│          │
-│          ├─memory
-│          │      file.go
-│          │      fs.go
-│          │
-│          └─osfs
-│                  fs.go
-│
-├─save
-├─src
-│  │  book.go
-│  │  bookshelf.go
-│  │  catalogue.go
-│  │  login.go
-│  │  progressbar.go
-│  │  search.go
-│  │
-│  ├─boluobao
-│  │      api.go
-│  │
-│  ├─hbooker
-│  │  │  api.go
-│  │  │  Geetest.go
-│  │  │  UrlConstants.go
-│  │  │
-│  │  └─Encrypt
-│  │          decode.go
-│  │          Encrypt.go
-│  │
-│  └─https
-│          Header.go
-│          param.go
-│          request.go
-│          urlconstant.go
-│
-└─struct
-    │  command.go
-    │  config.go
-    │
-    ├─book_info
-    │      book_info.go
-    │
-    ├─hbooker_structs
-    │  │  chapter.go
-    │  │  config.go
-    │  │  content.go
-    │  │  detail.go
-    │  │  geetest.go
-    │  │  key.go
-    │  │  login.go
-    │  │  recommend.go
-    │  │  search.go
-    │  │
-    │  ├─bookshelf
-    │  │      bookshelf.go
-    │  │
-    │  └─division
-    │          division.go
-    │
-    └─sfacg_structs
-        │  account.go
-        │  book.go
-        │  catalogue.go
-        │  content.go
-        │  login.go
-        │  search.go
-        │
-        └─bookshelf
-                bookshelf.go
+## 登录您的ciweimao帐户
+
+- - -
+
+- 登录您的帐户以获取使用此脚本的“令牌”
+
+- hboker新版本增加了GEETEST验证，如果您输入错误信息或多次登录，将触发GEETEST校验。
+
+- IP地址可能需要在几小时后再次登录以避免触发验证，您可以尝试更改IP以避免触发确认。
+
+
+<br><br>
+
+
+
+## API访问通过令牌实现。
+
+- - -
+
+- **采用token访问api，绕过登录**
+
+- 第三方captcha geetest已添加到ciweimao官方服务器。
+
+- ciweimao登录受到geetest的保护，这似乎是不可能规避的。
+
+- 您可以提供`刺猬猫 Android`应用程序的数据包捕获以获取`account`和`login token`登录。
+
+
+<br><br>
+
+## **Example**
+- - -
+``` bash
+NAME:
+   pineapple-backups - https://github.com/VeronicaAlexia/pineapple-backups
+
+USAGE:
+   main.exe [global options] command [command options] [arguments...]
+
+VERSION:
+   V.1.7.0
+
+COMMANDS:
+   help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   -a value, --app value       cheng app type (default: "cat")
+   -d value, --download value  book id
+   -t, --token                 input hbooker token
+   -m value, --max value       change max thread number (default: 16)
+   -u value, --user value      input account name
+   -p value, --password value  input password
+   --update                    update book
+   -s value, --search value    search book by keyword
+   -l, --login                 login local account
+   -e, --epub                  start epub
+   --help, -h                  show help
+   --version, -v               print the version
 
 ```
+
+## **Disclaimers**
+
+- This tool is for learning only. Please delete it from your computer within 24 hours after downloading.
+- Please respect the copyright and do not spread the crawled books by yourself.
+- In no event shall the authors or copyright holders be liable for any claim damages or other liability, whether in an
+  action of contract tort or otherwise, arising from, out of or in connection with the software or the use or other
+  dealings in the software , including but not limited to the use of the software for illegal purposes,author is not
+  responsible for any legal consequences.
+- If you have any questions, please contact me by github issues or email.
