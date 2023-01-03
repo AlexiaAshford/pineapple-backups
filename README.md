@@ -7,12 +7,25 @@
     <a href="https://app.hbooker.com/">hbooker</a> to read them. 
 
 </h3> 
+ 
 
 [简中](./docs/README_zh-CN.md) | [繁中](./docs/README_zh-TW.md)
 
-## **Functions**
+- - -
+<br>
+ 
 
-- Download function is implemented for sfacg WeChat Api and hbooker Android API
+## **About download sfacg vip books**    
+- - -
+- Wechat API can't download vip chapters, because the sfacg programmer updates the chapter api return value, the new api can't get the text, only get the picture, so you can't download vip chapters.
+- you need to enable sfacg Android API to implement vip chapter download, you can modify the `App` variable in the `main.go` file and set `false` to `true` to implement the api switch. 
+
+
+<br><br>
+
+## **Functions**
+- - -
+- Download function is implemented for sfacg [`Android`/`WeChat`] Api and hbooker Android API 
 - Login your account and save cookies to a ```config.json```
 - Input the book id or url and download the book to the local directory
 - Input url and download book text from the url
@@ -20,22 +33,30 @@
 - Search books by keyword,and download the search result
 - [ **warning** ] New version book cache is incompatible with older book cache.
 
+<br><br>
+
+
 ## Sign in to your ciweimao Account 
-- **Login your account to get your `token` to use this script**
+- - -
+  - Login your account to get your `token` to use this script
   - hbooker new version add GEETEST verification, if you enter the wrong information or log in multiple times, GEETEST verification will be triggered.
   - IP address may need to log in again after a few hours to avoid triggering verification, you can try to change the IP to avoid triggering verification.
 
+<br><br>
+
 
 ## API access is achieved through token.
-- **Adopt token to access api, bypass login**
+- - -
+  - **Adopt token to access api, bypass login**
   - third party captcha geetest has been adding to the ciweimao official server.
   - ciweimao login is protected by geetest, which seems impossible to circumvent.
   - you can **`Packet Capture`** of the `ciweimao Android App` to get the `account` and `login_token` login.
 
+<br><br>
 
 ## **Example**
-
-```
+- - -
+``` bash
 NAME:
    pineapple-backups - https://github.com/VeronicaAlexia/pineapple-backups
 
@@ -43,10 +64,10 @@ USAGE:
    main.exe [global options] command [command options] [arguments...]
 
 VERSION:
-   V.1.6.2
+   V.1.7.0
 
 COMMANDS:
-     help, h  Shows a list of commands or help for one command
+   help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    -a value, --app value       cheng app type (default: "cat")
@@ -72,118 +93,4 @@ GLOBAL OPTIONS:
   action of contract tort or otherwise, arising from, out of or in connection with the software or the use or other
   dealings in the software , including but not limited to the use of the software for illegal purposes,author is not
   responsible for any legal consequences.
-
-## **File tree**
-
-``` 
-C:.
-│  .gitignore
-│  config.json
-│  go.mod
-│  go.sum
-│  LICENSE
-│  main.go
-│  README.md
-│  
-├─.idea
-│      workspace.xml
-│
-├─cache
-├─config
-│      command.go
-│      config.go
-│      file.go
-│      msg.go
-│      thread.go
-│      tool.go
-│ 
-├─docs
-│      81841388.png
-│      84782349.png
-│      README_zh-CN.md
-│      README_zh-TW.md
-│
-├─epub
-│  │  dirinfo.go
-│  │  epub.go
-│  │  fetchmedia.go
-│  │  fs.go
-│  │  pkg.go
-│  │  toc.go
-│  │  write.go
-│  │  xhtml.go
-│  │
-│  └─internal
-│      └─storage
-│          │  storage.go
-│          │
-│          ├─memory
-│          │      file.go
-│          │      fs.go
-│          │
-│          └─osfs
-│                  fs.go
-│
-├─save
-├─src
-│  │  book.go
-│  │  bookshelf.go
-│  │  catalogue.go
-│  │  login.go
-│  │  progressbar.go
-│  │  search.go
-│  │
-│  ├─boluobao
-│  │      api.go
-│  │
-│  ├─hbooker
-│  │  │  api.go
-│  │  │  Geetest.go
-│  │  │  UrlConstants.go
-│  │  │
-│  │  └─Encrypt
-│  │          decode.go
-│  │          Encrypt.go
-│  │
-│  └─https
-│          Header.go
-│          param.go
-│          request.go
-│          urlconstant.go
-│
-└─struct
-    │  command.go
-    │  config.go
-    │
-    ├─book_info
-    │      book_info.go
-    │
-    ├─hbooker_structs
-    │  │  chapter.go
-    │  │  config.go
-    │  │  content.go
-    │  │  detail.go
-    │  │  geetest.go
-    │  │  key.go
-    │  │  login.go
-    │  │  recommend.go
-    │  │  search.go
-    │  │
-    │  ├─bookshelf
-    │  │      bookshelf.go
-    │  │
-    │  └─division
-    │          division.go
-    │
-    └─sfacg_structs
-        │  account.go
-        │  book.go
-        │  catalogue.go
-        │  content.go
-        │  login.go
-        │  search.go
-        │
-        └─bookshelf
-                bookshelf.go
-
-```
+- If you have any questions, please contact me by github issues or email.
