@@ -31,22 +31,22 @@ func init() {
 	InitApp.Version = "V.1.6.9"
 	InitApp.Usage = "https://github.com/VeronicaAlexia/pineapple-backups"
 	InitApp.Flags = config.Args
-
 	HbookerConfig.AppConfig.AppVersion = config.Apps.Hbooker.AppVersion
 	HbookerConfig.AppConfig.Account = config.Apps.Hbooker.Account
 	HbookerConfig.AppConfig.LoginToken = config.Apps.Hbooker.LoginToken
 	HbookerConfig.AppConfig.DeviceToken = config.Apps.Hbooker.DeviceToken
 
-	BoluobaoConfig.AppConfig.App = false
+	BoluobaoConfig.AppConfig.App = false // set boluobao app mode
 	BoluobaoConfig.AppConfig.AppKey = "FMLxgOdsfxmN!Dt4"
 	BoluobaoConfig.AppConfig.DeviceId = "240a90cc-4c40-32c7-b44e-d4cf9e670605"
 	BoluobaoConfig.AppConfig.Cookie = config.Apps.Sfacg.Cookie
 
 	InitApp.Action = func(c *cli.Context) {
+
 		fmt.Println("you can input -h and --help to see the command list.")
 		if config.CommandLines.AppType != "cat" && config.CommandLines.AppType != "sfacg" {
-			fmt.Println(config.CommandLines.AppType, "app type error, default app type is cat.")
-			config.CommandLines.AppType = "cat" // default app type is cat
+			fmt.Println(config.CommandLines.AppType, "app type error, default app type is sfacg.")
+			config.CommandLines.AppType = "sfacg" // default app type is sfacg
 		}
 	}
 	if err := InitApp.Run(os.Args); err != nil {
@@ -64,9 +64,9 @@ func current_download_book_function(book_id string) {
 	if !catalogue.Test {
 		fmt.Println(catalogue.BookMessage)
 		os.Exit(1)
-	} else {
-		catalogue.GetDownloadsList()
 	}
+	catalogue.GetDownloadsList()
+
 	if len(config.Current.DownloadList) > 0 {
 		thread := threading.NewGoLimit(uint(config.Vars.MaxRetry))
 		fmt.Println(len(config.Current.DownloadList), " chapters will be downloaded.")

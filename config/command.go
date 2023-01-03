@@ -4,7 +4,9 @@ import (
 	"github.com/urfave/cli"
 )
 
-var CommandLines = struct {
+var CommandLines = CommandLinesType{}
+
+type CommandLinesType struct {
 	BookId    string
 	Account   string
 	Password  string
@@ -16,12 +18,12 @@ var CommandLines = struct {
 	ShowInfo  bool
 	Update    bool
 	Epub      bool
-}{}
+}
 
 var Args = []cli.Flag{
 	cli.StringFlag{
 		Name:        "a, app",
-		Value:       "cat",
+		Value:       "sfacg",
 		Usage:       "cheng app type",
 		Destination: &CommandLines.AppType,
 	},

@@ -22,7 +22,7 @@ func UpdateConfig() { // update config.json if necessary
 	}
 	if Vars.AppType == "" {
 		// default app type
-		Vars.AppType = "cat"
+		Vars.AppType = "sfacg"
 		changeVar = true
 	}
 	if Vars.DeviceId == "" {
