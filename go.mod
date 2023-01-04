@@ -3,8 +3,8 @@ module github.com/VeronicaAlexia/pineapple-backups
 go 1.19
 
 require (
-	github.com/VeronicaAlexia/BoluobaoAPI v0.0.0-20230103162058-edb6cb29e8f4
-	github.com/VeronicaAlexia/HbookerAPI v0.0.0-20221222050523-a529e61558cb
+	github.com/VeronicaAlexia/BoluobaoAPI v0.0.0-20230104081854-0c9f9f79d476
+	github.com/VeronicaAlexia/HbookerAPI v0.0.0-20221228043426-2aac9368105b
 	github.com/gabriel-vasile/mimetype v1.4.1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gofrs/uuid v4.3.1+incompatible
@@ -21,6 +21,7 @@ require (
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d // indirect
+	github.com/liushuochen/gotable v0.0.0-20221119160816-1113793e7092 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect

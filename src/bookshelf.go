@@ -3,8 +3,7 @@ package src
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/BoluobaoAPI/Template"
-	sfbook "github.com/VeronicaAlexia/BoluobaoAPI/boluobao/book"
-	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/bookshelf"
+	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao"
 	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/ciweimao/bookshelf"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
@@ -13,12 +12,12 @@ import (
 )
 
 func sfacg_bookshelf() (map[int][]map[string]string, error) {
-	response := bookshelf.GET_BOOK_SHELF_INFORMATION()
+	response := boluobao.API.BookShelf.NovelBookShelf()
 	bookshelf_info := make(map[int][]map[string]string)
-	if response.Status.HTTPCode != 200 {
-		return nil, fmt.Errorf(response.Status.Msg.(string))
+	if response == nil {
+		return nil, fmt.Errorf("get bookshelf error")
 	}
-	for index, value := range response.Data {
+	for index, value := range *response {
 		fmt.Println("书架号:", index, "\t\t\t书架名:", value.Name)
 		var bookshelf_info_list []map[string]string
 		for _, book := range value.Expand.Novels {
@@ -35,8 +34,8 @@ type Bookshelf struct {
 	ShelfIndex int
 }
 
-func (bs *Bookshelf) ShowBookshelf(shelf Template.InfoData) {
-	for index, value := range shelf.Data {
+func (bs *Bookshelf) ShowBookshelf(shelf *[]Template.ShelfData) {
+	for index, value := range *shelf {
 		fmt.Println("书架号:", index, "\t\t\t书架名:", value.Name)
 	}
 
@@ -49,21 +48,19 @@ func (bs *Bookshelf) ChoiceBookshelf(BookInfoData []Template.BookInfoData) *Temp
 	choice := tools.InputStr(">")
 	if strings.Contains(choice, "d ") {
 		book_id := strings.Replace(choice, "d ", "", 1)
-		res := sfbook.GET_BOOK_INFORMATION(book_id)
-		if res.Status.HTTPCode == 200 {
-			fmt.Println(res.Data.NovelName, res.Data.NovelID)
-			return &res.Data
-		} else {
-			fmt.Println("get book info error:", res.Status.Msg)
+		res := boluobao.API.Book.NovelInfo(book_id)
+		if res != nil {
+			fmt.Println(res.NovelName, res.NovelID)
+			return res
 		}
 
 	}
 	if strings.ToLower(choice) == "y" {
 		BookIndex := tools.InputInt(">", len(BookInfoData))
-		sfbook.GET_BOOK_INFORMATION(strconv.Itoa(BookInfoData[BookIndex].NovelID))
+		boluobao.API.Book.NovelInfo(strconv.Itoa(BookInfoData[BookIndex].NovelID))
 	} else if strings.ToLower(choice) == "a" {
 		for _, book := range BookInfoData {
-			sfbook.GET_BOOK_INFORMATION(strconv.Itoa(book.NovelID))
+			boluobao.API.Book.NovelInfo(strconv.Itoa(book.NovelID))
 		}
 	} else {
 		fmt.Println("已退出书架下载")
@@ -72,27 +69,25 @@ func (bs *Bookshelf) ChoiceBookshelf(BookInfoData []Template.BookInfoData) *Temp
 }
 
 func (bs *Bookshelf) NewSfacgBookshelf() *Template.BookInfoData {
-	response := bookshelf.GET_BOOK_SHELF_INFORMATION()
-	if response.Status.HTTPCode == 200 {
-		if len(response.Data) == 1 {
+	response := boluobao.API.BookShelf.NovelBookShelf()
+	if response != nil {
+		if len(*response) == 1 {
 			fmt.Println("检测到只有一个书架，无需选择书架")
 			bs.ShelfIndex = 0
 			bs.ShowBookshelf(response)
 
 		} else {
 			fmt.Println("检测到多个书架，需要选择书架")
-			bs.ShelfIndex = tools.InputInt(">", len(response.Data))
+			bs.ShelfIndex = tools.InputInt(">", len(*response))
 			bs.ShowBookshelf(response)
 		}
 		for i := 0; i < 5; i++ {
 
-			result := bs.ChoiceBookshelf(response.Data[bs.ShelfIndex].Expand.Novels)
-			if result != nil {
-				return result
-			}
+			//result := bs.ChoiceBookshelf(response[bs.ShelfIndex].Expand.Novels)
+			//if result != nil {
+			//	return result
+			//}
 		}
-	} else {
-		fmt.Println("get bookshelf error:", response.Status.Msg)
 	}
 	return nil
 }

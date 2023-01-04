@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/account"
-	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/task"
+	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao"
 	BoluobaoConfig "github.com/VeronicaAlexia/BoluobaoAPI/pkg/config"
 	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/ciweimao/book"
 	HbookerConfig "github.com/VeronicaAlexia/HbookerAPI/pkg/config"
@@ -15,7 +14,6 @@ import (
 	"github.com/urfave/cli"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -196,14 +194,15 @@ func main() {
 				fmt.Println("hbooker error:", response.Tip)
 			}
 		} else if config.Vars.AppType == "sfacg" {
-			accounts := account.GET_ACCOUNT_INFORMATION()
-			if accounts.Data.AccountID > 0 {
-				Tasks := task.Task{AccountId: strconv.Itoa(accounts.Data.AccountID)}
-				Tasks.NovelCompleteTas()
-				shell_run_console_and_bookshelf()
-			} else {
-				fmt.Println("you need to login to use the automatic sign-in and task function")
-			}
+			boluobao.API.User.UserInformation()
+			shell_run_console_and_bookshelf()
+			//if accounts.Data.AccountID > 0 {
+			//	Tasks := task.Task{AccountId: strconv.Itoa(accounts.Data.AccountID)}
+			//	Tasks.NovelCompleteTas()
+			//	shell_run_console_and_bookshelf()
+			//} else {
+			//	fmt.Println("you need to login to use the automatic sign-in and task function")
+			//}
 		}
 	}
 }

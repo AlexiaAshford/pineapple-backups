@@ -2,8 +2,8 @@ package src
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/book"
-	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/ciweimao/book"
+	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao"
+	"github.com/VeronicaAlexia/HbookerAPI/ciweimao/book"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
@@ -35,7 +35,7 @@ func (catalogue *Catalogue) ReadChapterConfig() {
 func GET_DIVISION(BookId string) []map[string]string {
 	var chapter_index int
 	var division_info_list []map[string]string
-	VolumeList := HbookerAPI.GET_DIVISION_LIST_BY_BOOKID(BookId)
+	VolumeList := book.GET_DIVISION_LIST_BY_BOOKID(BookId)
 	for division_index, division_info := range VolumeList.Data.ChapterList {
 		fmt.Printf("第%v卷\t\t%v\n", division_index+1, division_info.DivisionName)
 		for _, chapter := range division_info.ChapterList {
@@ -60,7 +60,7 @@ func (catalogue *Catalogue) GetDownloadsList() []string {
 	catalogue.ReadChapterConfig()
 	var chapter_info_list []map[string]string
 	if config.Vars.AppType == "sfacg" {
-		return book.NovelCatalogue(config.Current.NewBooks["novel_id"])
+		return boluobao.API.Book.NovelCatalogue(config.Current.NewBooks["novel_id"])
 	} else if config.Vars.AppType == "cat" {
 		var DownloadList []string
 		chapter_info_list = GET_DIVISION(config.Current.NewBooks["novel_id"])
@@ -87,9 +87,9 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapte
 	var content_text string
 	for i := 0; i < 5; i++ {
 		if config.Vars.AppType == "sfacg" {
-			content_text = book.NovelContent(chapterID).Data.Expand.Content
+			content_text = boluobao.API.Book.NovelContent(chapterID).Data.Expand.Content
 		} else if config.Vars.AppType == "cat" {
-			content_text = HbookerAPI.GetContent(chapterID)
+			content_text = book.GetContent(chapterID)
 		}
 		if content_text != "" {
 			file.Open(path.Join(config.Current.ConfigPath, chapterID+".txt"), content_text, "w")
@@ -102,7 +102,7 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	savePath := path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"], config.Current.NewBooks["novel_name"])
 	var NovelCatalogue []string
 	if config.Vars.AppType == "sfacg" {
-		NovelCatalogue = book.NovelCatalogue(config.Current.NewBooks["novel_id"])
+		NovelCatalogue = boluobao.API.Book.NovelCatalogue(config.Current.NewBooks["novel_id"])
 	} else {
 		for _, chapter_info := range GET_DIVISION(config.Current.NewBooks["novel_id"]) {
 			if !tools.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {

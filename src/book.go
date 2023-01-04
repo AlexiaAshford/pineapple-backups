@@ -2,8 +2,8 @@ package src
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/book"
-	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/ciweimao/book"
+	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao"
+	"github.com/VeronicaAlexia/HbookerAPI/ciweimao/book"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
@@ -55,22 +55,21 @@ func SettingBooks(book_id string) Catalogue {
 	var err error
 	switch config.Vars.AppType {
 	case "sfacg":
-		BookInfo := book.GET_BOOK_INFORMATION(book_id)
-		if BookInfo.Status.HTTPCode == 200 {
+		BookInfo := boluobao.API.Book.NovelInfo(book_id)
+		if BookInfo != nil {
 			config.Current.NewBooks = map[string]string{
-				"novel_name":  tools.RegexpName(BookInfo.Data.NovelName),
-				"novel_id":    strconv.Itoa(BookInfo.Data.NovelID),
-				"novel_cover": BookInfo.Data.NovelCover,
-				"author_name": BookInfo.Data.AuthorName,
-				"char_count":  strconv.Itoa(BookInfo.Data.CharCount),
-				"mark_count":  strconv.Itoa(BookInfo.Data.MarkCount),
+				"novel_name":  tools.RegexpName(BookInfo.NovelName),
+				"novel_id":    strconv.Itoa(BookInfo.NovelID),
+				"novel_cover": BookInfo.NovelCover,
+				"author_name": BookInfo.AuthorName,
+				"char_count":  strconv.Itoa(BookInfo.CharCount),
+				"mark_count":  strconv.Itoa(BookInfo.MarkCount),
 			}
-			err = nil
 		} else {
-			err = fmt.Errorf(BookInfo.Status.Msg.(string))
+			return Catalogue{Test: false, BookMessage: fmt.Sprintf("book_id:%v is invalid:%v", book_id, err)}
 		}
 	case "cat":
-		BookInfo := HbookerAPI.GET_BOOK_INFORMATION(book_id)
+		BookInfo := book.GET_BOOK_INFORMATION(book_id)
 		config.Current.NewBooks = map[string]string{
 			"novel_name":  tools.RegexpName(BookInfo.Data.BookInfo.BookName),
 			"novel_id":    BookInfo.Data.BookInfo.BookID,
@@ -78,10 +77,9 @@ func SettingBooks(book_id string) Catalogue {
 			"author_name": BookInfo.Data.BookInfo.AuthorName,
 			"char_count":  BookInfo.Data.BookInfo.TotalWordCount,
 		}
-		err = nil
-	}
-	if err != nil {
-		return Catalogue{Test: false, BookMessage: fmt.Sprintf("book_id:%v is invalid:%v", book_id, err)}
+		if BookInfo.Data.BookInfo.BookName == "" {
+			return Catalogue{Test: false, BookMessage: fmt.Sprintf("book_id:%v is invalid:%v", book_id, err)}
+		}
 	}
 	//fmt.Println(config.Current.NewBooks)
 	tools.Mkdir(path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"]))
