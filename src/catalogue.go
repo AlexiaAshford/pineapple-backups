@@ -67,7 +67,7 @@ func (catalogue *Catalogue) GetDownloadsList() []string {
 		for _, chapter_info := range chapter_info_list {
 			if !tools.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {
 				if chapter_info["money"] == "0" || chapter_info["money"] == "1" {
-					DownloadList = append(DownloadList, chapter_info["file_name"])
+					DownloadList = append(DownloadList, chapter_info["chapter_id"])
 				} else {
 					fmt.Println(chapter_info["chapter_name"], " is vip chapter, You need to subscribe it")
 				}
@@ -100,7 +100,22 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapte
 
 func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	savePath := path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"], config.Current.NewBooks["novel_name"])
-	for _, chapterId := range book.NovelCatalogue(config.Current.NewBooks["novel_id"]) {
+	var NovelCatalogue []string
+	if config.Vars.AppType == "sfacg" {
+		NovelCatalogue = book.NovelCatalogue(config.Current.NewBooks["novel_id"])
+	} else {
+		for _, chapter_info := range GET_DIVISION(config.Current.NewBooks["novel_id"]) {
+			if !tools.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {
+				if chapter_info["money"] == "0" || chapter_info["money"] == "1" {
+					NovelCatalogue = append(NovelCatalogue, chapter_info["chapter_id"])
+				} else {
+					fmt.Println(chapter_info["chapter_name"], " is vip chapter, You need to subscribe it")
+				}
+			}
+		}
+	}
+
+	for _, chapterId := range NovelCatalogue {
 		if config.Exist(path.Join(config.Current.ConfigPath, chapterId+".txt")) {
 			content := file.Open(path.Join(config.Current.ConfigPath, chapterId+".txt"), "", "r")
 			if config.Vars.Epub {

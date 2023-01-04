@@ -72,6 +72,7 @@ func current_download_book_function(book_id string) {
 		fmt.Println(len(DownloadList), " chapters will be downloaded.")
 		catalogue.ChapterBar = src.New(len(DownloadList))
 		catalogue.ChapterBar.Describe("working...")
+		//fmt.Println(DownloadList)
 		for _, chapterID := range DownloadList {
 			thread.Add()
 			go catalogue.DownloadContent(thread, chapterID)
