@@ -32,30 +32,7 @@ func (catalogue *Catalogue) ReadChapterConfig() {
 	}
 }
 
-func GET_CATALOGUE(NovelID string) []map[string]string {
-	var chapter_index int
-	var division_info []map[string]string
-	response := book.GET_CATALOGUE(NovelID)
-	for division_index, division := range response.Data.VolumeList {
-		fmt.Printf("第%v卷\t\t%v\n", division_index+1, division.Title)
-		for _, chapter := range division.ChapterList {
-			chapter_index += 1
-			division_info = append(division_info, map[string]string{
-				"division_name":  division.Title,
-				"division_id":    strconv.Itoa(division.VolumeID),
-				"division_index": strconv.Itoa(division_index),
-				"chapter_name":   chapter.Title,
-				"chapter_id":     strconv.Itoa(chapter.ChapID),
-				"chapter_index":  strconv.Itoa(chapter_index),
-				"money":          strconv.Itoa(chapter.OriginNeedFireMoney),
-				"file_name":      file.NameSetting(chapter.VolumeID, chapter.ChapOrder, chapter.ChapID),
-			})
-		}
-	}
-	return division_info
-}
-
-func GET_DIVISION_Hbooker(BookId string) []map[string]string {
+func GET_DIVISION(BookId string) []map[string]string {
 	var chapter_index int
 	var division_info_list []map[string]string
 	VolumeList := HbookerAPI.GET_DIVISION_LIST_BY_BOOKID(BookId)
@@ -79,37 +56,43 @@ func GET_DIVISION_Hbooker(BookId string) []map[string]string {
 	return division_info_list
 }
 
-func (catalogue *Catalogue) GetDownloadsList() {
+func (catalogue *Catalogue) GetDownloadsList() []string {
 	catalogue.ReadChapterConfig()
 	var chapter_info_list []map[string]string
 	if config.Vars.AppType == "sfacg" {
-		chapter_info_list = GET_CATALOGUE(config.Current.NewBooks["novel_id"])
+		return book.NovelCatalogue(config.Current.NewBooks["novel_id"])
 	} else if config.Vars.AppType == "cat" {
-		chapter_info_list = GET_DIVISION_Hbooker(config.Current.NewBooks["novel_id"])
-	}
-	for _, chapter_info := range chapter_info_list {
-		if !tools.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {
-			if chapter_info["money"] == "0" || chapter_info["money"] == "1" {
-				config.Current.DownloadList = append(config.Current.DownloadList, chapter_info["file_name"])
-			} else {
-				fmt.Println(chapter_info["chapter_name"], " is vip chapter, You need to subscribe it")
+		var DownloadList []string
+		chapter_info_list = GET_DIVISION(config.Current.NewBooks["novel_id"])
+		for _, chapter_info := range chapter_info_list {
+			if !tools.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {
+				if chapter_info["money"] == "0" || chapter_info["money"] == "1" {
+					DownloadList = append(DownloadList, chapter_info["file_name"])
+				} else {
+					fmt.Println(chapter_info["chapter_name"], " is vip chapter, You need to subscribe it")
+				}
 			}
 		}
+		return DownloadList
 	}
+	return nil
 }
 
-func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, file_name string) {
+func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapterID string) {
 	defer threading.Done()
-	chapter_id := catalogue.speed_progress(file_name)
+	catalogue.speed_progress()
+	if config.Exist(path.Join(config.Current.ConfigPath, chapterID+".txt")) {
+		return
+	}
 	var content_text string
 	for i := 0; i < 5; i++ {
 		if config.Vars.AppType == "sfacg" {
-			content_text = book.Content(chapter_id).Data.Expand.Content
+			content_text = book.NovelContent(chapterID).Data.Expand.Content
 		} else if config.Vars.AppType == "cat" {
-			content_text = HbookerAPI.GetContent(chapter_id)
+			content_text = HbookerAPI.GetContent(chapterID)
 		}
 		if content_text != "" {
-			file.Open(path.Join(config.Current.ConfigPath, file_name), content_text, "w")
+			file.Open(path.Join(config.Current.ConfigPath, chapterID+".txt"), content_text, "w")
 			break
 		}
 	}
@@ -117,13 +100,23 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, file_n
 
 func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	savePath := path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"], config.Current.NewBooks["novel_name"])
-	for _, local_file_name := range tools.GetFileName(config.Current.ConfigPath) {
-		content := file.Open(config.Current.ConfigPath+"/"+local_file_name, "", "r")
-		file.Open(savePath+".txt", "\n\n\n"+content, "a")
-		if config.Vars.Epub {
-			catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content+"</p>")
-		} // save to epub file if epub is true
+	for _, chapterId := range book.NovelCatalogue(config.Current.NewBooks["novel_id"]) {
+		if config.Exist(path.Join(config.Current.ConfigPath, chapterId+".txt")) {
+			content := file.Open(path.Join(config.Current.ConfigPath, chapterId+".txt"), "", "r")
+			if config.Vars.Epub {
+				file.Open(savePath+".txt", "\n\n\n"+content, "a")
+				catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content+"</p>")
+			} // save to epub file if epub is true
+		}
 	}
+
+	//for _, local_file_name := range tools.GetFileName(config.Current.ConfigPath) {
+	//	content := file.Open(config.Current.ConfigPath+"/"+local_file_name, "", "r")
+	//	file.Open(savePath+".txt", "\n\n\n"+content, "a")
+	//	if config.Vars.Epub {
+	//		catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content+"</p>")
+	//	} // save to epub file if epub is true
+	//}
 	if config.Vars.Epub { // output epub file
 		out_put_epub_now := time.Now() // start time
 		if err := catalogue.EpubSetting.Write(savePath + ".epub"); err != nil {
@@ -131,7 +124,6 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 		}
 		fmt.Println("output epub file success, time:", time.Since(out_put_epub_now))
 	}
-	config.Current.DownloadList = nil
 }
 
 func (catalogue *Catalogue) add_chapter_in_epub_file(title, content string) {
@@ -140,13 +132,12 @@ func (catalogue *Catalogue) add_chapter_in_epub_file(title, content string) {
 		fmt.Printf("epub add chapter:%v\t\terror message:%v", title, err)
 	}
 }
-func (catalogue *Catalogue) speed_progress(file_name string) string {
+func (catalogue *Catalogue) speed_progress() {
 	if err := catalogue.ChapterBar.Add(1); err != nil {
 		fmt.Println("bar error:", err)
 	} else {
 		//time.Sleep(time.Second * time.Duration(2))
 	}
-	return strings.ReplaceAll(strings.Split(file_name, "-")[2], ".txt", "")
 
 }
 

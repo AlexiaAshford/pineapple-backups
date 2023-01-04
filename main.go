@@ -65,16 +65,16 @@ func current_download_book_function(book_id string) {
 		fmt.Println(catalogue.BookMessage)
 		os.Exit(1)
 	}
-	catalogue.GetDownloadsList()
+	DownloadList := catalogue.GetDownloadsList()
 
-	if len(config.Current.DownloadList) > 0 {
+	if DownloadList != nil && len(DownloadList) > 0 {
 		thread := threading.NewGoLimit(uint(config.Vars.MaxRetry))
-		fmt.Println(len(config.Current.DownloadList), " chapters will be downloaded.")
-		catalogue.ChapterBar = src.New(len(config.Current.DownloadList))
+		fmt.Println(len(DownloadList), " chapters will be downloaded.")
+		catalogue.ChapterBar = src.New(len(DownloadList))
 		catalogue.ChapterBar.Describe("working...")
-		for _, file_name := range config.Current.DownloadList {
+		for _, chapterID := range DownloadList {
 			thread.Add()
-			go catalogue.DownloadContent(thread, file_name)
+			go catalogue.DownloadContent(thread, chapterID)
 		}
 		thread.WaitZero()
 		fmt.Printf("\nNovel:%v download complete!\n", config.Current.NewBooks["novel_name"])
@@ -198,7 +198,7 @@ func main() {
 			accounts := account.GET_ACCOUNT_INFORMATION()
 			if accounts.Data.AccountID > 0 {
 				Tasks := task.Task{AccountId: strconv.Itoa(accounts.Data.AccountID)}
-				Tasks.COMPLETE_ALL()
+				Tasks.NovelCompleteTas()
 				shell_run_console_and_bookshelf()
 			} else {
 				fmt.Println("you need to login to use the automatic sign-in and task function")
