@@ -52,7 +52,7 @@ func init() {
 	}
 	config.Vars.ThreadNum = config.Command.MaxThread
 	config.Vars.AppType = config.Command.AppType
-	config.Vars.Epub = config.Command.Epub
+	//config.Vars.Epub = config.Command.Epub
 
 	fmt.Println("current app type:", config.Vars.AppType)
 }

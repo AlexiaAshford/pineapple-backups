@@ -118,10 +118,10 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	for _, chapterId := range NovelCatalogue {
 		if config.Exist(path.Join(config.Current.ConfigPath, chapterId+".txt")) {
 			content := file.Open(path.Join(config.Current.ConfigPath, chapterId+".txt"), "", "r")
-			if config.Vars.Epub {
-				file.Open(savePath+".txt", "\n\n\n"+content, "a")
-				catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content+"</p>")
-			} // save to epub file if epub is true
+			//if config.Vars.Epub {
+			file.Open(savePath+".txt", "\n\n\n"+content, "a")
+			catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content+"</p>")
+			//} // save to epub file if epub is true
 		}
 	}
 
@@ -132,13 +132,13 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	//		catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content+"</p>")
 	//	} // save to epub file if epub is true
 	//}
-	if config.Vars.Epub { // output epub file
-		out_put_epub_now := time.Now() // start time
-		if err := catalogue.EpubSetting.Write(savePath + ".epub"); err != nil {
-			fmt.Println("output epub error:", err)
-		}
-		fmt.Println("output epub file success, time:", time.Since(out_put_epub_now))
+	//if config.Vars.Epub { // output epub file
+	out_put_epub_now := time.Now() // start time
+	if err := catalogue.EpubSetting.Write(savePath + ".epub"); err != nil {
+		fmt.Println("output epub error:", err)
 	}
+	fmt.Println("output epub file success, time:", time.Since(out_put_epub_now))
+	//}
 }
 
 func (catalogue *Catalogue) add_chapter_in_epub_file(title, content string) {
