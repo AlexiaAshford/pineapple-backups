@@ -14,8 +14,11 @@ import (
 	"github.com/urfave/cli"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
+
+var bookShelfList map[string]int
 
 func init() {
 	if !config.Exist("./config.json") || file.SizeFile("./config.json") == 0 {
@@ -34,13 +37,12 @@ func init() {
 	HbookerConfig.AppConfig.LoginToken = config.Apps.Hbooker.LoginToken
 	HbookerConfig.AppConfig.DeviceToken = config.Apps.Hbooker.DeviceToken
 
-	BoluobaoConfig.AppConfig.App = false // set boluobao app mode
+	BoluobaoConfig.AppConfig.App = true // set boluobao app mode
 	BoluobaoConfig.AppConfig.AppKey = "FMLxgOdsfxmN!Dt4"
 	BoluobaoConfig.AppConfig.DeviceId = "240a90cc-4c40-32c7-b44e-d4cf9e670605"
 	BoluobaoConfig.AppConfig.Cookie = config.Apps.Sfacg.Cookie
 
 	InitApp.Action = func(c *cli.Context) {
-
 		fmt.Println("you can input -h and --help to see the command list.")
 		if config.Command.AppType != "cat" && config.Command.AppType != "sfacg" {
 			fmt.Println(config.Command.AppType, "app type error")
@@ -114,6 +116,19 @@ func shell(inputs []string) {
 		} else {
 			fmt.Println("input book id or url, like:download <bookid/url>")
 		}
+	case "bs", "bookshelf":
+		if len(bookShelfList) > 0 {
+			if len(inputs) == 2 {
+				value, ok := bookShelfList[inputs[1]]
+				if ok {
+					current_download_book_function(strconv.Itoa(value))
+				} else {
+					fmt.Println(inputs[1], "key not found")
+				}
+			}
+		} else {
+			fmt.Println("bookshelf is empty, please login and update bookshelf.")
+		}
 	case "s", "search":
 		if len(inputs) == 2 && inputs[1] != "" {
 			s := src.Search{Keyword: inputs[1], Page: 0}
@@ -160,6 +175,7 @@ func shell_run_console_and_bookshelf() {
 }
 
 func main() {
+
 	if len(os.Args) > 1 {
 		if config.Command.Account != "" && config.Command.Password != "" {
 			shell([]string{"login", config.Command.Account, config.Command.Password})
@@ -195,7 +211,13 @@ func main() {
 			}
 		} else if config.Vars.AppType == "sfacg" {
 			boluobao.API.User.UserInformation()
-			shell_run_console_and_bookshelf()
+			if bs := src.NewChoiceBookshelf(); bs != nil {
+				bs.NewSfacgBookshelf()
+				bookShelfList = bs.ShelfBook
+			}
+			shell(tools.GET(">"))
+
+			//shell_run_console_and_bookshelf()
 			//if accounts.Data.AccountID > 0 {
 			//	Tasks := task.Task{AccountId: strconv.Itoa(accounts.Data.AccountID)}
 			//	Tasks.NovelCompleteTas()

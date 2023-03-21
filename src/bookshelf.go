@@ -7,6 +7,8 @@ import (
 	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/ciweimao/bookshelf"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
+	"github.com/olekukonko/tablewriter"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -31,7 +33,9 @@ func sfacg_bookshelf() (map[int][]map[string]string, error) {
 }
 
 type Bookshelf struct {
-	ShelfIndex int
+	ShelfIndex    int
+	ShelfBookData *[]Template.ShelfData
+	ShelfBook     map[string]int
 }
 
 func (bs *Bookshelf) ShowBookshelf(shelf *[]Template.ShelfData) {
@@ -68,28 +72,48 @@ func (bs *Bookshelf) ChoiceBookshelf(BookInfoData []Template.BookInfoData) *Temp
 	return nil
 }
 
-func (bs *Bookshelf) NewSfacgBookshelf() *Template.BookInfoData {
-	response := boluobao.API.BookShelf.NovelBookShelf()
-	if response != nil {
-		if len(*response) == 1 {
+func NewChoiceBookshelf() *Bookshelf {
+	var bs Bookshelf
+	bs.ShelfBookData = boluobao.API.BookShelf.NovelBookShelf()
+	if bs.ShelfBookData != nil {
+		if len(*bs.ShelfBookData) == 1 {
 			fmt.Println("检测到只有一个书架，无需选择书架")
 			bs.ShelfIndex = 0
-			bs.ShowBookshelf(response)
+			//bs.ShowBookshelf(response)
 
 		} else {
 			fmt.Println("检测到多个书架，需要选择书架")
-			bs.ShelfIndex = tools.InputInt(">", len(*response))
-			bs.ShowBookshelf(response)
+			for index, value := range *bs.ShelfBookData {
+				fmt.Println("书架号:", index, "\t\t\t书架名:", value.Name)
+			}
+			bs.ShelfIndex = tools.InputInt(">", len(*bs.ShelfBookData))
+			//bs.ShowBookshelf(response)
 		}
-		for i := 0; i < 5; i++ {
+		return &bs
 
-			//result := bs.ChoiceBookshelf(response[bs.ShelfIndex].Expand.Novels)
-			//if result != nil {
-			//	return result
-			//}
-		}
 	}
 	return nil
+}
+
+func (bs *Bookshelf) NewSfacgBookshelf() {
+	for i, value := range *bs.ShelfBookData {
+		if i == bs.ShelfIndex {
+			if value.Expand.Novels != nil {
+				bs.ShelfBook = make(map[string]int)
+				table := tablewriter.NewWriter(os.Stdout)
+				table.SetHeader([]string{"序号", "小说名", "小说ID"})
+				for index, bookInfo := range value.Expand.Novels {
+					table.Append([]string{strconv.Itoa(index), bookInfo.NovelName, strconv.Itoa(bookInfo.NovelID)})
+					//bs.ShelfBook = append(bs.ShelfBook, map[int]int{index: bookInfo.NovelID})
+					bs.ShelfBook[strconv.Itoa(index)] = bookInfo.NovelID
+				}
+				table.Render()
+			} else {
+				fmt.Println(value.Name, "书架中没有书籍!")
+			}
+		}
+	}
+
 }
 
 func hbooker_bookshelf() (map[int][]map[string]string, error) {

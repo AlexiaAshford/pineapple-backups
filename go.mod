@@ -12,6 +12,7 @@ require (
 	github.com/gookit/color v1.5.2
 	github.com/mattn/go-runewidth v0.0.14
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
+	github.com/olekukonko/tablewriter v0.0.5
 	github.com/tidwall/gjson v1.14.4
 	github.com/tidwall/sjson v1.2.5
 	github.com/urfave/cli v1.22.10
