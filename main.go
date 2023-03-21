@@ -2,9 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao"
 	BoluobaoConfig "github.com/VeronicaAlexia/BoluobaoAPI/pkg/config"
-	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/ciweimao/book"
 	HbookerConfig "github.com/VeronicaAlexia/HbookerAPI/pkg/config"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
@@ -14,11 +12,10 @@ import (
 	"github.com/urfave/cli"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 )
 
-var bookShelfList map[string]int
+var bookShelfList map[string]string
 
 func init() {
 	if !config.Exist("./config.json") || file.SizeFile("./config.json") == 0 {
@@ -121,7 +118,7 @@ func shell(inputs []string) {
 			if len(inputs) == 2 {
 				value, ok := bookShelfList[inputs[1]]
 				if ok {
-					current_download_book_function(strconv.Itoa(value))
+					current_download_book_function(value)
 				} else {
 					fmt.Println(inputs[1], "key not found")
 				}
@@ -154,26 +151,6 @@ func shell(inputs []string) {
 		fmt.Println("command not found,please input help to see the command list:", inputs[0])
 	}
 }
-
-func shell_run_console_and_bookshelf() {
-	bookshelf_book_index, book_shelf_bookcase := src.InitBookShelf() // init bookshelf information
-	for {
-		if comment := tools.GET(">"); comment != nil {
-			if tools.TestIntList(bookshelf_book_index, comment[0]) {
-				current_download_book_function(book_shelf_bookcase[tools.StrToInt(comment[0])]["novel_id"])
-			} else if comment[0] == "load" || comment[0] == "bookshelf" {
-				bookshelf_book_index, book_shelf_bookcase = src.InitBookShelf() // load bookshelf information
-			} else if comment[0] == "q" || comment[0] == "quit" {
-				shell(comment)
-			} else {
-				fmt.Println("input book index to download book")
-				fmt.Println("input load to reload bookshelf")
-				fmt.Println("input quit to exit bookshelf")
-			}
-		}
-	}
-}
-
 func main() {
 
 	if len(os.Args) > 1 {
@@ -191,42 +168,71 @@ func main() {
 		} else if config.Command.Token {
 			src.InputAccountToken()
 		} else {
-			shell_run_console_and_bookshelf()
+			//shell_run_console_and_bookshelf()
 		}
 	} else {
 		for _, message := range config.HelpMessage {
 			fmt.Println("[info]", message)
 		}
-		if config.Vars.AppType == "cat" {
-			// recommend list for hbooker app
-			//if book_id := recommend.NEW_RECOMMEND().CHANGE_NEW_RECOMMEND(); book_id != "" {
-			//	current_download_book_function(book_id)
-			//}
-			response := HbookerAPI.GET_BOOK_INFORMATION("100280239")
-			//fmt.Println(response)
-			if response.Code == "100000" {
-				shell_run_console_and_bookshelf()
-			} else {
-				fmt.Println("hbooker error:", response.Tip)
-			}
-		} else if config.Vars.AppType == "sfacg" {
-			boluobao.API.User.UserInformation()
-			if bs := src.NewChoiceBookshelf(); bs != nil {
-				bs.NewSfacgBookshelf()
-				bookShelfList = bs.ShelfBook
-			}
-			for {
-				shell(tools.GET(">"))
-			}
 
-			//shell_run_console_and_bookshelf()
-			//if accounts.Data.AccountID > 0 {
-			//	Tasks := task.Task{AccountId: strconv.Itoa(accounts.Data.AccountID)}
-			//	Tasks.NovelCompleteTas()
-			//	shell_run_console_and_bookshelf()
-			//} else {
-			//	fmt.Println("you need to login to use the automatic sign-in and task function")
-			//}
+		if bs := src.NewChoiceBookshelf(); bs != nil {
+			bs.InitBookshelf()
+			bookShelfList = bs.ShelfBook
+		}
+
+		for {
+			shell(tools.GET(">"))
 		}
 	}
 }
+
+//if config.Vars.AppType == "cat" {
+//	// recommend list for hbooker app
+//	//if book_id := recommend.NEW_RECOMMEND().CHANGE_NEW_RECOMMEND(); book_id != "" {
+//	//	current_download_book_function(book_id)
+//	//}
+//	response := HbookerAPI.GET_BOOK_INFORMATION("100280239")
+//	//fmt.Println(response)
+//	if response.Code == "100000" {
+//		//shell_run_console_and_bookshelf()
+//	} else {
+//		fmt.Println("hbooker error:", response.Tip)
+//	}
+//} else if config.Vars.AppType == "sfacg" {
+//	boluobao.API.User.UserInformation()
+//	if bs := src.NewChoiceBookshelf(); bs != nil {
+//		bs.NewSfacgBookshelf()
+//		bookShelfList = bs.ShelfBook
+//	}
+//	for {
+//		shell(tools.GET(">"))
+//	}
+//
+//	//shell_run_console_and_bookshelf()
+//	//if accounts.Data.AccountID > 0 {
+//	//	Tasks := task.Task{AccountId: strconv.Itoa(accounts.Data.AccountID)}
+//	//	Tasks.NovelCompleteTas()
+//	//	shell_run_console_and_bookshelf()
+//	//} else {
+//	//	fmt.Println("you need to login to use the automatic sign-in and task function")
+//	//}
+//}
+
+//func shell_run_console_and_bookshelf() {
+//	bookshelf_book_index, book_shelf_bookcase := src.InitBookShelf() // init bookshelf information
+//	for {
+//		if comment := tools.GET(">"); comment != nil {
+//			if tools.TestIntList(bookshelf_book_index, comment[0]) {
+//				current_download_book_function(book_shelf_bookcase[tools.StrToInt(comment[0])]["novel_id"])
+//			} else if comment[0] == "load" || comment[0] == "bookshelf" {
+//				bookshelf_book_index, book_shelf_bookcase = src.InitBookShelf() // load bookshelf information
+//			} else if comment[0] == "q" || comment[0] == "quit" {
+//				shell(comment)
+//			} else {
+//				fmt.Println("input book index to download book")
+//				fmt.Println("input load to reload bookshelf")
+//				fmt.Println("input quit to exit bookshelf")
+//			}
+//		}
+//	}
+//}
