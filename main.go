@@ -26,9 +26,10 @@ func init() {
 	config.UpdateConfig()
 	InitApp := cli.NewApp()
 	InitApp.Name = "pineapple-backups"
-	InitApp.Version = "V.1.8.6"
+	InitApp.Version = "V.1.8.7"
 	InitApp.Usage = "https://github.com/VeronicaAlexia/pineapple-backups"
 	InitApp.Flags = config.Args
+
 	HbookerConfig.AppConfig.AppVersion = config.Apps.Hbooker.AppVersion
 	HbookerConfig.AppConfig.Account = config.Apps.Hbooker.Account
 	HbookerConfig.AppConfig.LoginToken = config.Apps.Hbooker.LoginToken
@@ -51,7 +52,7 @@ func init() {
 	}
 	config.Vars.ThreadNum = config.Command.MaxThread
 	config.Vars.AppType = config.Command.AppType
-	config.Vars.AppType = "cat"
+	//config.Vars.AppType = "cat"
 	//config.Vars.Epub = config.Command.Epub
 
 	fmt.Println("current app type:", config.Vars.AppType)
@@ -115,14 +116,12 @@ func shell(inputs []string) {
 			fmt.Println("input book id or url, like:download <bookid/url>")
 		}
 	case "bs", "bookshelf":
-		if len(bookShelfList) > 0 {
-			if len(inputs) == 2 {
-				value, ok := bookShelfList[inputs[1]]
-				if ok {
-					current_download_book_function(value)
-				} else {
-					fmt.Println(inputs[1], "key not found")
-				}
+		if len(bookShelfList) > 0 && len(inputs) == 2 {
+			value, ok := bookShelfList[inputs[1]]
+			if ok {
+				current_download_book_function(value)
+			} else {
+				fmt.Println(inputs[1], "key not found")
 			}
 		} else {
 			fmt.Println("bookshelf is empty, please login and update bookshelf.")
