@@ -26,7 +26,7 @@ func init() {
 	config.UpdateConfig()
 	InitApp := cli.NewApp()
 	InitApp.Name = "pineapple-backups"
-	InitApp.Version = "V.1.6.9"
+	InitApp.Version = "V.1.8.6"
 	InitApp.Usage = "https://github.com/VeronicaAlexia/pineapple-backups"
 	InitApp.Flags = config.Args
 	HbookerConfig.AppConfig.AppVersion = config.Apps.Hbooker.AppVersion
@@ -51,6 +51,7 @@ func init() {
 	}
 	config.Vars.ThreadNum = config.Command.MaxThread
 	config.Vars.AppType = config.Command.AppType
+	config.Vars.AppType = "cat"
 	//config.Vars.Epub = config.Command.Epub
 
 	fmt.Println("current app type:", config.Vars.AppType)
@@ -179,7 +180,6 @@ func main() {
 			bs.InitBookshelf()
 			bookShelfList = bs.ShelfBook
 		}
-
 		for {
 			shell(tools.GET(">"))
 		}

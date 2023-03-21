@@ -25,7 +25,6 @@ func NewChoiceBookshelf() *Bookshelf {
 	switch config.Vars.AppType {
 	case "sfacg":
 		bs.SfacgBookShelfData = boluobao.API.BookShelf.NovelBookShelf()
-
 		if bs.SfacgBookShelfData != nil {
 			if len(*bs.SfacgBookShelfData) == 1 {
 				fmt.Println("检测到只有一个书架，无需选择书架")
@@ -38,10 +37,9 @@ func NewChoiceBookshelf() *Bookshelf {
 				bs.ShelfIndex = tools.InputInt(">", len(*bs.SfacgBookShelfData))
 			}
 		} else {
-
 			return nil
 		}
-	case "hbooker":
+	case "cat":
 		response := bookshelf.GET_BOOK_SHELF_INFORMATION()
 		if response.Code == "100000" {
 			if len(response.Data.ShelfList) == 1 {
@@ -49,7 +47,6 @@ func NewChoiceBookshelf() *Bookshelf {
 				for _, value := range response.Data.ShelfList {
 					bs.ShelfIndex, _ = strconv.Atoi(value.ShelfID)
 				}
-				bs.ShelfIndex = 0
 			} else {
 				fmt.Println("检测到多个书架，需要选择书架")
 				for index, value := range response.Data.ShelfList {
@@ -60,6 +57,7 @@ func NewChoiceBookshelf() *Bookshelf {
 			}
 
 			bs.HbookerBookShelfData = bookshelf.GET_BOOK_SHELF_INDEXES_INFORMATION(strconv.Itoa(bs.ShelfIndex)) // 获取书架信息
+
 		} else {
 			return nil
 		}
