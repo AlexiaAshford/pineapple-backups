@@ -215,7 +215,9 @@ func main() {
 				bs.NewSfacgBookshelf()
 				bookShelfList = bs.ShelfBook
 			}
-			shell(tools.GET(">"))
+			for {
+				shell(tools.GET(">"))
+			}
 
 			//shell_run_console_and_bookshelf()
 			//if accounts.Data.AccountID > 0 {

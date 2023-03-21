@@ -13,63 +13,10 @@ import (
 	"strings"
 )
 
-func sfacg_bookshelf() (map[int][]map[string]string, error) {
-	response := boluobao.API.BookShelf.NovelBookShelf()
-	bookshelf_info := make(map[int][]map[string]string)
-	if response == nil {
-		return nil, fmt.Errorf("get bookshelf error")
-	}
-	for index, value := range *response {
-		fmt.Println("书架号:", index, "\t\t\t书架名:", value.Name)
-		var bookshelf_info_list []map[string]string
-		for _, book := range value.Expand.Novels {
-			bookshelf_info_list = append(bookshelf_info_list,
-				map[string]string{"novel_name": book.NovelName, "novel_id": strconv.Itoa(book.NovelID)},
-			)
-		}
-		bookshelf_info[index] = bookshelf_info_list
-	}
-	return bookshelf_info, nil
-}
-
 type Bookshelf struct {
 	ShelfIndex    int
 	ShelfBookData *[]Template.ShelfData
 	ShelfBook     map[string]int
-}
-
-func (bs *Bookshelf) ShowBookshelf(shelf *[]Template.ShelfData) {
-	for index, value := range *shelf {
-		fmt.Println("书架号:", index, "\t\t\t书架名:", value.Name)
-	}
-
-}
-
-func (bs *Bookshelf) ChoiceBookshelf(BookInfoData []Template.BookInfoData) *Template.BookInfoData {
-	for _, book := range BookInfoData {
-		fmt.Println("小说名:", book.NovelName, "\t\t\t小说ID:", book.NovelID)
-	}
-	choice := tools.InputStr(">")
-	if strings.Contains(choice, "d ") {
-		book_id := strings.Replace(choice, "d ", "", 1)
-		res := boluobao.API.Book.NovelInfo(book_id)
-		if res != nil {
-			fmt.Println(res.NovelName, res.NovelID)
-			return res
-		}
-
-	}
-	if strings.ToLower(choice) == "y" {
-		BookIndex := tools.InputInt(">", len(BookInfoData))
-		boluobao.API.Book.NovelInfo(strconv.Itoa(BookInfoData[BookIndex].NovelID))
-	} else if strings.ToLower(choice) == "a" {
-		for _, book := range BookInfoData {
-			boluobao.API.Book.NovelInfo(strconv.Itoa(book.NovelID))
-		}
-	} else {
-		fmt.Println("已退出书架下载")
-	}
-	return nil
 }
 
 func NewChoiceBookshelf() *Bookshelf {
@@ -142,7 +89,8 @@ func hbooker_bookshelf() (map[int][]map[string]string, error) {
 
 func request_bookshelf_book_list() (map[int][]map[string]string, error) {
 	if config.Vars.AppType == "sfacg" {
-		return sfacg_bookshelf()
+		//return sfacg_bookshelf()
+		return nil, nil
 	} else if config.Vars.AppType == "cat" {
 		return hbooker_bookshelf()
 	} else {
@@ -192,3 +140,56 @@ func select_bookcase(bookshelf_book_list map[int][]map[string]string) ([]int, []
 	}
 	return bookshelf_book_index, book_shelf_bookcase
 }
+
+//func (bs *Bookshelf) ShowBookshelf(shelf *[]Template.ShelfData) {
+//	for index, value := range *shelf {
+//		fmt.Println("书架号:", index, "\t\t\t书架名:", value.Name)
+//	}
+//
+//}
+//
+//func (bs *Bookshelf) ChoiceBookshelf(BookInfoData []Template.BookInfoData) *Template.BookInfoData {
+//	for _, book := range BookInfoData {
+//		fmt.Println("小说名:", book.NovelName, "\t\t\t小说ID:", book.NovelID)
+//	}
+//	choice := tools.InputStr(">")
+//	if strings.Contains(choice, "d ") {
+//		book_id := strings.Replace(choice, "d ", "", 1)
+//		res := boluobao.API.Book.NovelInfo(book_id)
+//		if res != nil {
+//			fmt.Println(res.NovelName, res.NovelID)
+//			return res
+//		}
+//
+//	}
+//	if strings.ToLower(choice) == "y" {
+//		BookIndex := tools.InputInt(">", len(BookInfoData))
+//		boluobao.API.Book.NovelInfo(strconv.Itoa(BookInfoData[BookIndex].NovelID))
+//	} else if strings.ToLower(choice) == "a" {
+//		for _, book := range BookInfoData {
+//			boluobao.API.Book.NovelInfo(strconv.Itoa(book.NovelID))
+//		}
+//	} else {
+//		fmt.Println("已退出书架下载")
+//	}
+//	return nil
+//}
+
+//func sfacg_bookshelf() (map[int][]map[string]string, error) {
+//	response := boluobao.API.BookShelf.NovelBookShelf()
+//	bookshelf_info := make(map[int][]map[string]string)
+//	if response == nil {
+//		return nil, fmt.Errorf("get bookshelf error")
+//	}
+//	for index, value := range *response {
+//		fmt.Println("书架号:", index, "\t\t\t书架名:", value.Name)
+//		var bookshelf_info_list []map[string]string
+//		for _, book := range value.Expand.Novels {
+//			bookshelf_info_list = append(bookshelf_info_list,
+//				map[string]string{"novel_name": book.NovelName, "novel_id": strconv.Itoa(book.NovelID)},
+//			)
+//		}
+//		bookshelf_info[index] = bookshelf_info_list
+//	}
+//	return bookshelf_info, nil
+//}
