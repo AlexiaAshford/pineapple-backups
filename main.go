@@ -180,7 +180,9 @@ func main() {
 			bookShelfList = bs.ShelfBook
 		}
 		for {
-			shell(tools.GET(">"))
+			if inputRes := tools.GET(">"); len(inputRes) > 0 {
+				shell(inputRes)
+			}
 		}
 	}
 }
