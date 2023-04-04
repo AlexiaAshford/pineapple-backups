@@ -29,18 +29,23 @@ func LoginAccount(username string, password string, retry int) {
 	config.Apps.Sfacg.UserName = username
 	config.Apps.Sfacg.Password = password
 	config.Apps.Sfacg.Cookie = account.LOGIN_ACCOUNT(username, password)
-	BoluobaoConfig.AppConfig.Cookie = config.Apps.Sfacg.Cookie
-	config.SaveJson()
-	if AccountDetailed() == "需要登录才能访问该资源" {
-		fmt.Println("Your login attempt was not successful, try again retry:", retry+1)
-		LoginAccount(username, password, retry+1)
-	} else {
-		if retry == 0 {
-			fmt.Println("Login successful!\n" + AccountDetailed())
+	if BoluobaoConfig.AppConfig.Cookie != "" {
+		BoluobaoConfig.AppConfig.Cookie = config.Apps.Sfacg.Cookie
+		config.SaveJson()
+		if AccountDetailed() == "需要登录才能访问该资源" {
+			fmt.Println("Your login attempt was not successful, try again retry:", retry+1)
+			LoginAccount(username, password, retry+1)
 		} else {
-			fmt.Println("Login again successful!\n" + AccountDetailed())
+			if retry == 0 {
+				fmt.Println("Login successful!\n" + AccountDetailed())
+			} else {
+				fmt.Println("Login again successful!\n" + AccountDetailed())
+			}
 		}
+	} else {
+		fmt.Println("Your login attempt was not successful.")
 	}
+
 }
 
 func TestCatAccount() bool {
