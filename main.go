@@ -75,7 +75,7 @@ func update_local_booklist() {
 		fmt.Println("bookList.txt not exist, create a new one!")
 	}
 }
-func shell(inputs []string) {
+func shellSwitch(inputs []string) {
 	switch inputs[0] { // switch command
 	case "up", "update":
 		update_local_booklist()
@@ -131,11 +131,29 @@ func shell(inputs []string) {
 		fmt.Println("command not found,please input help to see the command list:", inputs[0])
 	}
 }
+func shell(messageOpen bool) {
+	if messageOpen {
+		for _, message := range config.HelpMessage {
+			fmt.Println("[info]", message)
+		}
+	}
+
+	if bs := src.NewChoiceBookshelf(); bs != nil {
+		bs.InitBookshelf()
+		bookShelfList = bs.ShelfBook
+	}
+	for {
+		if inputRes := tools.GET(">"); len(inputRes) > 0 {
+			shellSwitch(inputRes)
+		}
+	}
+}
+
 func main() {
 
 	if len(os.Args) > 1 {
 		if command.Command.Account != "" && command.Command.Password != "" {
-			shell([]string{"login", command.Command.Account, command.Command.Password})
+			shellSwitch([]string{"login", command.Command.Account, command.Command.Password})
 		} else if command.Command.Login {
 			src.TestAppTypeAndAccount()
 		} else if command.Command.BookID != "" {
@@ -147,22 +165,12 @@ func main() {
 			update_local_booklist()
 		} else if command.Command.Token {
 			src.InputAccountToken()
+		} else if command.Command.BookShelf {
+			shell(false)
 		} else {
-			//shell_run_console_and_bookshelf()
+			fmt.Println("command not found,please input help to see the command list:", os.Args[1])
 		}
 	} else {
-		for _, message := range config.HelpMessage {
-			fmt.Println("[info]", message)
-		}
-
-		if bs := src.NewChoiceBookshelf(); bs != nil {
-			bs.InitBookshelf()
-			bookShelfList = bs.ShelfBook
-		}
-		for {
-			if inputRes := tools.GET(">"); len(inputRes) > 0 {
-				shell(inputRes)
-			}
-		}
+		shell(true)
 	}
 }

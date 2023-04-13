@@ -22,6 +22,7 @@ type commandLines struct {
 	ShowInfo  bool
 	Update    bool
 	Epub      bool
+	BookShelf bool
 }
 
 const (
@@ -35,6 +36,7 @@ const (
 	FlagSearch    = "search"
 	FlagLogin     = "login"
 	FlagEpub      = "epub"
+	FlagBookShelf = "bookshelf"
 )
 
 var commandArgs = []cli.Flag{
@@ -93,5 +95,10 @@ var commandArgs = []cli.Flag{
 		Name:        fmt.Sprintf("e, %s", FlagEpub),
 		Usage:       "start epub",
 		Destination: &Command.Epub,
+	},
+	cli.BoolFlag{
+		Name:        fmt.Sprintf("b, %s", FlagBookShelf),
+		Usage:       "show bookshelf",
+		Destination: &Command.BookShelf,
 	},
 }
