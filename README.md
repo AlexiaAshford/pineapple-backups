@@ -90,6 +90,21 @@ GLOBAL OPTIONS:
 
 ```
 
+## Thank you for JetBrains License
+  [<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="JetBrains" width="128"/>](https://www.jetbrains.com)
+
+- [Goland](https://www.jetbrains.com/go/)
+
+-  I would like to express my sincere gratitude and appreciation to JetBrains for providing me with the license to use and leverage software related to open source tools.
+  
+-  Your software has helped me to accomplish my tasks faster and more efficiently in my daily work, while also providing me with appropriate quality assurance. This is important for my personal growth and business development.
+
+-   Thank you for your outstanding contribution to promoting the development of open-source software community. I will continue to use and support your company's software in my work and leisure time, and actively participate in contributing to the open-source community.
+
+-   Once again, thank you JetBrains for your support!
+
+-   Best regards, Alexia 
+
 ## **Disclaimers**
 
 - This tool is for educational purposes only. Please delete it from your computer within 24 hours after downloading.
