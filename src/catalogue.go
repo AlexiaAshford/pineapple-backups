@@ -128,6 +128,7 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 			catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content+"</p>")
 			//} // save to epub file if epub is true
 		}
+
 	}
 
 	//for _, local_file_name := range tools.GetFileName(config.Current.ConfigPath) {

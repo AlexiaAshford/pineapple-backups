@@ -5,12 +5,11 @@ import (
 	BoluobaoConfig "github.com/VeronicaAlexia/BoluobaoAPI/pkg/config"
 	HbookerConfig "github.com/VeronicaAlexia/HbookerAPI/pkg/config"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/src"
-	"github.com/urfave/cli"
-	"log"
 	"os"
 	"strings"
 )
@@ -24,12 +23,8 @@ func init() {
 		config.LoadJson()
 	}
 	config.UpdateConfig()
-	InitApp := cli.NewApp()
-	InitApp.Name = "pineapple-backups"
-	InitApp.Version = "V.1.8.7"
-	InitApp.Usage = "https://github.com/VeronicaAlexia/pineapple-backups"
-	InitApp.Flags = config.Args
 
+	command.NewApp()
 	HbookerConfig.AppConfig.AppVersion = config.Apps.Hbooker.AppVersion
 	HbookerConfig.AppConfig.Account = config.Apps.Hbooker.Account
 	HbookerConfig.AppConfig.LoginToken = config.Apps.Hbooker.LoginToken
@@ -40,20 +35,7 @@ func init() {
 	BoluobaoConfig.AppConfig.DeviceId = "240a90cc-4c40-32c7-b44e-d4cf9e670605"
 	BoluobaoConfig.AppConfig.Cookie = config.Apps.Sfacg.Cookie
 
-	InitApp.Action = func(c *cli.Context) {
-		fmt.Println("you can input -h and --help to see the command list.")
-		if config.Command.AppType != "cat" && config.Command.AppType != "sfacg" {
-			fmt.Println(config.Command.AppType, "app type error")
-			os.Exit(1)
-		}
-	}
-	if err := InitApp.Run(os.Args); err != nil {
-		log.Fatal(err)
-	}
-	config.Vars.ThreadNum = config.Command.MaxThread
-	config.Vars.AppType = config.Command.AppType
-	//config.Vars.AppType = "cat"
-	//config.Vars.Epub = config.Command.Epub
+	config.Vars.AppType = command.Command.AppType
 
 	fmt.Println("current app type:", config.Vars.AppType)
 }
@@ -154,18 +136,18 @@ func shell(inputs []string) {
 func main() {
 
 	if len(os.Args) > 1 {
-		if config.Command.Account != "" && config.Command.Password != "" {
-			shell([]string{"login", config.Command.Account, config.Command.Password})
-		} else if config.Command.Login {
+		if command.Command.Account != "" && command.Command.Password != "" {
+			shell([]string{"login", command.Command.Account, command.Command.Password})
+		} else if command.Command.Login {
 			src.TestAppTypeAndAccount()
-		} else if config.Command.BookId != "" {
-			current_download_book_function(config.Command.BookId)
-		} else if config.Command.SearchKey != "" {
-			s := src.Search{Keyword: config.Command.SearchKey, Page: 0}
+		} else if command.Command.BookID != "" {
+			current_download_book_function(command.Command.BookID)
+		} else if command.Command.SearchKey != "" {
+			s := src.Search{Keyword: command.Command.SearchKey, Page: 0}
 			current_download_book_function(s.SearchBook())
-		} else if config.Command.Update {
+		} else if command.Command.Update {
 			update_local_booklist()
-		} else if config.Command.Token {
+		} else if command.Command.Token {
 			src.InputAccountToken()
 		} else {
 			//shell_run_console_and_bookshelf()
