@@ -87,7 +87,12 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapte
 	var content_text string
 	for i := 0; i < 5; i++ {
 		if config.Vars.AppType == "sfacg" {
-			content_text = boluobao.API.Book.NovelContent(chapterID).Data.Expand.Content
+			response := boluobao.API.Book.NovelContent(chapterID)
+			if response != nil {
+				content_text = response.Data.Expand.Content
+			} else {
+				break
+			}
 		} else if config.Vars.AppType == "cat" {
 			content_text = book.GetContent(chapterID)
 		}
