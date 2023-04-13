@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"net/http"
 	"os"
 )
@@ -24,7 +25,7 @@ func Base64Bytes(UserName, Password string) string {
 func SET_THE_HEADERS(req *http.Request) {
 	HeaderCollection := make(map[string]string)
 	HeaderCollection["Content-Type"] = "application/json"
-	switch config.Vars.AppType {
+	switch command.Command.AppType {
 	case "sfacg":
 		HeaderCollection["sf-minip-info"] = "minip_novel/1.0.70(android;11)/wxmp"
 		HeaderCollection["Cookie"] = config.Apps.Sfacg.Cookie
@@ -35,7 +36,7 @@ func SET_THE_HEADERS(req *http.Request) {
 		HeaderCollection["Authorization"] = Base64Bytes(config.Apps.Hbooker.Account, config.Apps.Hbooker.LoginToken)
 
 	default:
-		fmt.Println(config.Vars.AppType, "AppType is invalid, please check config file")
+		fmt.Println(command.Command.AppType, "AppType is invalid, please check config file")
 		os.Exit(1)
 	}
 	for HeaderKey, HeaderValue := range HeaderCollection {

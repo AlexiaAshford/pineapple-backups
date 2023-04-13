@@ -5,6 +5,7 @@ import (
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao"
 	"github.com/VeronicaAlexia/HbookerAPI/ciweimao/book"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
@@ -59,9 +60,9 @@ func GET_DIVISION(BookId string) []map[string]string {
 func (catalogue *Catalogue) GetDownloadsList() []string {
 	catalogue.ReadChapterConfig()
 	var chapter_info_list []map[string]string
-	if config.Vars.AppType == "sfacg" {
+	if command.Command.AppType == "sfacg" {
 		return boluobao.API.Book.NovelCatalogue(config.Current.NewBooks["novel_id"])
-	} else if config.Vars.AppType == "cat" {
+	} else if command.Command.AppType == "cat" {
 		var DownloadList []string
 		chapter_info_list = GET_DIVISION(config.Current.NewBooks["novel_id"])
 		for _, chapter_info := range chapter_info_list {
@@ -86,14 +87,14 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapte
 	}
 	var content_text string
 	for i := 0; i < 5; i++ {
-		if config.Vars.AppType == "sfacg" {
+		if command.Command.AppType == "sfacg" {
 			response := boluobao.API.Book.NovelContent(chapterID)
 			if response != nil {
 				content_text = response.Data.Expand.Content
 			} else {
 				break
 			}
-		} else if config.Vars.AppType == "cat" {
+		} else if command.Command.AppType == "cat" {
 			content_text = book.GetContent(chapterID)
 		}
 		if content_text != "" {
@@ -106,7 +107,7 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapte
 func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	savePath := path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"], config.Current.NewBooks["novel_name"])
 	var NovelCatalogue []string
-	if config.Vars.AppType == "sfacg" {
+	if command.Command.AppType == "sfacg" {
 		NovelCatalogue = boluobao.API.Book.NovelCatalogue(config.Current.NewBooks["novel_id"])
 	} else {
 		for _, chapter_info := range GET_DIVISION(config.Current.NewBooks["novel_id"]) {

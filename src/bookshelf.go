@@ -6,7 +6,7 @@ import (
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao"
 	ht "github.com/VeronicaAlexia/HbookerAPI/Template"
 	"github.com/VeronicaAlexia/HbookerAPI/ciweimao/bookshelf"
-	"github.com/VeronicaAlexia/pineapple-backups/config"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/olekukonko/tablewriter"
 	"os"
@@ -22,7 +22,7 @@ type Bookshelf struct {
 
 func NewChoiceBookshelf() *Bookshelf {
 	var bs Bookshelf
-	switch config.Vars.AppType {
+	switch command.Command.AppType {
 	case "sfacg":
 		bs.SfacgBookShelfData = boluobao.API.BookShelf.NovelBookShelf()
 		if bs.SfacgBookShelfData != nil {
@@ -69,7 +69,7 @@ func (bs *Bookshelf) InitBookshelf() {
 	bs.ShelfBook = make(map[string]string)
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"序号", "小说名", "小说ID"})
-	switch config.Vars.AppType {
+	switch command.Command.AppType {
 	case "sfacg":
 		for i, value := range *bs.SfacgBookShelfData {
 			if i == bs.ShelfIndex {
@@ -116,10 +116,10 @@ func (bs *Bookshelf) InitBookshelf() {
 //}
 
 //func request_bookshelf_book_list() (map[int][]map[string]string, error) {
-//	if config.Vars.AppType == "sfacg" {
+//	if command.Command.AppType == "sfacg" {
 //		//return sfacg_bookshelf()
 //		return nil, nil
-//	} else if config.Vars.AppType == "cat" {
+//	} else if command.Command.AppType == "cat" {
 //		return hbooker_bookshelf()
 //	} else {
 //		return nil, fmt.Errorf("app type error")
@@ -130,14 +130,14 @@ func (bs *Bookshelf) InitBookshelf() {
 //	bookshelf_book_list, response_err := request_bookshelf_book_list()
 //	if response_err != nil || bookshelf_book_list == nil {
 //		var test_login_status bool
-//		fmt.Println("config.Vars.AppType ", config.Vars.AppType)
+//		fmt.Println("command.Command.AppType ", command.Command.AppType)
 //		fmt.Println("BookShelf Error:", response_err)
-//		if config.Vars.AppType == "sfacg" {
+//		if command.Command.AppType == "sfacg" {
 //			test_login_status = AutoAccount()
-//		} else if config.Vars.AppType == "cat" {
+//		} else if command.Command.AppType == "cat" {
 //			test_login_status = InputAccountToken()
 //		}
-//		if !test_login_status && config.Vars.AppType == "sfacg" {
+//		if !test_login_status && command.Command.AppType == "sfacg" {
 //			fmt.Println("please login your sfacg account and password!")
 //			account := tools.InputStr("please input your account:")
 //			password := tools.InputStr("please input your password:")

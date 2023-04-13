@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/search"
 	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/ciweimao/search"
-	"github.com/VeronicaAlexia/pineapple-backups/config"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"strconv"
 )
@@ -47,12 +47,12 @@ func (s *Search) SfacgSearchDetailed() []string {
 }
 
 func (s *Search) load_search_list() {
-	if config.Vars.AppType == "cat" {
+	if command.Command.AppType == "cat" {
 		s.SearchResult = s.CatSearchDetailed()
-	} else if config.Vars.AppType == "sfacg" {
+	} else if command.Command.AppType == "sfacg" {
 		s.SearchResult = s.SfacgSearchDetailed()
 	} else {
-		panic("app type is not correct" + config.Vars.AppType)
+		panic("app type is not correct" + command.Command.AppType)
 	}
 }
 

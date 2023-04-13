@@ -3,6 +3,7 @@ package request
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 )
 
 type Context struct {
@@ -29,7 +30,7 @@ func (c *Context) Init(url string) *Context {
 }
 
 func (c *Context) AddCatToken() {
-	if config.Vars.AppType == "cat" {
+	if command.Command.AppType == "cat" {
 		c.Query("login_token", config.Apps.Hbooker.LoginToken).
 			Query("account", config.Apps.Hbooker.Account).
 			Query("app_version", config.Apps.Hbooker.AppVersion).

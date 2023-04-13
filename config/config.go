@@ -12,17 +12,8 @@ import (
 
 func UpdateConfig() { // update config.json if necessary
 	changeVar := false
-	if Vars.ThreadNum == 0 || Vars.ThreadNum >= 64 {
-		Vars.ThreadNum = 32 // default value is 32 thread
-		changeVar = true
-	}
 	if Vars.MaxRetry == 0 || Vars.MaxRetry >= 10 {
 		Vars.MaxRetry = 5 // retry times when failed
-		changeVar = true
-	}
-	if Vars.AppType == "" {
-		// default app type
-		Vars.AppType = "sfacg"
 		changeVar = true
 	}
 	if Vars.DeviceId == "" {

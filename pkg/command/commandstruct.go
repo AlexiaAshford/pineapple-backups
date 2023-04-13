@@ -7,7 +7,7 @@ import (
 
 var Command = &commandLines{
 	AppType:   "sfacg",
-	MaxThread: 16,
+	MaxThread: 32,
 }
 
 type commandLines struct {

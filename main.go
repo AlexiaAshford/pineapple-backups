@@ -35,9 +35,7 @@ func init() {
 	BoluobaoConfig.AppConfig.DeviceId = "240a90cc-4c40-32c7-b44e-d4cf9e670605"
 	BoluobaoConfig.AppConfig.Cookie = config.Apps.Sfacg.Cookie
 
-	config.Vars.AppType = command.Command.AppType
-
-	fmt.Println("current app type:", config.Vars.AppType)
+	fmt.Println("current app type:", command.Command.AppType)
 }
 
 func current_download_book_function(book_id string) {
@@ -49,7 +47,7 @@ func current_download_book_function(book_id string) {
 	DownloadList := catalogue.GetDownloadsList()
 
 	if DownloadList != nil && len(DownloadList) > 0 {
-		thread := threading.NewGoLimit(uint(config.Vars.MaxRetry))
+		thread := threading.NewGoLimit(uint(command.Command.MaxThread))
 		fmt.Println(len(DownloadList), " chapters will be downloaded.")
 		catalogue.ChapterBar = src.New(len(DownloadList))
 		catalogue.ChapterBar.Describe("working...")
@@ -83,7 +81,7 @@ func shell(inputs []string) {
 		update_local_booklist()
 	case "a", "app":
 		if tools.TestList([]string{"sfacg", "cat"}, inputs[1]) {
-			config.Vars.AppType = inputs[1]
+			command.Command.AppType = inputs[1]
 		} else {
 			fmt.Println("app type error, please input again.")
 		}
@@ -117,10 +115,10 @@ func shell(inputs []string) {
 		}
 
 	case "l", "login":
-		if config.Vars.AppType == "cat" && len(inputs) >= 3 {
+		if command.Command.AppType == "cat" && len(inputs) >= 3 {
 			//hbooker.GET_LOGIN_TOKEN(inputs[1], inputs[2])
 			fmt.Println("hbooker login function is not available now.")
-		} else if config.Vars.AppType == "sfacg" && len(inputs) >= 3 {
+		} else if command.Command.AppType == "sfacg" && len(inputs) >= 3 {
 			src.LoginAccount(inputs[1], inputs[2], 0)
 		} else {
 			fmt.Println("you must input account and password, like: -login account password")

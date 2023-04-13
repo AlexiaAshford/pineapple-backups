@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/encryption"
 	"io"
 	"net/http"
@@ -19,7 +20,7 @@ func JsonUnmarshal(response []byte, Struct any) any {
 }
 
 func SET_URL(url string) string {
-	switch config.Vars.AppType {
+	switch command.Command.AppType {
 	case "cat":
 		return CatWebSite + strings.ReplaceAll(url, CatWebSite, "")
 	case "sfacg":
@@ -33,7 +34,7 @@ func SET_URL(url string) string {
 
 func Request(url string) []byte {
 	method := "GET"
-	if config.Vars.AppType == "cat" || strings.Contains(url, "session") {
+	if command.Command.AppType == "cat" || strings.Contains(url, "session") {
 		if !strings.Contains(url, "jpg") {
 			method = "POST"
 		}
@@ -42,7 +43,7 @@ func Request(url string) []byte {
 	SET_THE_HEADERS(request)
 	if response, ok := http.DefaultClient.Do(request); ok == nil {
 		result_body, _ := io.ReadAll(response.Body)
-		if config.Vars.AppType == "cat" && !strings.Contains(url, "jpg") {
+		if command.Command.AppType == "cat" && !strings.Contains(url, "jpg") {
 			return encryption.Decode(string(result_body), "")
 		} else {
 			return result_body

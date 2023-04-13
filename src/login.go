@@ -5,6 +5,7 @@ import (
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/account"
 	BoluobaoConfig "github.com/VeronicaAlexia/BoluobaoAPI/pkg/config"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"os"
 )
@@ -93,7 +94,7 @@ func InputAccountToken() bool {
 
 func TestAppTypeAndAccount() {
 	// test AppType and Account is valid
-	switch config.Vars.AppType {
+	switch command.Command.AppType {
 	case "cat":
 		if !TestCatAccount() {
 			fmt.Println("please input account and login token, please input again:")
@@ -105,7 +106,7 @@ func TestAppTypeAndAccount() {
 			os.Exit(1)
 		}
 	default:
-		panic("app type %v is invalid, please input again:" + config.Vars.AppType)
+		panic("app type %v is invalid, please input again:" + command.Command.AppType)
 	}
 
 }

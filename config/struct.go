@@ -15,7 +15,6 @@ type ScriptConfig struct {
 	OutputName string `json:"output_name"`
 	CoverFile  string `json:"cover_file"`
 	DeviceId   string `json:"device_id"`
-	AppType    string `json:"app_type"`
 	ThreadNum  int    `json:"thread_num"`
 	MaxRetry   int    `json:"max_retry"`
 	Epub       bool   `json:"epub"`

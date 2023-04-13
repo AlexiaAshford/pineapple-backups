@@ -5,6 +5,7 @@ import (
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao"
 	"github.com/VeronicaAlexia/HbookerAPI/ciweimao/book"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
+	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/request"
@@ -53,7 +54,7 @@ func (books *BookInits) InitEpubFile() {
 
 func SettingBooks(book_id string) Catalogue {
 	var err error
-	switch config.Vars.AppType {
+	switch command.Command.AppType {
 	case "sfacg":
 		BookInfo := boluobao.API.Book.NovelInfo(book_id)
 		if BookInfo != nil {
