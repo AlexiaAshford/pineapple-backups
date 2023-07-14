@@ -3,7 +3,7 @@ package src
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao"
-	"github.com/VeronicaAlexia/HbookerAPI/ciweimao/book"
+	"github.com/VeronicaAlexia/ciweimaoapiLib"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
@@ -70,10 +70,10 @@ func SettingBooks(book_id string) Catalogue {
 			return Catalogue{Test: false, BookMessage: fmt.Sprintf("book_id:%v is invalid:%v", book_id, err)}
 		}
 	case "cat":
-		BookInfo := book.GET_BOOK_INFORMATION(book_id)
+		BookInfo := ciweimaoapi.GetBookInfo(book_id)
 		config.Current.NewBooks = map[string]string{
-			"novel_name":  tools.RegexpName(BookInfo.Data.BookInfo.BookName),
-			"novel_id":    BookInfo.Data.BookInfo.BookID,
+			"novel_name":  BookInfo.Data.BookInfo.BookName,
+			"novel_id":    BookInfo.Data.BookInfo.BookId,
 			"novel_cover": BookInfo.Data.BookInfo.Cover,
 			"author_name": BookInfo.Data.BookInfo.AuthorName,
 			"char_count":  BookInfo.Data.BookInfo.TotalWordCount,

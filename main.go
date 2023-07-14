@@ -3,13 +3,14 @@ package main
 import (
 	"fmt"
 	BoluobaoConfig "github.com/VeronicaAlexia/BoluobaoAPI/pkg/config"
-	HbookerConfig "github.com/VeronicaAlexia/HbookerAPI/pkg/config"
+	"github.com/VeronicaAlexia/ciweimaoapiLib"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/src"
+	"log"
 	"os"
 	"strings"
 )
@@ -25,11 +26,11 @@ func init() {
 	config.UpdateConfig()
 
 	command.NewApp()
-	HbookerConfig.AppConfig.AppVersion = config.Apps.Hbooker.AppVersion
-	HbookerConfig.AppConfig.Account = config.Apps.Hbooker.Account
-	HbookerConfig.AppConfig.LoginToken = config.Apps.Hbooker.LoginToken
-	HbookerConfig.AppConfig.DeviceToken = config.Apps.Hbooker.DeviceToken
 
+	err := ciweimaoapi.SetciweimaoAuthentication(config.Apps.Hbooker.LoginToken, config.Apps.Hbooker.Account)
+	if err != nil {
+		log.Panicln("Error setting ciweimao authentication" + err.Error())
+	}
 	BoluobaoConfig.AppConfig.App = true // set boluobao app mode
 	BoluobaoConfig.AppConfig.AppKey = "FMLxgOdsfxmN!Dt4"
 	BoluobaoConfig.AppConfig.DeviceId = "240a90cc-4c40-32c7-b44e-d4cf9e670605"
@@ -116,8 +117,10 @@ func shellSwitch(inputs []string) {
 
 	case "l", "login":
 		if command.Command.AppType == "cat" && len(inputs) >= 3 {
-			//hbooker.GET_LOGIN_TOKEN(inputs[1], inputs[2])
-			fmt.Println("hbooker login function is not available now.")
+			err := ciweimaoapi.SetciweimaoAuthentication(inputs[1], inputs[2])
+			if err != nil {
+				log.Println("error setting ciweimao authentication" + err.Error())
+			}
 		} else if command.Command.AppType == "sfacg" && len(inputs) >= 3 {
 			src.LoginAccount(inputs[1], inputs[2], 0)
 		} else {

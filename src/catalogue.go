@@ -3,15 +3,15 @@ package src
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao"
-	"github.com/VeronicaAlexia/HbookerAPI/ciweimao/book"
+	"github.com/VeronicaAlexia/ciweimaoapiLib"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
+	"log"
 	"path"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -33,47 +33,29 @@ func (catalogue *Catalogue) ReadChapterConfig() {
 	}
 }
 
-func GET_DIVISION(BookId string) []map[string]string {
-	var chapter_index int
-	var division_info_list []map[string]string
-	VolumeList := book.GET_DIVISION_LIST_BY_BOOKID(BookId)
-	for division_index, division_info := range VolumeList.Data.ChapterList {
-		fmt.Printf("第%v卷\t\t%v\n", division_index+1, division_info.DivisionName)
-		for _, chapter := range division_info.ChapterList {
-			chapter_index += 1
-			division_info_list = append(division_info_list, map[string]string{
-				"is_valid":       chapter.IsValid,
-				"chapter_id":     chapter.ChapterID,
-				"money":          chapter.AuthAccess,
-				"chapter_name":   chapter.ChapterTitle,
-				"division_name":  division_info.DivisionName,
-				"division_id":    division_info.DivisionID,
-				"division_index": strconv.Itoa(division_index),
-				"chapter_index":  strconv.Itoa(chapter_index),
-				"file_name":      file.FileCacheName(division_index, chapter_index, chapter.ChapterID),
-			})
-		}
-	}
-	return division_info_list
-}
-
 func (catalogue *Catalogue) GetDownloadsList() []string {
 	catalogue.ReadChapterConfig()
-	var chapter_info_list []map[string]string
 	if command.Command.AppType == "sfacg" {
 		return boluobao.API.Book.NovelCatalogue(config.Current.NewBooks["novel_id"])
 	} else if command.Command.AppType == "cat" {
 		var DownloadList []string
-		chapter_info_list = GET_DIVISION(config.Current.NewBooks["novel_id"])
-		for _, chapter_info := range chapter_info_list {
-			if !tools.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {
-				if chapter_info["money"] == "0" || chapter_info["money"] == "1" {
-					DownloadList = append(DownloadList, chapter_info["chapter_id"])
-				} else {
-					fmt.Println(chapter_info["chapter_name"], " is vip chapter, You need to subscribe it")
+		response := ciweimaoapi.GetCatalog(config.Current.NewBooks["novel_id"])
+		if response != nil && response.Code == "100000" {
+			for _, value := range response.Data.ChapterList {
+				for _, value2 := range value.ChapterList {
+					if !tools.TestList(catalogue.ChapterCfg, value2.ChapterId) {
+						if value2.AuthAccess == "0" || value2.AuthAccess == "1" {
+							DownloadList = append(DownloadList, value2.ChapterId)
+						} else {
+							fmt.Println(value2.ChapterTitle, " is vip chapter, You need to subscribe it")
+						}
+					}
 				}
 			}
+		} else {
+			log.Printf("GetCatalog Error: %v", response.Tip.(string))
 		}
+		fmt.Println(DownloadList)
 		return DownloadList
 	}
 	return nil
@@ -95,7 +77,7 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapte
 				break
 			}
 		} else if command.Command.AppType == "cat" {
-			content_text = book.GetContent(chapterID)
+			content_text = ciweimaoapi.GetContent(chapterID).Data.ChapterInfo.TxtContent
 		}
 		if content_text != "" {
 			file.Open(path.Join(config.Current.ConfigPath, chapterID+".txt"), content_text, "w")
@@ -110,12 +92,14 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	if command.Command.AppType == "sfacg" {
 		NovelCatalogue = boluobao.API.Book.NovelCatalogue(config.Current.NewBooks["novel_id"])
 	} else {
-		for _, chapter_info := range GET_DIVISION(config.Current.NewBooks["novel_id"]) {
-			if !tools.TestList(catalogue.ChapterCfg, chapter_info["file_name"]) {
-				if chapter_info["money"] == "0" || chapter_info["money"] == "1" {
-					NovelCatalogue = append(NovelCatalogue, chapter_info["chapter_id"])
-				} else {
-					fmt.Println(chapter_info["chapter_name"], " is vip chapter, You need to subscribe it")
+		for _, i := range ciweimaoapi.GetCatalog(config.Current.NewBooks["novel_id"]).Data.ChapterList {
+			for _, chapterInfo := range i.ChapterList {
+				if !tools.TestList(catalogue.ChapterCfg, chapterInfo.ChapterId) {
+					if chapterInfo.AuthAccess == "0" || chapterInfo.AuthAccess == "1" {
+						NovelCatalogue = append(NovelCatalogue, chapterInfo.ChapterId)
+					} else {
+						fmt.Println(chapterInfo.ChapterTitle, " is vip chapter, You need to subscribe it")
+					}
 				}
 			}
 		}

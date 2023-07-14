@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/VeronicaAlexia/BoluobaoAPI v0.0.0-20230104081854-0c9f9f79d476
 	github.com/VeronicaAlexia/HbookerAPI v0.0.0-20221228043426-2aac9368105b
+	github.com/VeronicaAlexia/ciweimaoapiLib v0.0.0-20230713231522-657c5d4e03a6
 	github.com/gabriel-vasile/mimetype v1.4.1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gofrs/uuid v4.3.1+incompatible

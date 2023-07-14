@@ -73,10 +73,6 @@ func AutoAccount() bool {
 	return false
 }
 
-//func LoginAccountToken() bool {
-//	hbooker.GET_LOGIN_TOKEN()
-//}
-
 func InputAccountToken() bool {
 	for i := 0; i < config.Vars.MaxRetry; i++ {
 		LoginToken := tools.InputStr("you must input 32 characters login token:")
