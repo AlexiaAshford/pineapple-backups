@@ -2,7 +2,6 @@ package src
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
@@ -10,6 +9,7 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -29,32 +29,45 @@ func (catalogue *Catalogue) ReadChapterConfig() {
 	}
 }
 
-func (catalogue *Catalogue) GetDownloadsList() []string {
+func (catalogue *Catalogue) GetDownloadsList() ([]string, error) {
 	catalogue.ReadChapterConfig()
-	if command.Command.AppType == "sfacg" {
-		return boluobao.API.Book.NovelCatalogue(config.Current.NewBooks["novel_id"])
-	} else if command.Command.AppType == "cat" {
-		var DownloadList []string
-		divisionList, err := config.APP.Hbooker.Client.API.GetDivisionListByBookId(config.APP.Hbooker.BookInfo.BookID)
+	var downloadList []string
+	switch command.Command.AppType {
+	case "sfacg":
+		divisionList, err := config.APP.SFacg.Client.API.GetCatalogue(config.APP.SFacg.BookInfo.NovelId)
 		if err != nil {
-			fmt.Println("get division list error:", err)
-		} else {
-			for _, value := range divisionList {
-				for _, value2 := range value.ChapterList {
-					if !tools.TestList(catalogue.ChapterCfg, value2.ChapterID) {
-						if value2.AuthAccess == "0" || value2.AuthAccess == "1" {
-							DownloadList = append(DownloadList, value2.ChapterID)
-						} else {
-							fmt.Println(value2.ChapterTitle, " is vip chapter, You need to subscribe it")
-						}
+			return nil, err
+		}
+		for _, division := range divisionList {
+			for _, chapter := range division.ChapterList {
+				if !tools.TestList(catalogue.ChapterCfg, strconv.Itoa(chapter.ChapID)) {
+					if chapter.OriginNeedFireMoney == 0 {
+						downloadList = append(downloadList, strconv.Itoa(chapter.ChapID))
 					}
 				}
 			}
 		}
-		fmt.Println(DownloadList)
-		return DownloadList
+	case "cat":
+		divisionList, err := config.APP.Hbooker.Client.API.GetDivisionListByBookId(config.APP.Hbooker.BookInfo.BookID)
+		if err != nil {
+			return nil, err
+		}
+		for _, value := range divisionList {
+			for _, value2 := range value.ChapterList {
+				if !tools.TestList(catalogue.ChapterCfg, value2.ChapterID) {
+					if value2.AuthAccess == "0" || value2.AuthAccess == "1" {
+						downloadList = append(downloadList, value2.ChapterID)
+					} else {
+						fmt.Println(value2.ChapterTitle, " is vip chapter, You need to subscribe it")
+					}
+				}
+			}
+		}
 	}
-	return nil
+	if len(downloadList) == 0 {
+		return nil, fmt.Errorf("no new chapters")
+	}
+	return downloadList, nil
 }
 
 func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapterID string) {
@@ -65,12 +78,12 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapte
 	}
 	var contentText string
 	if command.Command.AppType == "sfacg" {
-		response := boluobao.API.Book.NovelContent(chapterID)
-		if response != nil {
-			contentText = response.Data.Title + "\n" + response.Data.Expand.Content
-		} else {
+		chapterInfo, err := config.APP.SFacg.Client.API.GetChapterContent(chapterID)
+		if err != nil {
+			fmt.Println("get chapter content error:", err)
 			return
 		}
+		contentText = chapterInfo.Title + "\n" + chapterInfo.Expand.Content
 	} else if command.Command.AppType == "cat" {
 		chapterKey, err := config.APP.Hbooker.Client.API.GetChapterKey(chapterID)
 		if err != nil {
@@ -91,14 +104,23 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapte
 func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	var savePath string
 	if command.Command.AppType == "sfacg" {
-		savePath = path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"], config.Current.NewBooks["novel_name"])
+		savePath = path.Join(config.Vars.OutputName, config.APP.SFacg.BookInfo.NovelName, config.APP.SFacg.BookInfo.NovelName)
+		divisionList, err := config.APP.SFacg.Client.API.GetCatalogue(config.APP.SFacg.BookInfo.NovelId)
+		if err != nil {
+			fmt.Println("get division list error:", err)
+			return
+		}
+		for _, i := range divisionList {
+			for _, chapterInfo := range i.ChapterList {
+				if config.Exist(path.Join(config.Current.ConfigPath, strconv.Itoa(chapterInfo.ChapID)+".txt")) {
+					content := file.Open(path.Join(config.Current.ConfigPath, strconv.Itoa(chapterInfo.ChapID)+".txt"), "", "r")
+					file.Open(savePath+".txt", "\n\n\n"+chapterInfo.Title+"\n"+content, "a")
+					catalogue.addChapterInEpubFile(chapterInfo.Title, content+"</p>")
+				}
+			}
+		}
 	} else {
 		savePath = path.Join(config.Vars.OutputName, config.APP.Hbooker.BookInfo.BookName, config.APP.Hbooker.BookInfo.BookName)
-	}
-	var NovelCatalogue []string
-	if command.Command.AppType == "sfacg" {
-		NovelCatalogue = boluobao.API.Book.NovelCatalogue(config.Current.NewBooks["novel_id"])
-	} else {
 		divisionList, err := config.APP.Hbooker.Client.API.GetDivisionListByBookId(config.APP.Hbooker.BookInfo.BookID)
 		if err != nil {
 			fmt.Println("get division list error:", err)
@@ -106,26 +128,13 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 		}
 		for _, i := range divisionList {
 			for _, chapterInfo := range i.ChapterList {
-				if !tools.TestList(catalogue.ChapterCfg, chapterInfo.ChapterID) {
-					if chapterInfo.IsPaid == "0" || chapterInfo.AuthAccess == "1" {
-						NovelCatalogue = append(NovelCatalogue, chapterInfo.ChapterID)
-					} else {
-						fmt.Println(chapterInfo.ChapterTitle, " is vip chapter, You need to subscribe it")
-					}
+				if config.Exist(path.Join(config.Current.ConfigPath, chapterInfo.ChapterID+".txt")) {
+					content := file.Open(path.Join(config.Current.ConfigPath, chapterInfo.ChapterID+".txt"), "", "r")
+					file.Open(savePath+".txt", "\n\n\n"+chapterInfo.ChapterTitle+"\n"+content, "a")
+					catalogue.addChapterInEpubFile(chapterInfo.ChapterTitle, content+"</p>")
 				}
 			}
 		}
-	}
-
-	for _, chapterId := range NovelCatalogue {
-		if config.Exist(path.Join(config.Current.ConfigPath, chapterId+".txt")) {
-			content := file.Open(path.Join(config.Current.ConfigPath, chapterId+".txt"), "", "r")
-			//if config.Vars.Epub {
-			file.Open(savePath+".txt", "\n\n\n"+content, "a")
-			catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content+"</p>")
-			//} // save to epub file if epub is true
-		}
-
 	}
 
 	outPutEpubNow := time.Now() // start time
@@ -133,10 +142,9 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 		fmt.Println("output epub error:", err)
 	}
 	fmt.Println("output epub file success, time:", time.Since(outPutEpubNow))
-	//}
 }
 
-func (catalogue *Catalogue) add_chapter_in_epub_file(title, content string) {
+func (catalogue *Catalogue) addChapterInEpubFile(title, content string) {
 	xmlContent := "<h1>" + title + "</h1>\n<p>" + strings.ReplaceAll(content, "\n", "</p>\n<p>")
 	if _, err := catalogue.EpubSetting.AddSection(xmlContent, title, "", ""); err != nil {
 		fmt.Printf("epub add chapter:%v\t\terror message:%v", title, err)

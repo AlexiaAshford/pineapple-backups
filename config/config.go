@@ -3,6 +3,8 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/AlexiaVeronica/boluobaoLib"
+	"github.com/AlexiaVeronica/boluobaoLib/boluobaomodel"
 	"github.com/AlexiaVeronica/hbookerLib"
 	"github.com/AlexiaVeronica/hbookerLib/hbookermodel"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
@@ -38,11 +40,16 @@ func UpdateConfig() { // update config.json if necessary
 
 var APP = struct {
 	Hbooker *Hbooker
+	SFacg   *SFacg
 }{}
 
 type Hbooker struct {
 	Client   *hbookerLib.Client
 	BookInfo *hbookermodel.BookInfo
+}
+type SFacg struct {
+	Client   *boluobaoLib.Client
+	BookInfo *boluobaomodel.BookInfoData
 }
 
 func Exist(fileName any) bool {

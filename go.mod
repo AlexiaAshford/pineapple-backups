@@ -3,13 +3,12 @@ module github.com/VeronicaAlexia/pineapple-backups
 go 1.19
 
 require (
+	github.com/AlexiaVeronica/boluobaoLib v0.0.0-20231009050433-38835643b9f9
 	github.com/AlexiaVeronica/hbookerLib v0.1.3
-	github.com/VeronicaAlexia/BoluobaoAPI v0.0.0-20230104081854-0c9f9f79d476
-	github.com/VeronicaAlexia/HbookerAPI v0.0.0-20221228043426-2aac9368105b
 	github.com/gabriel-vasile/mimetype v1.4.1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gofrs/uuid v4.3.1+incompatible
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.3.1
 	github.com/gookit/color v1.5.2
 	github.com/mattn/go-runewidth v0.0.14
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
@@ -33,7 +32,6 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/imroc/req/v3 v3.42.1 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
-	github.com/liushuochen/gotable v0.0.0-20221119160816-1113793e7092 // indirect
 	github.com/onsi/ginkgo/v2 v2.12.0 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
 	github.com/quic-go/qtls-go1-20 v0.3.3 // indirect

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/AlexiaVeronica/boluobaoLib"
 	"github.com/AlexiaVeronica/hbookerLib"
-	BoluobaoConfig "github.com/VeronicaAlexia/BoluobaoAPI/pkg/config"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
@@ -25,43 +25,39 @@ func init() {
 	config.UpdateConfig()
 
 	command.NewApp()
-
-	BoluobaoConfig.AppConfig.App = true // set boluobao app mode
-	BoluobaoConfig.AppConfig.AppKey = "FMLxgOdsfxmN!Dt4"
-	BoluobaoConfig.AppConfig.DeviceId = "240a90cc-4c40-32c7-b44e-d4cf9e670605"
-	BoluobaoConfig.AppConfig.Cookie = config.Apps.Sfacg.Cookie
-
 	config.APP.Hbooker = &config.Hbooker{
 		Client: hbookerLib.NewClient(
 			//hbookerLib.WithAccountAndLoginToken(config.Apps.Hbooker.Account, config.Apps.Hbooker.LoginToken),
 			hbookerLib.WithDebug(),
 		)}
+	config.APP.SFacg = &config.SFacg{
+		Client: boluobaoLib.NewClient(
+			boluobaoLib.WithCookie(config.Apps.Sfacg.Cookie), boluobaoLib.WithDebug(),
+		),
+	}
 	fmt.Println("current app type:", command.Command.AppType)
 }
 
-func currentDownloadBookFunction(book_id string) {
-	catalogue, err := src.SettingBooks(book_id) // get book catalogues
+func currentDownloadBookFunction(bookId string) {
+	catalogue, err := src.SettingBooks(bookId) // get book catalogues
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	DownloadList := catalogue.GetDownloadsList()
-
-	if DownloadList != nil && len(DownloadList) > 0 {
-		thread := threading.NewGoLimit(uint(command.Command.MaxThread))
-		fmt.Println(len(DownloadList), " chapters will be downloaded.")
-		catalogue.ChapterBar = src.New(len(DownloadList))
-		catalogue.ChapterBar.Describe("working...")
-		//fmt.Println(DownloadList)
-		for _, chapterID := range DownloadList {
-			thread.Add()
-			go catalogue.DownloadContent(thread, chapterID)
-		}
-		thread.WaitZero()
-		fmt.Printf("\nNovel:%v download complete!\n", config.Current.NewBooks["novel_name"])
-	} else {
-		fmt.Println(config.Current.NewBooks["novel_name"] + " No chapter need to download!\n")
+	downloadList, err := catalogue.GetDownloadsList()
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
+	thread := threading.NewGoLimit(uint(command.Command.MaxThread))
+	fmt.Println(len(downloadList), " chapters will be downloaded.")
+	catalogue.ChapterBar = src.New(len(downloadList))
+	catalogue.ChapterBar.Describe("working...")
+	for _, chapterID := range downloadList {
+		thread.Add()
+		go catalogue.DownloadContent(thread, chapterID)
+	}
+	thread.WaitZero()
 	catalogue.MergeTextAndEpubFiles()
 }
 
@@ -98,8 +94,7 @@ func shellSwitch(inputs []string) {
 		}
 	case "bs", "bookshelf":
 		if len(bookShelfList) > 0 && len(inputs) == 2 {
-			value, ok := bookShelfList[inputs[1]]
-			if ok {
+			if value, ok := bookShelfList[inputs[1]]; ok {
 				currentDownloadBookFunction(value)
 			} else {
 				fmt.Println(inputs[1], "key not found")
@@ -119,7 +114,7 @@ func shellSwitch(inputs []string) {
 		if command.Command.AppType == "cat" && len(inputs) >= 3 {
 			config.APP.Hbooker.Client.SetDefaultParams(inputs[1], inputs[2])
 		} else if command.Command.AppType == "sfacg" && len(inputs) >= 3 {
-			src.LoginAccount(inputs[1], inputs[2], 0)
+			src.LoginAccount(inputs[1], inputs[2])
 		} else {
 			fmt.Println("you must input account and password, like: -login account password")
 		}
@@ -137,25 +132,26 @@ func shell(messageOpen bool) {
 			fmt.Println("[info]", message)
 		}
 	}
-
-	if bs := src.NewChoiceBookshelf(); bs != nil {
-		bs.InitBookshelf()
-		bookShelfList = bs.ShelfBook
+	bookshelf, err := src.NewChoiceBookshelf()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		bookShelfList = bookshelf
 	}
+
 	for {
 		if inputRes := tools.GET(">"); len(inputRes) > 0 {
 			shellSwitch(inputRes)
 		}
 	}
+
 }
 
 func main() {
 
 	if len(os.Args) > 1 {
 		if command.Command.Account != "" && command.Command.Password != "" {
-			shellSwitch([]string{"login", command.Command.Account, command.Command.Password})
-		} else if command.Command.Login {
-			src.TestAppTypeAndAccount()
+			src.LoginAccount(command.Command.Account, command.Command.Password)
 		} else if command.Command.BookID != "" {
 			currentDownloadBookFunction(command.Command.BookID)
 		} else if command.Command.SearchKey != "" {

@@ -2,8 +2,7 @@ package src
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao/search"
-	HbookerAPI "github.com/VeronicaAlexia/HbookerAPI/ciweimao/search"
+	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"strconv"
@@ -17,31 +16,28 @@ type Search struct {
 
 func (s *Search) CatSearchDetailed() []string {
 	var searchResult []string
-	response := HbookerAPI.GET_SEARCH(s.Keyword, s.Page) // init search struct
-	if response.Code != "100000" || len(response.Data.BookList) == 0 {
-		fmt.Println("search failed, code:", response.Code)
+	searchInfo, err := config.APP.Hbooker.Client.API.GetSearchBooksAPI(s.Keyword, s.Page)
+	if err != nil {
+		fmt.Println("search failed!" + err.Error())
 		return nil
-	} else {
-		fmt.Println("this page has", len(response.Data.BookList), "books")
 	}
-	for index, book_info := range response.Data.BookList {
-		fmt.Println("Index:", index, "\t\t\tBookName:", book_info.BookName)
-		searchResult = append(searchResult, book_info.BookID)
+	for index, bookInfo := range searchInfo {
+		fmt.Println("Index:", index, "\t\t\tBookName:", bookInfo.BookName)
+		searchResult = append(searchResult, bookInfo.BookID)
 	}
 	return searchResult
 }
 
 func (s *Search) SfacgSearchDetailed() []string {
 	var searchResult []string
-	response := search.GET_SEARCH(s.Keyword, s.Page)
-	if response.Status.HTTPCode != 200 || len(response.Data.Novels) == 0 {
+	searchInfo, err := config.APP.SFacg.Client.API.GetSearch(s.Keyword, s.Page)
+	if err != nil {
+		fmt.Println("search failed!" + err.Error())
 		return nil // if the search result is empty
-	} else {
-		fmt.Println("this page has", len(response.Data.Novels), "novels")
 	}
-	for index, book := range response.Data.Novels {
+	for index, book := range searchInfo {
 		fmt.Println("Index:", index, "\t\t\tBookName:", book.NovelName)
-		searchResult = append(searchResult, strconv.Itoa(book.NovelID))
+		searchResult = append(searchResult, strconv.Itoa(book.NovelId))
 	}
 	return searchResult
 }

@@ -2,7 +2,6 @@ package src
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
@@ -12,7 +11,6 @@ import (
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"os"
 	"path"
-	"strconv"
 )
 
 type BookInits struct {
@@ -70,22 +68,13 @@ func SettingBooks(bookId string) (*Catalogue, error) {
 	var err error
 	switch command.Command.AppType {
 	case "sfacg":
-		BookInfo := boluobao.API.Book.NovelInfo(bookId)
-		if BookInfo != nil {
-			config.Current.NewBooks = map[string]string{
-				"novel_name":  tools.RegexpName(BookInfo.NovelName),
-				"novel_id":    strconv.Itoa(BookInfo.NovelID),
-				"novel_cover": BookInfo.NovelCover,
-				"author_name": BookInfo.AuthorName,
-				"char_count":  strconv.Itoa(BookInfo.CharCount),
-				"mark_count":  strconv.Itoa(BookInfo.MarkCount),
-			}
-			tools.Mkdir(path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"]))
-			config.Current.ConfigPath = path.Join(config.Vars.ConfigName, config.Current.NewBooks["novel_name"])
-			config.Current.CoverPath = path.Join(config.Vars.ConfigName, config.Vars.CoverFile, config.Current.NewBooks["novel_name"]+".jpg")
-		} else {
-			return nil, fmt.Errorf("book_id:%v is invalid", bookId)
+		config.APP.SFacg.BookInfo, err = config.APP.SFacg.Client.API.GetBookInfo(bookId)
+		if err != nil {
+			return nil, err
 		}
+		tools.Mkdir(path.Join(config.Vars.OutputName, config.APP.SFacg.BookInfo.NovelName))
+		config.Current.ConfigPath = path.Join(config.Vars.ConfigName, config.APP.SFacg.BookInfo.NovelName)
+		config.Current.CoverPath = path.Join(config.Vars.ConfigName, config.Vars.CoverFile, config.APP.SFacg.BookInfo.NovelName+".jpg")
 	case "cat":
 		config.APP.Hbooker.BookInfo, err = config.APP.Hbooker.Client.API.GetBookInfo(bookId)
 		if err != nil {
@@ -104,11 +93,11 @@ func BookDetailed() *Catalogue {
 	var briefIntroduction string
 	if command.Command.AppType == "sfacg" {
 		briefIntroduction = fmt.Sprintf("Name: %v\nBookID: %v\nAuthor: %v\nCount: %v\n\n\n",
-			config.Current.NewBooks["novel_name"], config.Current.NewBooks["novel_id"], config.Current.NewBooks["author_name"],
-			config.Current.NewBooks["char_count"],
+			config.APP.SFacg.BookInfo.NovelName, config.APP.SFacg.BookInfo.NovelId, config.APP.SFacg.BookInfo.AuthorName,
+			config.APP.SFacg.BookInfo.CharCount,
 		)
 		file.Open(
-			path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"], config.Current.NewBooks["novel_name"]+".txt"),
+			path.Join(config.Vars.OutputName, config.APP.SFacg.BookInfo.NovelName, config.APP.SFacg.BookInfo.NovelName+".txt"),
 			briefIntroduction,
 			"w",
 		)
