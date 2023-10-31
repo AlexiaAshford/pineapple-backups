@@ -12,7 +12,7 @@ func NewApp() {
 	app := cli.NewApp()
 	app.Name = "pineapple-backups"
 	app.Version = "V.1.9.7"
-	app.Usage = "https://github.com/VeronicaAlexia/pineapple-backups"
+	app.Usage = "https://github.com/AlexiaVeronica/pineapple-backups"
 	app.Flags = commandArgs
 
 	app.Action = func(c *cli.Context) {

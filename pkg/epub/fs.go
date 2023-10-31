@@ -1,9 +1,9 @@
 package epub
 
 import (
-	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub/internal/storage"
-	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub/internal/storage/memory"
-	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub/internal/storage/osfs"
+	"github.com/AlexiaVeronica/pineapple-backups/pkg/epub/internal/storage"
+	"github.com/AlexiaVeronica/pineapple-backups/pkg/epub/internal/storage/memory"
+	"github.com/AlexiaVeronica/pineapple-backups/pkg/epub/internal/storage/osfs"
 	"os"
 )
 

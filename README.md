@@ -63,7 +63,7 @@ Download books from <a href="https://book.sfacg.com/">sfacg</a> and
 
 ``` bash
 NAME:
-   pineapple-backups - https://github.com/VeronicaAlexia/pineapple-backups
+   pineapple-backups - https://github.com/AlexiaVeronica/pineapple-backups
 
 USAGE:
    main.exe [global options] command [command options] [arguments...]

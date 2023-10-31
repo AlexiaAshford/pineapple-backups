@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub/internal/storage"
+	"github.com/AlexiaVeronica/pineapple-backups/pkg/epub/internal/storage"
 )
 
 type OSFS struct {

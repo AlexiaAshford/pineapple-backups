@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub/internal/storage"
+	"github.com/AlexiaVeronica/pineapple-backups/pkg/epub/internal/storage"
 )
 
 type Memory struct {

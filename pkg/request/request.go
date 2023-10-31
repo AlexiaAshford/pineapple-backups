@@ -3,9 +3,9 @@ package request
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/VeronicaAlexia/pineapple-backups/config"
-	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
-	"github.com/VeronicaAlexia/pineapple-backups/pkg/encryption"
+	"github.com/AlexiaVeronica/pineapple-backups/config"
+	"github.com/AlexiaVeronica/pineapple-backups/pkg/command"
+	"github.com/AlexiaVeronica/pineapple-backups/pkg/encryption"
 	"io"
 	"net/http"
 	"strings"

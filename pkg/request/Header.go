@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/base64"
 	"fmt"
-	"github.com/VeronicaAlexia/pineapple-backups/config"
-	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
+	"github.com/AlexiaVeronica/pineapple-backups/config"
+	"github.com/AlexiaVeronica/pineapple-backups/pkg/command"
 	"net/http"
 	"os"
 )

@@ -1,4 +1,4 @@
-module github.com/VeronicaAlexia/pineapple-backups
+module github.com/AlexiaVeronica/pineapple-backups
 
 go 1.19
 

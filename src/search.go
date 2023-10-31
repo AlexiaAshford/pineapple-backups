@@ -2,9 +2,9 @@ package src
 
 import (
 	"fmt"
-	"github.com/VeronicaAlexia/pineapple-backups/config"
-	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
-	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
+	"github.com/AlexiaVeronica/pineapple-backups/config"
+	"github.com/AlexiaVeronica/pineapple-backups/pkg/command"
+	"github.com/AlexiaVeronica/pineapple-backups/pkg/tools"
 	"strconv"
 )
 
