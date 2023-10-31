@@ -25,17 +25,8 @@ func init() {
 	config.UpdateConfig()
 
 	command.NewApp()
-	config.APP.Hbooker = &config.Hbooker{
-		Client: hbookerLib.NewClient(
-			hbookerLib.WithAccountAndLoginToken(config.Apps.Hbooker.Account, config.Apps.Hbooker.LoginToken),
-			//hbookerLib.WithDebug(),
-		)}
-	config.APP.SFacg = &config.SFacg{
-		Client: boluobaoLib.NewClient(
-			boluobaoLib.WithCookie(config.Apps.Sfacg.Cookie),
-			//boluobaoLib.WithDebug(),
-		),
-	}
+	config.APP.Hbooker = &config.Hbooker{Client: hbookerLib.NewClient(hbookerLib.WithAccountAndLoginToken(config.Apps.Hbooker.Account, config.Apps.Hbooker.LoginToken))}
+	config.APP.SFacg = &config.SFacg{Client: boluobaoLib.NewClient(boluobaoLib.WithCookie(config.Apps.Sfacg.Cookie))}
 	fmt.Println("current app type:", command.Command.AppType)
 }
 
@@ -85,8 +76,8 @@ func shellSwitch(inputs []string) {
 		}
 	case "d", "b", "book", "download":
 		if len(inputs) == 2 {
-			if book_id := config.FindID(inputs[1]); book_id != "" {
-				currentDownloadBookFunction(book_id)
+			if bookId := config.FindID(inputs[1]); bookId != "" {
+				currentDownloadBookFunction(bookId)
 			} else {
 				fmt.Println("book id is empty, please input again.")
 			}
@@ -127,6 +118,7 @@ func shellSwitch(inputs []string) {
 		fmt.Println("command not found,please input help to see the command list:", inputs[0])
 	}
 }
+
 func shell(messageOpen bool) {
 	if messageOpen {
 		for _, message := range config.HelpMessage {

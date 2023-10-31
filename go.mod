@@ -10,6 +10,7 @@ require (
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/google/uuid v1.4.0
 	github.com/gookit/color v1.5.4
+	github.com/imroc/req/v3 v3.42.1
 	github.com/mattn/go-runewidth v0.0.15
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
 	github.com/olekukonko/tablewriter v0.0.5
@@ -30,7 +31,6 @@ require (
 	github.com/google/pprof v0.0.0-20230901174712-0191c66da455 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
-	github.com/imroc/req/v3 v3.42.1 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/onsi/ginkgo/v2 v2.12.0 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect

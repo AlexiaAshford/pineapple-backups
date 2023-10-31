@@ -84,12 +84,3 @@ func (s *Search) SearchBook() string {
 		}
 	}
 }
-
-//func (s *Search) ReturnBookID(keyword string) string {
-//	if tool.IsNum(keyword) {
-//		return s.SearchResult[tool.InputInt(keyword, len(s.SearchResult))]
-//	} else { // if the input is not a number (not a book id)
-//		fmt.Println("input is not a number, please input search index or book id")
-//	}
-//	return "" // if the input is not a number (not a book id) or the index is out of range
-//}
