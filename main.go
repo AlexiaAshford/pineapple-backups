@@ -27,12 +27,13 @@ func init() {
 	command.NewApp()
 	config.APP.Hbooker = &config.Hbooker{
 		Client: hbookerLib.NewClient(
-			//hbookerLib.WithAccountAndLoginToken(config.Apps.Hbooker.Account, config.Apps.Hbooker.LoginToken),
-			hbookerLib.WithDebug(),
+			hbookerLib.WithAccountAndLoginToken(config.Apps.Hbooker.Account, config.Apps.Hbooker.LoginToken),
+			//hbookerLib.WithDebug(),
 		)}
 	config.APP.SFacg = &config.SFacg{
 		Client: boluobaoLib.NewClient(
-			boluobaoLib.WithCookie(config.Apps.Sfacg.Cookie), boluobaoLib.WithDebug(),
+			boluobaoLib.WithCookie(config.Apps.Sfacg.Cookie),
+			//boluobaoLib.WithDebug(),
 		),
 	}
 	fmt.Println("current app type:", command.Command.AppType)
