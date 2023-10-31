@@ -14,7 +14,8 @@ import (
 	"sync"
 )
 
-func UpdateConfig() { // update config.json if necessary
+// UpdateConfig update config.json if necessary
+func UpdateConfig() {
 	changeVar := false
 	if Vars.MaxRetry == 0 || Vars.MaxRetry >= 10 {
 		Vars.MaxRetry = 5 // retry times when failed
@@ -26,10 +27,6 @@ func UpdateConfig() { // update config.json if necessary
 	}
 	if Vars.ConfigName == "" || Vars.OutputName == "" || Vars.CoverFile == "" {
 		Vars.ConfigName, Vars.OutputName, Vars.CoverFile = "cache", "save", "cover"
-		changeVar = true
-	}
-	if Apps.Hbooker.DeviceToken == "" || Apps.Hbooker.AppVersion == "" {
-		Apps.Hbooker.DeviceToken, Apps.Hbooker.AppVersion = "ciweimao_", "2.9.291"
 		changeVar = true
 	}
 	Exist([]string{Vars.ConfigName, Vars.OutputName, path.Join(Vars.ConfigName, Vars.CoverFile)})

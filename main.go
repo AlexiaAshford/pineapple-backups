@@ -49,7 +49,7 @@ func currentDownloadBookFunction(bookId string) {
 		fmt.Println(err)
 		return
 	}
-	thread := threading.NewGoLimit(uint(command.Command.MaxThread))
+	thread := threading.NewGoLimit(uint(32))
 	fmt.Println(len(downloadList), " chapters will be downloaded.")
 	catalogue.ChapterBar = src.New(len(downloadList))
 	catalogue.ChapterBar.Describe("working...")

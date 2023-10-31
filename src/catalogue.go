@@ -8,6 +8,7 @@ import (
 	"github.com/AlexiaVeronica/pineapple-backups/pkg/file"
 	"github.com/AlexiaVeronica/pineapple-backups/pkg/threading"
 	"github.com/AlexiaVeronica/pineapple-backups/pkg/tools"
+	"os"
 	"path"
 	"strconv"
 	"strings"
@@ -21,11 +22,17 @@ type Catalogue struct {
 }
 
 func (catalogue *Catalogue) ReadChapterConfig() {
-	if !config.Exist(config.Current.ConfigPath) {
-		tools.Mkdir(config.Current.ConfigPath)
+	var bookName string
+	if command.Command.AppType == "cat" {
+		bookName = config.APP.Hbooker.BookInfo.BookName
+	} else {
+		bookName = config.APP.SFacg.BookInfo.NovelName
+	}
+	if !config.Exist(path.Join("cache", bookName)) {
+		os.Mkdir(path.Join("cache", bookName), 0777)
 		catalogue.ChapterCfg = []string{}
 	} else {
-		catalogue.ChapterCfg = tools.GetFileName(config.Current.ConfigPath)
+		catalogue.ChapterCfg = tools.GetFileName("cache")
 	}
 }
 
@@ -73,7 +80,8 @@ func (catalogue *Catalogue) GetDownloadsList() ([]string, error) {
 func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapterID string) {
 	defer threading.Done()
 	catalogue.speed_progress()
-	if config.Exist(path.Join(config.Current.ConfigPath, chapterID+".txt")) {
+
+	if config.Exist(path.Join(config.Vars.ConfigName, config.APP.SFacg.BookInfo.NovelName, chapterID+".txt")) {
 		return
 	}
 	var contentText string
@@ -83,7 +91,7 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapte
 			fmt.Println("get chapter content error:", err)
 			return
 		}
-		contentText = chapterInfo.Title + "\n" + chapterInfo.Expand.Content
+		contentText = chapterInfo.Expand.Content
 	} else if command.Command.AppType == "cat" {
 		chapterKey, err := config.APP.Hbooker.Client.API.GetChapterKey(chapterID)
 		if err != nil {
@@ -94,10 +102,10 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapte
 			fmt.Println("get chapter content error:", err)
 			return
 		}
-		contentText = chapterInfo.ChapterTitle + "\n" + chapterInfo.TxtContent
+		contentText = chapterInfo.TxtContent
 	}
 	if contentText != "" {
-		file.Open(path.Join(config.Current.ConfigPath, chapterID+".txt"), contentText, "w")
+		file.Open(path.Join("cache", config.APP.SFacg.BookInfo.NovelName, chapterID+".txt"), contentText, "w")
 	}
 }
 
@@ -112,8 +120,8 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 		}
 		for _, i := range divisionList {
 			for _, chapterInfo := range i.ChapterList {
-				if config.Exist(path.Join(config.Current.ConfigPath, strconv.Itoa(chapterInfo.ChapID)+".txt")) {
-					content := file.Open(path.Join(config.Current.ConfigPath, strconv.Itoa(chapterInfo.ChapID)+".txt"), "", "r")
+				if config.Exist(path.Join(config.Vars.ConfigName, config.APP.SFacg.BookInfo.NovelName, strconv.Itoa(chapterInfo.ChapID)+".txt")) {
+					content := file.Open(path.Join(config.Vars.ConfigName, config.APP.SFacg.BookInfo.NovelName, strconv.Itoa(chapterInfo.ChapID)+".txt"), "", "r")
 					file.Open(savePath+".txt", "\n\n\n"+chapterInfo.Title+"\n"+content, "a")
 					catalogue.addChapterInEpubFile(chapterInfo.Title, content+"</p>")
 				}
@@ -128,8 +136,8 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 		}
 		for _, i := range divisionList {
 			for _, chapterInfo := range i.ChapterList {
-				if config.Exist(path.Join(config.Current.ConfigPath, chapterInfo.ChapterID+".txt")) {
-					content := file.Open(path.Join(config.Current.ConfigPath, chapterInfo.ChapterID+".txt"), "", "r")
+				if config.Exist(path.Join(config.Vars.ConfigName, config.APP.SFacg.BookInfo.NovelName, chapterInfo.ChapterID+".txt")) {
+					content := file.Open(path.Join(config.Vars.ConfigName, config.APP.SFacg.BookInfo.NovelName, chapterInfo.ChapterID+".txt"), "", "r")
 					file.Open(savePath+".txt", "\n\n\n"+chapterInfo.ChapterTitle+"\n"+content, "a")
 					catalogue.addChapterInEpubFile(chapterInfo.ChapterTitle, content+"</p>")
 				}
