@@ -7,13 +7,13 @@ import (
 )
 
 func FindID(url string) string {
-	current_book_id := regexp.MustCompile(`(\d+)`).FindStringSubmatch(url)
-	if len(current_book_id) > 1 {
+	currentBookId := regexp.MustCompile(`(\d+)`).FindStringSubmatch(url)
+	if len(currentBookId) > 1 {
 		if command.Command.AppType == "cat" {
-			if len(current_book_id[1]) != 9 { // test if the input is hbooker book id
+			if len(currentBookId[1]) != 9 { // test if the input is hbooker book id
 				fmt.Println("hbooker bookid is 9 characters, please input again:")
 			} else {
-				return current_book_id[1]
+				return currentBookId[1]
 			}
 		}
 	}

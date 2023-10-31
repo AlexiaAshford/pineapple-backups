@@ -2,7 +2,6 @@ package config
 
 var Apps = AppConfig{}
 var Vars = &Apps.Config
-var Current = &BookInfo{}
 
 type AppConfig struct {
 	Hbooker HbookerCommonParams `json:"common_params"`
@@ -21,36 +20,10 @@ type ScriptConfig struct {
 }
 
 type BoluobaoConfig struct {
-	UserName     string `json:"account"`
-	Password     string `json:"password"`
-	Cookie       string `json:"cookie"`
-	WeChatCookie string `json:"we_chat_cookie"`
+	Cookie string `json:"cookie"`
 }
 
 type HbookerCommonParams struct {
-	LoginToken  string `json:"login_token"`
-	Account     string `json:"account"`
-	AppVersion  string `json:"app_version"`
-	DeviceToken string `json:"device_token"`
-}
-
-type Books struct {
-	NovelName  string
-	NovelID    string
-	IsFinish   bool
-	MarkCount  string
-	NovelCover string
-	AuthorName string
-	CharCount  string
-	SignStatus string
-}
-type BookInfo struct {
-	Book       Books
-	NewBooks   map[string]string
-	OutputPath string
-	ConfigPath string
-	CoverPath  string
-	//BackupsPath  string
-	BookInfoList []Books
-	DownloadList []string
+	LoginToken string `json:"login_token"`
+	Account    string `json:"account"`
 }
