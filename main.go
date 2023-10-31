@@ -2,15 +2,14 @@ package main
 
 import (
 	"fmt"
+	"github.com/AlexiaVeronica/hbookerLib"
 	BoluobaoConfig "github.com/VeronicaAlexia/BoluobaoAPI/pkg/config"
-	"github.com/VeronicaAlexia/ciweimaoapiLib"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/VeronicaAlexia/pineapple-backups/src"
-	"log"
 	"os"
 	"strings"
 )
@@ -27,22 +26,23 @@ func init() {
 
 	command.NewApp()
 
-	err := ciweimaoapi.SetciweimaoAuthentication(config.Apps.Hbooker.LoginToken, config.Apps.Hbooker.Account)
-	if err != nil {
-		log.Panicln("Error setting ciweimao authentication" + err.Error())
-	}
 	BoluobaoConfig.AppConfig.App = true // set boluobao app mode
 	BoluobaoConfig.AppConfig.AppKey = "FMLxgOdsfxmN!Dt4"
 	BoluobaoConfig.AppConfig.DeviceId = "240a90cc-4c40-32c7-b44e-d4cf9e670605"
 	BoluobaoConfig.AppConfig.Cookie = config.Apps.Sfacg.Cookie
 
+	config.APP.Hbooker = &config.Hbooker{
+		Client: hbookerLib.NewClient(
+			//hbookerLib.WithAccountAndLoginToken(config.Apps.Hbooker.Account, config.Apps.Hbooker.LoginToken),
+			hbookerLib.WithDebug(),
+		)}
 	fmt.Println("current app type:", command.Command.AppType)
 }
 
-func current_download_book_function(book_id string) {
-	catalogue := src.SettingBooks(book_id) // get book catalogues
-	if !catalogue.Test {
-		fmt.Println(catalogue.BookMessage)
+func currentDownloadBookFunction(book_id string) {
+	catalogue, err := src.SettingBooks(book_id) // get book catalogues
+	if err != nil {
+		fmt.Println(err)
 		os.Exit(1)
 	}
 	DownloadList := catalogue.GetDownloadsList()
@@ -65,11 +65,11 @@ func current_download_book_function(book_id string) {
 	catalogue.MergeTextAndEpubFiles()
 }
 
-func update_local_booklist() {
+func updateLocalBooklist() {
 	if config.Exist("./bookList.txt") {
 		for _, i := range strings.ReplaceAll(file.Open("./bookList.json", "", "r"), "\n", "") {
 			if !strings.Contains(string(i), "#") {
-				current_download_book_function(string(i))
+				currentDownloadBookFunction(string(i))
 			}
 		}
 	} else {
@@ -79,7 +79,7 @@ func update_local_booklist() {
 func shellSwitch(inputs []string) {
 	switch inputs[0] { // switch command
 	case "up", "update":
-		update_local_booklist()
+		updateLocalBooklist()
 	case "a", "app":
 		if tools.TestList([]string{"sfacg", "cat"}, inputs[1]) {
 			command.Command.AppType = inputs[1]
@@ -89,7 +89,7 @@ func shellSwitch(inputs []string) {
 	case "d", "b", "book", "download":
 		if len(inputs) == 2 {
 			if book_id := config.FindID(inputs[1]); book_id != "" {
-				current_download_book_function(book_id)
+				currentDownloadBookFunction(book_id)
 			} else {
 				fmt.Println("book id is empty, please input again.")
 			}
@@ -100,7 +100,7 @@ func shellSwitch(inputs []string) {
 		if len(bookShelfList) > 0 && len(inputs) == 2 {
 			value, ok := bookShelfList[inputs[1]]
 			if ok {
-				current_download_book_function(value)
+				currentDownloadBookFunction(value)
 			} else {
 				fmt.Println(inputs[1], "key not found")
 			}
@@ -110,17 +110,14 @@ func shellSwitch(inputs []string) {
 	case "s", "search":
 		if len(inputs) == 2 && inputs[1] != "" {
 			s := src.Search{Keyword: inputs[1], Page: 0}
-			current_download_book_function(s.SearchBook())
+			currentDownloadBookFunction(s.SearchBook())
 		} else {
 			fmt.Println("input search keyword, like:search <keyword>")
 		}
 
 	case "l", "login":
 		if command.Command.AppType == "cat" && len(inputs) >= 3 {
-			err := ciweimaoapi.SetciweimaoAuthentication(inputs[1], inputs[2])
-			if err != nil {
-				log.Println("error setting ciweimao authentication" + err.Error())
-			}
+			config.APP.Hbooker.Client.SetDefaultParams(inputs[1], inputs[2])
 		} else if command.Command.AppType == "sfacg" && len(inputs) >= 3 {
 			src.LoginAccount(inputs[1], inputs[2], 0)
 		} else {
@@ -160,12 +157,12 @@ func main() {
 		} else if command.Command.Login {
 			src.TestAppTypeAndAccount()
 		} else if command.Command.BookID != "" {
-			current_download_book_function(command.Command.BookID)
+			currentDownloadBookFunction(command.Command.BookID)
 		} else if command.Command.SearchKey != "" {
 			s := src.Search{Keyword: command.Command.SearchKey, Page: 0}
-			current_download_book_function(s.SearchBook())
+			currentDownloadBookFunction(s.SearchBook())
 		} else if command.Command.Update {
-			update_local_booklist()
+			updateLocalBooklist()
 		} else if command.Command.Token {
 			src.InputAccountToken()
 		} else if command.Command.BookShelf {

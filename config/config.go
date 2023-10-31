@@ -3,6 +3,8 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/AlexiaVeronica/hbookerLib"
+	"github.com/AlexiaVeronica/hbookerLib/hbookermodel"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
 	"github.com/google/uuid"
 	"os"
@@ -32,6 +34,15 @@ func UpdateConfig() { // update config.json if necessary
 	if changeVar {
 		SaveJson()
 	}
+}
+
+var APP = struct {
+	Hbooker *Hbooker
+}{}
+
+type Hbooker struct {
+	Client   *hbookerLib.Client
+	BookInfo *hbookermodel.BookInfo
 }
 
 func Exist(fileName any) bool {

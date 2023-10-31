@@ -3,14 +3,12 @@ package src
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/BoluobaoAPI/boluobao"
-	"github.com/VeronicaAlexia/ciweimaoapiLib"
 	"github.com/VeronicaAlexia/pineapple-backups/config"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/command"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/epub"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/file"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/threading"
 	"github.com/VeronicaAlexia/pineapple-backups/pkg/tools"
-	"log"
 	"path"
 	"strings"
 	"time"
@@ -19,8 +17,6 @@ import (
 type Catalogue struct {
 	ChapterBar  *ProgressBar
 	ChapterCfg  []string
-	Test        bool
-	BookMessage string
 	EpubSetting *epub.Epub
 }
 
@@ -39,21 +35,21 @@ func (catalogue *Catalogue) GetDownloadsList() []string {
 		return boluobao.API.Book.NovelCatalogue(config.Current.NewBooks["novel_id"])
 	} else if command.Command.AppType == "cat" {
 		var DownloadList []string
-		response := ciweimaoapi.GetCatalog(config.Current.NewBooks["novel_id"])
-		if response != nil && response.Code == "100000" {
-			for _, value := range response.Data.ChapterList {
+		divisionList, err := config.APP.Hbooker.Client.API.GetDivisionListByBookId(config.APP.Hbooker.BookInfo.BookID)
+		if err != nil {
+			fmt.Println("get division list error:", err)
+		} else {
+			for _, value := range divisionList {
 				for _, value2 := range value.ChapterList {
-					if !tools.TestList(catalogue.ChapterCfg, value2.ChapterId) {
+					if !tools.TestList(catalogue.ChapterCfg, value2.ChapterID) {
 						if value2.AuthAccess == "0" || value2.AuthAccess == "1" {
-							DownloadList = append(DownloadList, value2.ChapterId)
+							DownloadList = append(DownloadList, value2.ChapterID)
 						} else {
 							fmt.Println(value2.ChapterTitle, " is vip chapter, You need to subscribe it")
 						}
 					}
 				}
 			}
-		} else {
-			log.Printf("GetCatalog Error: %v", response.Tip.(string))
 		}
 		fmt.Println(DownloadList)
 		return DownloadList
@@ -67,36 +63,52 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapte
 	if config.Exist(path.Join(config.Current.ConfigPath, chapterID+".txt")) {
 		return
 	}
-	var content_text string
-	for i := 0; i < 5; i++ {
-		if command.Command.AppType == "sfacg" {
-			response := boluobao.API.Book.NovelContent(chapterID)
-			if response != nil {
-				content_text = response.Data.Expand.Content
-			} else {
-				break
-			}
-		} else if command.Command.AppType == "cat" {
-			content_text = ciweimaoapi.GetContent(chapterID).Data.ChapterInfo.TxtContent
+	var contentText string
+	if command.Command.AppType == "sfacg" {
+		response := boluobao.API.Book.NovelContent(chapterID)
+		if response != nil {
+			contentText = response.Data.Title + "\n" + response.Data.Expand.Content
+		} else {
+			return
 		}
-		if content_text != "" {
-			file.Open(path.Join(config.Current.ConfigPath, chapterID+".txt"), content_text, "w")
-			break
+	} else if command.Command.AppType == "cat" {
+		chapterKey, err := config.APP.Hbooker.Client.API.GetChapterKey(chapterID)
+		if err != nil {
+			return
 		}
+		chapterInfo, err := config.APP.Hbooker.Client.API.GetChapterContentAPI(chapterID, chapterKey)
+		if err != nil {
+			fmt.Println("get chapter content error:", err)
+			return
+		}
+		contentText = chapterInfo.ChapterTitle + "\n" + chapterInfo.TxtContent
+	}
+	if contentText != "" {
+		file.Open(path.Join(config.Current.ConfigPath, chapterID+".txt"), contentText, "w")
 	}
 }
 
 func (catalogue *Catalogue) MergeTextAndEpubFiles() {
-	savePath := path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"], config.Current.NewBooks["novel_name"])
+	var savePath string
+	if command.Command.AppType == "sfacg" {
+		savePath = path.Join(config.Vars.OutputName, config.Current.NewBooks["novel_name"], config.Current.NewBooks["novel_name"])
+	} else {
+		savePath = path.Join(config.Vars.OutputName, config.APP.Hbooker.BookInfo.BookName, config.APP.Hbooker.BookInfo.BookName)
+	}
 	var NovelCatalogue []string
 	if command.Command.AppType == "sfacg" {
 		NovelCatalogue = boluobao.API.Book.NovelCatalogue(config.Current.NewBooks["novel_id"])
 	} else {
-		for _, i := range ciweimaoapi.GetCatalog(config.Current.NewBooks["novel_id"]).Data.ChapterList {
+		divisionList, err := config.APP.Hbooker.Client.API.GetDivisionListByBookId(config.APP.Hbooker.BookInfo.BookID)
+		if err != nil {
+			fmt.Println("get division list error:", err)
+			return
+		}
+		for _, i := range divisionList {
 			for _, chapterInfo := range i.ChapterList {
-				if !tools.TestList(catalogue.ChapterCfg, chapterInfo.ChapterId) {
-					if chapterInfo.AuthAccess == "0" || chapterInfo.AuthAccess == "1" {
-						NovelCatalogue = append(NovelCatalogue, chapterInfo.ChapterId)
+				if !tools.TestList(catalogue.ChapterCfg, chapterInfo.ChapterID) {
+					if chapterInfo.IsPaid == "0" || chapterInfo.AuthAccess == "1" {
+						NovelCatalogue = append(NovelCatalogue, chapterInfo.ChapterID)
 					} else {
 						fmt.Println(chapterInfo.ChapterTitle, " is vip chapter, You need to subscribe it")
 					}
@@ -116,19 +128,11 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 
 	}
 
-	//for _, local_file_name := range tools.GetFileName(config.Current.ConfigPath) {
-	//	content := file.Open(config.Current.ConfigPath+"/"+local_file_name, "", "r")
-	//	file.Open(savePath+".txt", "\n\n\n"+content, "a")
-	//	if config.Vars.Epub {
-	//		catalogue.add_chapter_in_epub_file(strings.Split(content, "\n")[0], content+"</p>")
-	//	} // save to epub file if epub is true
-	//}
-	//if config.Vars.Epub { // output epub file
-	out_put_epub_now := time.Now() // start time
+	outPutEpubNow := time.Now() // start time
 	if err := catalogue.EpubSetting.Write(savePath + ".epub"); err != nil {
 		fmt.Println("output epub error:", err)
 	}
-	fmt.Println("output epub file success, time:", time.Since(out_put_epub_now))
+	fmt.Println("output epub file success, time:", time.Since(outPutEpubNow))
 	//}
 }
 
@@ -146,12 +150,3 @@ func (catalogue *Catalogue) speed_progress() {
 	}
 
 }
-
-//func (catalogue *Catalogue) AddChapterConfig(chapId any) {
-//	switch chapId.(type) {
-//	case string:
-//		cfg.Write(cfg.Current.ConfigPath, chapId.(string)+",", "a")
-//	case int:
-//		cfg.Write(cfg.Current.ConfigPath, strconv.Itoa(chapId.(int))+",", "a")
-//	}
-//}
