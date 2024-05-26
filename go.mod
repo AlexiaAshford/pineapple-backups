@@ -3,7 +3,7 @@ module github.com/AlexiaVeronica/pineapple-backups
 go 1.19
 
 require (
-	github.com/AlexiaVeronica/boluobaoLib v0.0.0-20231031062102-279399004e4a
+	github.com/AlexiaVeronica/boluobaoLib v0.1.5
 	github.com/AlexiaVeronica/hbookerLib v0.1.3
 	github.com/gabriel-vasile/mimetype v1.4.3
 	github.com/go-resty/resty/v2 v2.10.0

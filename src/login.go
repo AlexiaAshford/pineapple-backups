@@ -7,13 +7,12 @@ import (
 )
 
 func LoginAccount(username string, password string) {
-	cookie, err := config.APP.SFacg.Client.API.Login(username, password)
+	cookie, err := config.APP.SFacg.Client.API().Login(username, password)
 	if err != nil {
 		fmt.Println("login failed!" + err.Error())
 		return
 	}
-	config.APP.SFacg.Client.API.HttpClient.Cookie = cookie
-	config.Apps.Sfacg.Cookie = cookie
+	config.APP.SFacg.Client.HttpClient.SetCommonHeader("Cookie", cookie)
 	config.SaveJson()
 }
 

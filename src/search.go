@@ -30,7 +30,7 @@ func (s *Search) CatSearchDetailed() []string {
 
 func (s *Search) SfacgSearchDetailed() []string {
 	var searchResult []string
-	searchInfo, err := config.APP.SFacg.Client.API.GetSearch(s.Keyword, s.Page)
+	searchInfo, err := config.APP.SFacg.Client.API().GetSearch(s.Keyword, s.Page)
 	if err != nil {
 		fmt.Println("search failed!" + err.Error())
 		return nil // if the search result is empty

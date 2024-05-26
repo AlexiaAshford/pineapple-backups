@@ -56,7 +56,7 @@ func SettingBooks(bookId string) (*Catalogue, error) {
 	var err error
 	switch command.Command.AppType {
 	case "sfacg":
-		config.APP.SFacg.BookInfo, err = config.APP.SFacg.Client.API.GetBookInfo(bookId)
+		config.APP.SFacg.BookInfo, err = config.APP.SFacg.Client.API().GetBookInfo(bookId)
 		if err != nil {
 			return nil, err
 		}

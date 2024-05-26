@@ -1,5 +1,6 @@
 github.com/AlexiaVeronica/boluobaoLib v0.0.0-20231031062102-279399004e4a h1:8Euwn1xIhglC77v+hN4y4sHt0Jzj4k5jfxaP1psqzqA=
 github.com/AlexiaVeronica/boluobaoLib v0.0.0-20231031062102-279399004e4a/go.mod h1:Qp8o2TQtZUI82BCm4niyYFkaUomHkpK5hjNLeeX3suc=
+github.com/AlexiaVeronica/boluobaoLib v0.1.5/go.mod h1:OJm2WHovZ8NLWNCl4klsrCLKhDx2A1rQFYrlaeZBR9M=
 github.com/AlexiaVeronica/hbookerLib v0.1.3 h1:9cXUI4S/PBoTj7UZqNSOrDxLyvg9iyNSTgzbM6FSeIY=
 github.com/AlexiaVeronica/hbookerLib v0.1.3/go.mod h1:Y48bD+Qi7G9D6Zj0BYVJcKZWwdx+8Ye9JIZmxup3uD0=
 github.com/BurntSushi/toml v1.3.2/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=

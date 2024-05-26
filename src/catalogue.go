@@ -41,7 +41,7 @@ func (catalogue *Catalogue) GetDownloadsList() ([]string, error) {
 	var downloadList []string
 	switch command.Command.AppType {
 	case "sfacg":
-		divisionList, err := config.APP.SFacg.Client.API.GetCatalogue(config.APP.SFacg.BookInfo.NovelId)
+		divisionList, err := config.APP.SFacg.Client.API().GetCatalogue(config.APP.SFacg.BookInfo.NovelId)
 		if err != nil {
 			return nil, err
 		}
@@ -86,7 +86,7 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapte
 	}
 	var contentText string
 	if command.Command.AppType == "sfacg" {
-		chapterInfo, err := config.APP.SFacg.Client.API.GetChapterContent(chapterID)
+		chapterInfo, err := config.APP.SFacg.Client.API().GetChapterContent(chapterID)
 		if err != nil {
 			fmt.Println("get chapter content error:", err)
 			return
@@ -113,7 +113,7 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 	var savePath string
 	if command.Command.AppType == "sfacg" {
 		savePath = path.Join(config.Vars.OutputName, config.APP.SFacg.BookInfo.NovelName, config.APP.SFacg.BookInfo.NovelName)
-		divisionList, err := config.APP.SFacg.Client.API.GetCatalogue(config.APP.SFacg.BookInfo.NovelId)
+		divisionList, err := config.APP.SFacg.Client.API().GetCatalogue(config.APP.SFacg.BookInfo.NovelId)
 		if err != nil {
 			fmt.Println("get division list error:", err)
 			return

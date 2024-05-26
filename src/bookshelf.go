@@ -17,7 +17,7 @@ func NewChoiceBookshelf() (map[string]string, error) {
 	switch command.Command.AppType {
 	case "sfacg":
 		var shelfIndex int
-		bookShelf, err := config.APP.SFacg.Client.API.GetBookShelfInfo()
+		bookShelf, err := config.APP.SFacg.Client.API().GetBookShelfInfo()
 		if err != nil {
 			return nil, err
 		}
