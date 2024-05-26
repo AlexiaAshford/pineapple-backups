@@ -25,7 +25,10 @@ func init() {
 	config.UpdateConfig()
 
 	command.NewApp()
-	config.APP.Hbooker = &config.Hbooker{Client: hbookerLib.NewClient(hbookerLib.WithAccountAndLoginToken(config.Apps.Hbooker.Account, config.Apps.Hbooker.LoginToken))}
+	config.APP.Hbooker = &config.Hbooker{Client: hbookerLib.NewClient(
+		hbookerLib.WithAccount(config.Apps.Hbooker.Account),
+		hbookerLib.WithLoginToken(config.Apps.Hbooker.LoginToken),
+	)}
 	config.APP.SFacg = &config.SFacg{Client: boluobaoLib.NewClient(boluobaoLib.WithCookie(config.Apps.Sfacg.Cookie))}
 	fmt.Println("current app type:", command.Command.AppType)
 }
@@ -104,7 +107,8 @@ func shellSwitch(inputs []string) {
 
 	case "l", "login":
 		if command.Command.AppType == "cat" && len(inputs) >= 3 {
-			config.APP.Hbooker.Client.SetDefaultParams(inputs[1], inputs[2])
+			config.APP.Hbooker.Client.Account = inputs[1]
+			config.APP.Hbooker.Client.LoginToken = inputs[2]
 		} else if command.Command.AppType == "sfacg" && len(inputs) >= 3 {
 			src.LoginAccount(inputs[1], inputs[2])
 		} else {

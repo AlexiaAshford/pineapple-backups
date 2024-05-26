@@ -62,7 +62,7 @@ func SettingBooks(bookId string) (*Catalogue, error) {
 		}
 		tools.Mkdir(path.Join(config.Vars.OutputName, config.APP.SFacg.BookInfo.NovelName))
 	case "cat":
-		config.APP.Hbooker.BookInfo, err = config.APP.Hbooker.Client.API.GetBookInfo(bookId)
+		config.APP.Hbooker.BookInfo, err = config.APP.Hbooker.Client.API().GetBookInfo(bookId)
 		if err != nil {
 			return nil, err
 		}

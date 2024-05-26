@@ -16,7 +16,7 @@ type Search struct {
 
 func (s *Search) CatSearchDetailed() []string {
 	var searchResult []string
-	searchInfo, err := config.APP.Hbooker.Client.API.GetSearchBooksAPI(s.Keyword, s.Page)
+	searchInfo, err := config.APP.Hbooker.Client.API().GetSearchBooksAPI(s.Keyword, s.Page)
 	if err != nil {
 		fmt.Println("search failed!" + err.Error())
 		return nil
@@ -42,7 +42,7 @@ func (s *Search) SfacgSearchDetailed() []string {
 	return searchResult
 }
 
-func (s *Search) load_search_list() {
+func (s *Search) loadSearchList() {
 	if command.Command.AppType == "cat" {
 		s.SearchResult = s.CatSearchDetailed()
 	} else if command.Command.AppType == "sfacg" {
@@ -58,16 +58,16 @@ func (s *Search) subtraction() {
 	} else {
 		fmt.Println("page is 0, cannot go previous")
 	}
-	s.load_search_list()
+	s.loadSearchList()
 }
 
 func (s *Search) add() {
 	s.Page += 1 // next page
-	s.load_search_list()
+	s.loadSearchList()
 }
 
 func (s *Search) SearchBook() string {
-	s.load_search_list()
+	s.loadSearchList()
 	for {
 		keyword := tools.InputStr("lease input search keyword:")
 		if keyword == "next" || keyword == "n" {

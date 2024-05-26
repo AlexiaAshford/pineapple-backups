@@ -55,7 +55,7 @@ func (catalogue *Catalogue) GetDownloadsList() ([]string, error) {
 			}
 		}
 	case "cat":
-		divisionList, err := config.APP.Hbooker.Client.API.GetDivisionListByBookId(config.APP.Hbooker.BookInfo.BookID)
+		divisionList, err := config.APP.Hbooker.Client.API().GetDivisionListByBookId(config.APP.Hbooker.BookInfo.BookID)
 		if err != nil {
 			return nil, err
 		}
@@ -93,11 +93,11 @@ func (catalogue *Catalogue) DownloadContent(threading *threading.GoLimit, chapte
 		}
 		contentText = chapterInfo.Expand.Content
 	} else if command.Command.AppType == "cat" {
-		chapterKey, err := config.APP.Hbooker.Client.API.GetChapterKey(chapterID)
+		chapterKey, err := config.APP.Hbooker.Client.API().GetChapterKey(chapterID)
 		if err != nil {
 			return
 		}
-		chapterInfo, err := config.APP.Hbooker.Client.API.GetChapterContentAPI(chapterID, chapterKey)
+		chapterInfo, err := config.APP.Hbooker.Client.API().GetChapterContentAPI(chapterID, chapterKey)
 		if err != nil {
 			fmt.Println("get chapter content error:", err)
 			return
@@ -129,7 +129,7 @@ func (catalogue *Catalogue) MergeTextAndEpubFiles() {
 		}
 	} else {
 		savePath = path.Join(config.Vars.OutputName, config.APP.Hbooker.BookInfo.BookName, config.APP.Hbooker.BookInfo.BookName)
-		divisionList, err := config.APP.Hbooker.Client.API.GetDivisionListByBookId(config.APP.Hbooker.BookInfo.BookID)
+		divisionList, err := config.APP.Hbooker.Client.API().GetDivisionListByBookId(config.APP.Hbooker.BookInfo.BookID)
 		if err != nil {
 			fmt.Println("get division list error:", err)
 			return

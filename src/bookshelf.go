@@ -38,7 +38,7 @@ func NewChoiceBookshelf() (map[string]string, error) {
 		table.Render()
 	case "cat":
 		var shelfIndex string
-		bookShelfInfo, err := config.APP.Hbooker.Client.API.GetBookShelfInfoAPI()
+		bookShelfInfo, err := config.APP.Hbooker.Client.API().GetBookShelfInfoAPI()
 		if err != nil {
 			return nil, err
 		}
@@ -53,7 +53,7 @@ func NewChoiceBookshelf() (map[string]string, error) {
 			shelfIndex = bookShelfInfo[tools.InputInt(">", len(bookShelfInfo))].ShelfID
 		}
 
-		bookInfoList, err := config.APP.Hbooker.Client.API.GetBookShelfIndexesInfoAPI(shelfIndex)
+		bookInfoList, err := config.APP.Hbooker.Client.API().GetBookShelfIndexesInfoAPI(shelfIndex)
 		if err != nil {
 			return nil, err
 		}
