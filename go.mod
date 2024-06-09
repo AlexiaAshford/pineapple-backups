@@ -5,12 +5,12 @@ go 1.22.0
 require (
 	github.com/AlexiaVeronica/boluobaoLib v0.2.3
 	github.com/AlexiaVeronica/hbookerLib v0.4.0
+	github.com/AlexiaVeronica/input v0.0.1
 	github.com/gabriel-vasile/mimetype v1.4.3
 	github.com/go-resty/resty/v2 v2.10.0
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/google/uuid v1.4.0
 	github.com/gookit/color v1.5.4
-	github.com/imroc/req/v3 v3.43.5
 	github.com/mattn/go-runewidth v0.0.15
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
 	github.com/tidwall/gjson v1.14.4
@@ -21,7 +21,6 @@ require (
 )
 
 require (
-	github.com/AlexiaVeronica/input v0.0.1 // indirect
 	github.com/AlexiaVeronica/req/v3 v3.43.5 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/cloudflare/circl v1.3.7 // indirect

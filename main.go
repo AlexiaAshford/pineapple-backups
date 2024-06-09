@@ -9,7 +9,6 @@ import (
 	"github.com/AlexiaVeronica/input"
 	"github.com/AlexiaVeronica/pineapple-backups/config"
 	"github.com/AlexiaVeronica/pineapple-backups/pkg/app"
-	"github.com/AlexiaVeronica/pineapple-backups/pkg/file"
 	"github.com/AlexiaVeronica/pineapple-backups/pkg/tools"
 	"github.com/urfave/cli"
 )
@@ -44,7 +43,7 @@ const (
 )
 
 func init() {
-	if !config.Exist("./config.json") || file.SizeFile("./config.json") == 0 {
+	if !config.Exist("./config.json") {
 		fmt.Println("config.json does not exist, creating a new one!")
 	} else {
 		config.LoadJson()

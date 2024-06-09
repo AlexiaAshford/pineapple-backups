@@ -2,7 +2,8 @@ package app
 
 import (
 	"fmt"
-	"github.com/AlexiaVeronica/pineapple-backups/pkg/file"
+	"github.com/AlexiaVeronica/boluobaoLib/boluobaomodel"
+	"github.com/AlexiaVeronica/hbookerLib/hbookermodel"
 	"os"
 	"path"
 
@@ -28,15 +29,30 @@ func NewApp() *APP {
 		Boluobao:   boluobaoLib.NewClient(),
 		Ciweimao:   hbookerLib.NewClient(),
 	}
-	createCacheDirectory("cache")
-	createCacheDirectory("cache/" + CiweimaoLibAPP)
-	createCacheDirectory("cache/" + BoluobaoLibAPP)
+	a.initDirectories()
 	return a
+}
+
+func (a *APP) initDirectories() {
+	directories := []string{
+		"cache",
+		"cache/" + CiweimaoLibAPP,
+		"cache/" + BoluobaoLibAPP,
+		"save/",
+		"cover/",
+		"save/" + CiweimaoLibAPP,
+		"save/" + BoluobaoLibAPP,
+	}
+	for _, dir := range directories {
+		createCacheDirectory(dir)
+	}
 }
 
 func createCacheDirectory(path string) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		os.MkdirAll(path, 0777)
+		if err := os.MkdirAll(path, 0777); err != nil {
+			fmt.Printf("Failed to create directory %s: %v\n", path, err)
+		}
 	}
 }
 
@@ -45,7 +61,7 @@ func (a *APP) SetCurrentApp(app string) {
 	case BoluobaoLibAPP, CiweimaoLibAPP:
 		a.CurrentApp = app
 	default:
-		panic("app type is not correct: " + app)
+		panic("Invalid app type: " + app)
 	}
 }
 
@@ -86,36 +102,77 @@ func (a *APP) Bookshelf() *APP {
 func (a *APP) MergingText() *APP {
 	switch a.CurrentApp {
 	case BoluobaoLibAPP:
-		fmt.Println("boluobao app does not support merging text")
-		chapterList, err := a.Boluobao.API().GetCatalogue(a.BookId)
-		if err != nil {
-			fmt.Println("get chapter list error:", err)
-			return a
-		}
-		for _, chapter := range chapterList.Data.VolumeList {
-			for _, chapterInfo := range chapter.ChapterList {
-				cachePath := path.Join("cache", BoluobaoLibAPP, fmt.Sprintf("%v.txt", chapterInfo.ChapID))
-				savePath := path.Join("save", fmt.Sprintf("%v.txt", a.BookId))
-				if _, err = os.Stat(cachePath); err == nil {
-					file.Open(savePath, cachePath, "a")
-				}
-			}
-		}
+		a.mergeTextBoluobao()
 	case CiweimaoLibAPP:
-		chapterList, err := a.Ciweimao.API().GetDivisionListByBookId(a.BookId)
-		if err != nil {
-			fmt.Println("get division list error:", err)
-			return a
-		}
-		for _, division := range chapterList.Data.ChapterList {
-			for _, chapter := range division.ChapterList {
-				cachePath := path.Join("cache", CiweimaoLibAPP, fmt.Sprintf("%v.txt", chapter.ChapterID))
-				savePath := path.Join("save", fmt.Sprintf("%v.txt", a.BookId))
-				if _, err = os.Stat(cachePath); err == nil {
-					file.Open(savePath, cachePath, "a")
-				}
+		a.mergeTextCiweimao()
+	}
+	return a
+}
+
+func (a *APP) mergeTextBoluobao() {
+	bookInfo, err := a.Boluobao.API().GetBookInfo(a.BookId)
+	if err != nil {
+		fmt.Println("Failed to get book info:", err)
+		return
+	}
+	chapterList, err := a.Boluobao.API().GetCatalogue(bookInfo.Data.NovelId)
+	if err != nil {
+		fmt.Println("Failed to get chapter list:", err)
+		return
+	}
+	a.writeChaptersToFile(bookInfo.Data.NovelName, chapterList.Data.VolumeList)
+}
+
+func (a *APP) mergeTextCiweimao() {
+	bookInfo, err := a.Ciweimao.API().GetBookInfo(a.BookId)
+	if err != nil {
+		fmt.Println("Failed to get book info:", err)
+		return
+	}
+	chapterList, err := a.Ciweimao.API().GetDivisionListByBookId(bookInfo.Data.BookInfo.BookID)
+	if err != nil {
+		fmt.Println("Failed to get division list:", err)
+		return
+	}
+	a.writeChaptersToFile(bookInfo.Data.BookInfo.BookName, chapterList.Data.ChapterList)
+}
+
+func (a *APP) writeChaptersToFile(bookName string, chapterList interface{}) {
+	filePath := path.Join("save", a.CurrentApp, fmt.Sprintf("%v.txt", bookName))
+	file, err := os.Create(filePath)
+	if err != nil {
+		fmt.Printf("Failed to create file %s: %v\n", filePath, err)
+		return
+	}
+	defer file.Close()
+
+	chapters := extractChapters(chapterList)
+	for _, chapterPath := range chapters {
+		if _, err := os.Stat(chapterPath); err == nil {
+			content, err := os.ReadFile(chapterPath)
+			if err == nil {
+				file.Write(content)
 			}
 		}
 	}
-	return a
+}
+
+func extractChapters(chapterList interface{}) []string {
+	var chapters []string
+	switch list := chapterList.(type) {
+	case []boluobaomodel.VolumeList:
+		for _, volume := range list {
+			for _, chapter := range volume.ChapterList {
+				chapters = append(chapters, path.Join("cache", BoluobaoLibAPP, fmt.Sprintf("%v.txt", chapter.ChapID)))
+			}
+		}
+	case []hbookermodel.DivisionList:
+		for _, division := range list {
+			for _, chapter := range division.ChapterList {
+				chapters = append(chapters, path.Join("cache", CiweimaoLibAPP, fmt.Sprintf("%v.txt", chapter.ChapterID)))
+			}
+		}
+	}
+
+	return chapters
 }
