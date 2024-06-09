@@ -3,8 +3,8 @@ module github.com/AlexiaVeronica/pineapple-backups
 go 1.22.0
 
 require (
-	github.com/AlexiaVeronica/boluobaoLib v0.2.3
-	github.com/AlexiaVeronica/hbookerLib v0.4.0
+	github.com/AlexiaVeronica/boluobaoLib v0.3.2
+	github.com/AlexiaVeronica/hbookerLib v0.4.2
 	github.com/AlexiaVeronica/input v0.0.1
 	github.com/gabriel-vasile/mimetype v1.4.3
 	github.com/gofrs/uuid v4.4.0+incompatible

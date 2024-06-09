@@ -47,10 +47,26 @@ func (a *APP) initDirectories() {
 		createCacheDirectory(dir)
 	}
 }
+func mergeTextToFile[T any](bookName string) *os.File {
+	data := new(T)
+	var savePath string
+	switch any(data).(type) {
+	case *boluobaomodel.ChapterList:
+		savePath = path.Join("save", BoluobaoLibAPP, fmt.Sprintf("%v.txt", bookName))
+	case *hbookermodel.ChapterList:
+		savePath = path.Join("save", CiweimaoLibAPP, fmt.Sprintf("%v.txt", bookName))
+	}
+	file, err := os.OpenFile(savePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
+	if err != nil {
+		fmt.Printf("Failed to create file %s: %v\n", savePath, err)
+		return nil
+	}
+	return file
+}
 
 func createCacheDirectory(path string) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		if err := os.MkdirAll(path, 0777); err != nil {
+		if err = os.MkdirAll(path, 0777); err != nil {
 			fmt.Printf("Failed to create directory %s: %v\n", path, err)
 		}
 	}
@@ -72,20 +88,34 @@ func (a *APP) GetCurrentApp() string {
 func (a *APP) SearchDetailed(keyword string) *APP {
 	switch a.CurrentApp {
 	case BoluobaoLibAPP:
-		a.Boluobao.APP().Search(keyword, sfContinueFunction, sfContentFunction)
+		newApp := a.Boluobao.APP()
+		newApp.Search(keyword, sfContinueFunction, sfContentFunction).MergeText(
+			sfMergeText(mergeTextToFile[boluobaomodel.ChapterList](newApp.GetBookInfo().NovelName)))
 	case CiweimaoLibAPP:
-		a.Ciweimao.APP().Search(keyword, hbookerContinueFunction, hbookerContentFunction)
+		newApp := a.Ciweimao.APP().Search(keyword, hbookerContinueFunction, hbookerContentFunction)
+		newApp.MergeText(hbookerMergeText(mergeTextToFile[hbookermodel.ChapterList](newApp.GetBookInfo().BookName)))
 	}
 	return a
 }
 
 func (a *APP) DownloadBookByBookId(bookId string) *APP {
-	fmt.Println("bookId", bookId)
 	switch a.CurrentApp {
 	case BoluobaoLibAPP:
-		a.Boluobao.APP().Download(bookId, sfContinueFunction, sfContentFunction)
+		bookInfo, err := a.Boluobao.API().GetBookInfo(bookId)
+		if err != nil {
+			fmt.Println("Failed to get book info:", err)
+			return a
+		}
+		a.Boluobao.APP().SetBookInfo(&bookInfo.Data).Download(sfContinueFunction, sfContentFunction).MergeText(
+			sfMergeText(mergeTextToFile[boluobaomodel.ChapterList](bookInfo.Data.NovelName)))
 	case CiweimaoLibAPP:
-		a.Ciweimao.APP().Download(bookId, hbookerContinueFunction, hbookerContentFunction)
+		bookInfo, err := a.Ciweimao.API().GetBookInfo(bookId)
+		if err != nil {
+			fmt.Println("Failed to get book info:", err)
+			return a
+		}
+		a.Ciweimao.APP().SetBookInfo(&bookInfo.Data.BookInfo).Download(hbookerContinueFunction, hbookerContentFunction).
+			MergeText(hbookerMergeText(mergeTextToFile[hbookermodel.ChapterList](bookInfo.Data.BookInfo.BookName)))
 	}
 	return a
 }
@@ -93,87 +123,11 @@ func (a *APP) DownloadBookByBookId(bookId string) *APP {
 func (a *APP) Bookshelf() *APP {
 	switch a.CurrentApp {
 	case BoluobaoLibAPP:
-		a.Boluobao.APP().Bookshelf(sfContinueFunction, sfContentFunction)
+		newApp := a.Boluobao.APP().Bookshelf(sfContinueFunction, sfContentFunction)
+		newApp.MergeText(sfMergeText(mergeTextToFile[boluobaomodel.ChapterList](newApp.GetBookInfo().NovelName)))
 	case CiweimaoLibAPP:
-		a.Ciweimao.APP().Bookshelf(hbookerContinueFunction, hbookerContentFunction)
+		newApp := a.Ciweimao.APP().Bookshelf(hbookerContinueFunction, hbookerContentFunction)
+		newApp.MergeText(hbookerMergeText(mergeTextToFile[hbookermodel.ChapterList](newApp.GetBookInfo().BookName)))
 	}
 	return a
-}
-
-func (a *APP) MergingText() *APP {
-	switch a.CurrentApp {
-	case BoluobaoLibAPP:
-		a.mergeTextBoluobao()
-	case CiweimaoLibAPP:
-		a.mergeTextCiweimao()
-	}
-	return a
-}
-
-func (a *APP) mergeTextBoluobao() {
-	bookInfo, err := a.Boluobao.API().GetBookInfo(a.BookId)
-	if err != nil {
-		fmt.Println("Failed to get book info:", err)
-		return
-	}
-	chapterList, err := a.Boluobao.API().GetCatalogue(bookInfo.Data.NovelId)
-	if err != nil {
-		fmt.Println("Failed to get chapter list:", err)
-		return
-	}
-	a.writeChaptersToFile(bookInfo.Data.NovelName, chapterList.Data.VolumeList)
-}
-
-func (a *APP) mergeTextCiweimao() {
-	bookInfo, err := a.Ciweimao.API().GetBookInfo(a.BookId)
-	if err != nil {
-		fmt.Println("Failed to get book info:", err)
-		return
-	}
-	chapterList, err := a.Ciweimao.API().GetDivisionListByBookId(bookInfo.Data.BookInfo.BookID)
-	if err != nil {
-		fmt.Println("Failed to get division list:", err)
-		return
-	}
-	a.writeChaptersToFile(bookInfo.Data.BookInfo.BookName, chapterList.Data.ChapterList)
-}
-
-func (a *APP) writeChaptersToFile(bookName string, chapterList interface{}) {
-	filePath := path.Join("save", a.CurrentApp, fmt.Sprintf("%v.txt", bookName))
-	file, err := os.Create(filePath)
-	if err != nil {
-		fmt.Printf("Failed to create file %s: %v\n", filePath, err)
-		return
-	}
-	defer file.Close()
-
-	chapters := extractChapters(chapterList)
-	for _, chapterPath := range chapters {
-		if _, err = os.Stat(chapterPath); err == nil {
-			content, err := os.ReadFile(chapterPath)
-			if err == nil {
-				file.Write(content)
-			}
-		}
-	}
-}
-
-func extractChapters(chapterList interface{}) []string {
-	var chapters []string
-	switch list := chapterList.(type) {
-	case []boluobaomodel.VolumeList:
-		for _, volume := range list {
-			for _, chapter := range volume.ChapterList {
-				chapters = append(chapters, path.Join("cache", BoluobaoLibAPP, fmt.Sprintf("%v.txt", chapter.ChapID)))
-			}
-		}
-	case []hbookermodel.DivisionList:
-		for _, division := range list {
-			for _, chapter := range division.ChapterList {
-				chapters = append(chapters, path.Join("cache", CiweimaoLibAPP, fmt.Sprintf("%v.txt", chapter.ChapterID)))
-			}
-		}
-	}
-
-	return chapters
 }

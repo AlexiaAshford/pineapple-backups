@@ -1,7 +1,7 @@
-github.com/AlexiaVeronica/boluobaoLib v0.2.3 h1:O6X3ylB+69ekehcAQKE0wPKkc/6sMRt13+AH4d/QHDQ=
-github.com/AlexiaVeronica/boluobaoLib v0.2.3/go.mod h1:gW+XZnRWGWz1DZyXozWx8SiaL1v5Gcl7RcMD7NpKsL0=
-github.com/AlexiaVeronica/hbookerLib v0.4.0 h1:/Jhsjyt6zcK+U3xDoDcGcP3SX4XtWwzfQ8qxfc6ZK58=
-github.com/AlexiaVeronica/hbookerLib v0.4.0/go.mod h1:lpY244vSpe5o6PpUP+IG4rr90mkW+3B+JByQhB+Oy4U=
+github.com/AlexiaVeronica/boluobaoLib v0.3.2 h1:iZbeRx8z6H3b2G6iVr7oq0ARnN8q9Vf9Dzu3toiGoZQ=
+github.com/AlexiaVeronica/boluobaoLib v0.3.2/go.mod h1:gW+XZnRWGWz1DZyXozWx8SiaL1v5Gcl7RcMD7NpKsL0=
+github.com/AlexiaVeronica/hbookerLib v0.4.2 h1:gp2BUnlDFUM+TbLLVRsrhhWI+LI+QbLLMCsnnSf8xt8=
+github.com/AlexiaVeronica/hbookerLib v0.4.2/go.mod h1:lpY244vSpe5o6PpUP+IG4rr90mkW+3B+JByQhB+Oy4U=
 github.com/AlexiaVeronica/input v0.0.1 h1:2oRxd6yvYpZA9Ky0qAevlreXzQWE1BmrWoP0V7MM4Cc=
 github.com/AlexiaVeronica/input v0.0.1/go.mod h1:achI9MFvTjmqBNrigrxJyumEq81vsuFinLUaMPssGVE=
 github.com/AlexiaVeronica/req/v3 v3.43.5 h1:KqnIo1uC6vWUSPhq5uEGpOnkpJWIWDyfjwcbU/FwykM=

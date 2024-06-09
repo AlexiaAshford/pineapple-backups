@@ -140,8 +140,6 @@ func handleAppSwitch(inputs []string) {
 
 func handleDownload(inputs []string) {
 	if len(inputs) == 2 {
-		fmt.Println("download book by book id:", inputs)
-		fmt.Println(len(inputs))
 		apps.DownloadBookByBookId(inputs[1])
 	} else {
 		fmt.Println("input book id or url, like: download <bookid/url>")
