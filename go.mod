@@ -1,12 +1,10 @@
 module github.com/AlexiaVeronica/pineapple-backups
 
-go 1.21
-
-toolchain go1.22.0
+go 1.22.0
 
 require (
-	github.com/AlexiaVeronica/boluobaoLib v0.1.5
-	github.com/AlexiaVeronica/hbookerLib v0.2.0
+	github.com/AlexiaVeronica/boluobaoLib v0.2.3
+	github.com/AlexiaVeronica/hbookerLib v0.4.0
 	github.com/gabriel-vasile/mimetype v1.4.3
 	github.com/go-resty/resty/v2 v2.10.0
 	github.com/gofrs/uuid v4.4.0+incompatible
@@ -15,7 +13,6 @@ require (
 	github.com/imroc/req/v3 v3.43.5
 	github.com/mattn/go-runewidth v0.0.15
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
-	github.com/olekukonko/tablewriter v0.0.5
 	github.com/tidwall/gjson v1.14.4
 	github.com/tidwall/sjson v1.2.5
 	github.com/urfave/cli v1.22.14
@@ -24,6 +21,8 @@ require (
 )
 
 require (
+	github.com/AlexiaVeronica/input v0.0.1 // indirect
+	github.com/AlexiaVeronica/req/v3 v3.43.5 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/cloudflare/circl v1.3.7 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect

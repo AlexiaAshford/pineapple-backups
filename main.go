@@ -2,124 +2,139 @@ package main
 
 import (
 	"fmt"
-	"github.com/AlexiaVeronica/boluobaoLib"
-	"github.com/AlexiaVeronica/hbookerLib"
-	"github.com/AlexiaVeronica/pineapple-backups/config"
-	"github.com/AlexiaVeronica/pineapple-backups/pkg/command"
-	"github.com/AlexiaVeronica/pineapple-backups/pkg/file"
-	"github.com/AlexiaVeronica/pineapple-backups/pkg/threading"
-	"github.com/AlexiaVeronica/pineapple-backups/pkg/tools"
-	"github.com/AlexiaVeronica/pineapple-backups/src"
+	"log"
 	"os"
 	"strings"
+
+	"github.com/AlexiaVeronica/input"
+	"github.com/AlexiaVeronica/pineapple-backups/config"
+	"github.com/AlexiaVeronica/pineapple-backups/pkg/app"
+	"github.com/AlexiaVeronica/pineapple-backups/pkg/file"
+	"github.com/AlexiaVeronica/pineapple-backups/pkg/tools"
+	"github.com/urfave/cli"
 )
 
-var bookShelfList map[string]string
+var (
+	apps   *app.APP
+	newCli *cli.App
+	cmd    = &commandLines{
+		AppType:   "sfacg",
+		MaxThread: 32,
+	}
+)
+
+type commandLines struct {
+	BookID, Account, Password, AppType, SearchKey   string
+	MaxThread                                       int
+	Token, Login, ShowInfo, Update, Epub, BookShelf bool
+}
+
+const (
+	FlagAppType   = "appType"
+	FlagDownload  = "download"
+	FlagToken     = "token"
+	FlagMaxThread = "maxThread"
+	FlagUser      = "user"
+	FlagPassword  = "password"
+	FlagUpdate    = "update"
+	FlagSearch    = "search"
+	FlagLogin     = "login"
+	FlagEpub      = "epub"
+	FlagBookShelf = "bookshelf"
+)
 
 func init() {
 	if !config.Exist("./config.json") || file.SizeFile("./config.json") == 0 {
-		fmt.Println("config.json not exist, create a new one!")
+		fmt.Println("config.json does not exist, creating a new one!")
 	} else {
 		config.LoadJson()
 	}
 	config.UpdateConfig()
 
-	command.NewApp()
-	config.APP.Hbooker = &config.Hbooker{Client: hbookerLib.NewClient(
-		hbookerLib.WithAccount(config.Apps.Hbooker.Account),
-		hbookerLib.WithLoginToken(config.Apps.Hbooker.LoginToken),
-	)}
-	config.APP.SFacg = &config.SFacg{Client: boluobaoLib.NewClient(boluobaoLib.WithCookie(config.Apps.Sfacg.Cookie))}
-	fmt.Println("current app type:", command.Command.AppType)
+	newCli = cli.NewApp()
+	newCli.Name = "pineapple-backups"
+	newCli.Version = "V.2.2.1"
+	newCli.Usage = "https://github.com/AlexiaVeronica/pineapple-backups"
+	newCli.Flags = defineFlags()
+	newCli.Action = validateAppType
+
+	if err := newCli.Run(os.Args); err != nil {
+		log.Fatal(err)
+	}
+
+	setupTokens()
 }
 
-func currentDownloadBookFunction(bookId string) {
-	catalogue, err := src.SettingBooks(bookId) // get book catalogues
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+func defineFlags() []cli.Flag {
+	return []cli.Flag{
+		cli.StringFlag{Name: fmt.Sprintf("a, %s", FlagAppType), Value: "sfacg", Usage: "change app type", Destination: &cmd.AppType},
+		cli.StringFlag{Name: fmt.Sprintf("d, %s", FlagDownload), Usage: "book id", Destination: &cmd.BookID},
+		cli.BoolFlag{Name: fmt.Sprintf("t, %s", FlagToken), Usage: "input hbooker token", Destination: &cmd.Token},
+		cli.IntFlag{Name: fmt.Sprintf("m, %s", FlagMaxThread), Value: 16, Usage: "change max thread number", Destination: &cmd.MaxThread},
+		cli.StringFlag{Name: fmt.Sprintf("u, %s", FlagUser), Usage: "input account name", Destination: &cmd.Account},
+		cli.StringFlag{Name: fmt.Sprintf("p, %s", FlagPassword), Usage: "input password", Destination: &cmd.Password},
+		cli.BoolFlag{Name: FlagUpdate, Usage: "update book", Destination: &cmd.Update},
+		cli.StringFlag{Name: fmt.Sprintf("s, %s", FlagSearch), Usage: "search book by keyword", Destination: &cmd.SearchKey},
+		cli.BoolFlag{Name: fmt.Sprintf("l, %s", FlagLogin), Usage: "login local account", Destination: &cmd.Login},
+		cli.BoolFlag{Name: fmt.Sprintf("e, %s", FlagEpub), Usage: "start epub", Destination: &cmd.Epub},
+		cli.BoolFlag{Name: fmt.Sprintf("b, %s", FlagBookShelf), Usage: "show bookshelf", Destination: &cmd.BookShelf},
 	}
-	downloadList, err := catalogue.GetDownloadsList()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	thread := threading.NewGoLimit(uint(32))
-	fmt.Println(len(downloadList), " chapters will be downloaded.")
-	catalogue.ChapterBar = src.New(len(downloadList))
-	catalogue.ChapterBar.Describe("working...")
-	for _, chapterID := range downloadList {
-		thread.Add()
-		go catalogue.DownloadContent(thread, chapterID)
-	}
-	thread.WaitZero()
-	catalogue.MergeTextAndEpubFiles()
 }
 
-func updateLocalBooklist() {
-	if config.Exist("./bookList.txt") {
-		for _, i := range strings.ReplaceAll(file.Open("./bookList.json", "", "r"), "\n", "") {
-			if !strings.Contains(string(i), "#") {
-				currentDownloadBookFunction(string(i))
-			}
-		}
-	} else {
-		fmt.Println("bookList.txt not exist, create a new one!")
+func validateAppType(c *cli.Context) {
+	if !strings.Contains(cmd.AppType, "cat") && !strings.Contains(cmd.AppType, "sfacg") {
+		log.Fatalf("%s app type error", cmd.AppType)
 	}
 }
+
+func setupTokens() {
+	apps.Ciweimao.SetToken(config.Apps.Hbooker.Account, config.Apps.Hbooker.LoginToken)
+	apps.Boluobao.Cookie = config.Apps.Sfacg.Cookie
+}
+
 func shellSwitch(inputs []string) {
-	switch inputs[0] { // switch command
+	switch inputs[0] {
 	case "up", "update":
-		updateLocalBooklist()
+		// Update function placeholder
 	case "a", "app":
-		if tools.TestList([]string{"sfacg", "cat"}, inputs[1]) {
-			command.Command.AppType = inputs[1]
+		if tools.TestList([]string{app.BoluobaoLibAPP, app.CiweimaoLibAPP}, inputs[1]) {
+			apps.CurrentApp = inputs[1]
 		} else {
 			fmt.Println("app type error, please input again.")
 		}
-	case "d", "b", "book", "download":
+	case "d", "download":
 		if len(inputs) == 2 {
-			if bookId := config.FindID(inputs[1]); bookId != "" {
-				currentDownloadBookFunction(bookId)
-			} else {
-				fmt.Println("book id is empty, please input again.")
-			}
+			fmt.Println("download book by book id:", inputs)
+			apps.DownloadBookByBookId(inputs[1])
 		} else {
-			fmt.Println("input book id or url, like:download <bookid/url>")
+			fmt.Println("input book id or url, like: download <bookid/url>")
 		}
 	case "bs", "bookshelf":
-		if len(bookShelfList) > 0 && len(inputs) == 2 {
-			if value, ok := bookShelfList[inputs[1]]; ok {
-				currentDownloadBookFunction(value)
-			} else {
-				fmt.Println(inputs[1], "key not found")
-			}
-		} else {
-			fmt.Println("bookshelf is empty, please login and update bookshelf.")
-		}
+		apps.Bookshelf()
 	case "s", "search":
-		if len(inputs) == 2 && inputs[1] != "" {
-			s := src.Search{Keyword: inputs[1], Page: 0}
-			currentDownloadBookFunction(s.SearchBook())
-		} else {
-			fmt.Println("input search keyword, like:search <keyword>")
-		}
-
+		apps.SearchDetailed(inputs[1])
 	case "l", "login":
-		if command.Command.AppType == "cat" && len(inputs) >= 3 {
-			config.APP.Hbooker.Client.Account = inputs[1]
-			config.APP.Hbooker.Client.LoginToken = inputs[2]
-		} else if command.Command.AppType == "sfacg" && len(inputs) >= 3 {
-			src.LoginAccount(inputs[1], inputs[2])
-		} else {
-			fmt.Println("you must input account and password, like: -login account password")
-		}
+		handleLogin(inputs)
 	case "t", "token":
-		if ok := src.InputAccountToken(); !ok {
-			fmt.Println("you must input account and token.")
-		}
+		apps.Ciweimao.SetToken(inputs[1], inputs[2])
 	default:
-		fmt.Println("command not found,please input help to see the command list:", inputs[0])
+		fmt.Println("command not found, please input help to see the command list:", inputs[0])
+	}
+}
+
+func handleLogin(inputs []string) {
+	if len(inputs) < 3 {
+		fmt.Println("you must input account and password, like: -login account password")
+		return
+	}
+	switch apps.CurrentApp {
+	case app.CiweimaoLibAPP:
+		apps.Ciweimao.SetToken(inputs[1], inputs[2])
+	case app.BoluobaoLibAPP:
+		loginStatus, err := apps.Boluobao.API().Login(inputs[1], inputs[2])
+		if err == nil {
+			apps.Boluobao.Cookie = loginStatus.Cookie
+		}
 	}
 }
 
@@ -129,41 +144,39 @@ func shell(messageOpen bool) {
 			fmt.Println("[info]", message)
 		}
 	}
-	bookshelf, err := src.NewChoiceBookshelf()
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		bookShelfList = bookshelf
-	}
-
 	for {
-		if inputRes := tools.GET(">"); len(inputRes) > 0 {
-			shellSwitch(inputRes)
+		if inputRes := input.StringInput(">"); len(inputRes) > 0 {
+			shellSwitch(strings.Split(inputRes, " "))
 		}
 	}
-
 }
 
 func main() {
-
 	if len(os.Args) > 1 {
-		if command.Command.Account != "" && command.Command.Password != "" {
-			src.LoginAccount(command.Command.Account, command.Command.Password)
-		} else if command.Command.BookID != "" {
-			currentDownloadBookFunction(command.Command.BookID)
-		} else if command.Command.SearchKey != "" {
-			s := src.Search{Keyword: command.Command.SearchKey, Page: 0}
-			currentDownloadBookFunction(s.SearchBook())
-		} else if command.Command.Update {
-			updateLocalBooklist()
-		} else if command.Command.Token {
-			src.InputAccountToken()
-		} else if command.Command.BookShelf {
-			shell(false)
-		} else {
-			fmt.Println("command not found,please input help to see the command list:", os.Args[1])
-		}
+		handleCommandLine()
 	} else {
 		shell(true)
+	}
+}
+
+func handleCommandLine() {
+	switch {
+	case cmd.Login:
+		loginStatus, err := apps.Boluobao.API().Login(cmd.Account, cmd.Password)
+		if err == nil {
+			apps.Boluobao.Cookie = loginStatus.Cookie
+		}
+	case cmd.BookID != "":
+		apps.DownloadBookByBookId(cmd.BookID)
+	case cmd.SearchKey != "":
+		apps.SearchDetailed(cmd.SearchKey)
+	case cmd.Update:
+		// Update function placeholder
+	case cmd.Token:
+		apps.Ciweimao.SetToken(input.StringInput("Please input account:"), input.StringInput("Please input token:"))
+	case cmd.BookShelf:
+		apps.Bookshelf()
+	default:
+		fmt.Println("command not found, please input help to see the command list:", os.Args[1])
 	}
 }

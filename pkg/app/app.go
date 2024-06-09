@@ -2,89 +2,120 @@ package app
 
 import (
 	"fmt"
+	"github.com/AlexiaVeronica/pineapple-backups/pkg/file"
+	"os"
+	"path"
+
 	"github.com/AlexiaVeronica/boluobaoLib"
-	"github.com/AlexiaVeronica/pineapple-backups/config"
-	"strconv"
+	"github.com/AlexiaVeronica/hbookerLib"
 )
 
 type APP struct {
-	CurrentApp   string
-	searchResult []Book
-	Boluobao     *boluobaoLib.Client
-
-	//Ciweimao * .Client
-}
-
-type Book struct {
-	currentApp string
-	index      int
+	CurrentApp string
 	BookId     string
-	BookName   string
-	Author     string
+	Boluobao   *boluobaoLib.Client
+	Ciweimao   *hbookerLib.Client
 }
 
-const boluobaoLibAPP = "boluobao"
-const ciweimaoLibAPP = "ciweimao"
+const (
+	BoluobaoLibAPP = "boluobao"
+	CiweimaoLibAPP = "ciweimao"
+)
 
 func NewApp() *APP {
-	return &APP{
+	a := &APP{
+		CurrentApp: BoluobaoLibAPP,
+		Boluobao:   boluobaoLib.NewClient(),
+		Ciweimao:   hbookerLib.NewClient(),
+	}
+	createCacheDirectory("cache")
+	createCacheDirectory("cache/" + CiweimaoLibAPP)
+	createCacheDirectory("cache/" + BoluobaoLibAPP)
+	return a
+}
 
-		CurrentApp:   boluobaoLibAPP,
-		searchResult: make([]Book, 0),
-		Boluobao:     boluobaoLib.NewClient(),
-		//Ciweimao: .NewClient(),
+func createCacheDirectory(path string) {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		os.MkdirAll(path, 0777)
 	}
 }
 
 func (a *APP) SetCurrentApp(app string) {
-	if app == boluobaoLibAPP {
-		a.CurrentApp = boluobaoLibAPP
-	} else if app == ciweimaoLibAPP {
-		a.CurrentApp = ciweimaoLibAPP
-	} else {
-		panic("app type is not correct" + app)
+	switch app {
+	case BoluobaoLibAPP, CiweimaoLibAPP:
+		a.CurrentApp = app
+	default:
+		panic("app type is not correct: " + app)
 	}
 }
+
 func (a *APP) GetCurrentApp() string {
 	return a.CurrentApp
 }
 
 func (a *APP) SearchDetailed(keyword string) *APP {
-	if a.CurrentApp == boluobaoLibAPP {
-		searchInfo, err := config.APP.SFacg.Client.API().GetSearch(keyword, 0)
-		if err != nil {
-			fmt.Println("search failed! " + err.Error())
-			return nil
-		}
-		for index, book := range searchInfo {
-			fmt.Printf("Index: %d\t\t\tBookName: %s\n", index, book.NovelName)
-			a.searchResult = append(a.searchResult, Book{
-				index:      index,
-				BookId:     strconv.Itoa(book.NovelId),
-				BookName:   book.NovelName,
-				Author:     book.AuthorName,
-				currentApp: a.CurrentApp,
-			})
-		}
-	} else if a.CurrentApp == ciweimaoLibAPP {
-
+	switch a.CurrentApp {
+	case BoluobaoLibAPP:
+		a.Boluobao.APP().Search(keyword, sfContinueFunction, sfContentFunction)
+	case CiweimaoLibAPP:
+		a.Ciweimao.APP().Search(keyword, hbookerContinueFunction, hbookerContentFunction)
 	}
 	return a
 }
-func (book *Book) DownloadBookByBookId(client any, bookId string) *Book {
-	if book.currentApp == boluobaoLibAPP {
-		bookInfo, err := client.(*boluobaoLib.Client).API().GetBookInfo(bookId)
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			book.BookId = strconv.Itoa(bookInfo.NovelId)
-			book.BookName = bookInfo.NovelName
-			book.Author = bookInfo.AuthorName
-			book.currentApp = boluobaoLibAPP
-		}
 
-	} else if book.currentApp == ciweimaoLibAPP {
-
+func (a *APP) DownloadBookByBookId(bookId string) *APP {
+	switch a.CurrentApp {
+	case BoluobaoLibAPP:
+		a.Boluobao.APP().Download(bookId, sfContinueFunction, sfContentFunction)
+	case CiweimaoLibAPP:
+		a.Ciweimao.APP().Download(bookId, hbookerContinueFunction, hbookerContentFunction)
 	}
-	return book
+	return a
+}
+
+func (a *APP) Bookshelf() *APP {
+	switch a.CurrentApp {
+	case BoluobaoLibAPP:
+		a.Boluobao.APP().Bookshelf(sfContinueFunction, sfContentFunction)
+	case CiweimaoLibAPP:
+		a.Ciweimao.APP().Bookshelf(hbookerContinueFunction, hbookerContentFunction)
+	}
+	return a
+}
+
+func (a *APP) MergingText() *APP {
+	switch a.CurrentApp {
+	case BoluobaoLibAPP:
+		fmt.Println("boluobao app does not support merging text")
+		chapterList, err := a.Boluobao.API().GetCatalogue(a.BookId)
+		if err != nil {
+			fmt.Println("get chapter list error:", err)
+			return a
+		}
+		for _, chapter := range chapterList.Data.VolumeList {
+			for _, chapterInfo := range chapter.ChapterList {
+				cachePath := path.Join("cache", BoluobaoLibAPP, fmt.Sprintf("%v.txt", chapterInfo.ChapID))
+				savePath := path.Join("save", fmt.Sprintf("%v.txt", a.BookId))
+				if _, err = os.Stat(cachePath); err == nil {
+					file.Open(savePath, cachePath, "a")
+				}
+			}
+		}
+	case CiweimaoLibAPP:
+		chapterList, err := a.Ciweimao.API().GetDivisionListByBookId(a.BookId)
+		if err != nil {
+			fmt.Println("get division list error:", err)
+			return a
+		}
+		for _, division := range chapterList.Data.ChapterList {
+			for _, chapter := range division.ChapterList {
+				cachePath := path.Join("cache", CiweimaoLibAPP, fmt.Sprintf("%v.txt", chapter.ChapterID))
+				savePath := path.Join("save", fmt.Sprintf("%v.txt", a.BookId))
+				if _, err = os.Stat(cachePath); err == nil {
+					file.Open(savePath, cachePath, "a")
+				}
+			}
+		}
+	}
+	return a
 }

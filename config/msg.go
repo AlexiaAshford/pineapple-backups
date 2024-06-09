@@ -1,7 +1,5 @@
 package config
 
-import "fmt"
-
 var HelpMessage = []string{"input help to see the command list:",
 	"input quit to quit",
 	"input download <bookid/url> to download book",
@@ -12,8 +10,4 @@ var HelpMessage = []string{"input help to see the command list:",
 	"input app <app app keyword> to change app type",
 	"input max <thread> to change max thread number",
 	"you can input command like this: download <bookid/url>\n\n",
-}
-
-func Error(Message string, err error, Line int) error {
-	return fmt.Errorf("error: %v\tmessage:%s\tline: %v", err, Message, Line)
 }
