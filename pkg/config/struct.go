@@ -119,8 +119,6 @@ func ReadConfig(fileName string) ([]byte, error) {
 }
 
 func LoadConfig() {
-	FileLock.Lock()
-	defer FileLock.Unlock()
 
 	data, err := ReadConfig("")
 	if err != nil {

@@ -80,6 +80,7 @@ func (a *APP) SearchDetailed(keyword string) *APP {
 }
 
 func (a *APP) DownloadBookByBookId(bookId string) *APP {
+	fmt.Println("bookId", bookId)
 	switch a.CurrentApp {
 	case BoluobaoLibAPP:
 		a.Boluobao.APP().Download(bookId, sfContinueFunction, sfContentFunction)

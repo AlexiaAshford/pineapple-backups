@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/AlexiaVeronica/pineapple-backups/pkg/config"
 	"log"
 	"os"
 	"strings"
 
 	"github.com/AlexiaVeronica/input"
-	"github.com/AlexiaVeronica/pineapple-backups/config"
 	"github.com/AlexiaVeronica/pineapple-backups/pkg/app"
 	"github.com/AlexiaVeronica/pineapple-backups/pkg/tools"
 	"github.com/urfave/cli"
@@ -15,14 +15,11 @@ import (
 
 var (
 	apps *app.APP
-	cmd  = &commandLines{
-		AppType:   "sfacg",
-		MaxThread: 32,
-	}
+	cmd  = &commandLines{MaxThread: 32}
 )
 
 type commandLines struct {
-	BookID, Account, Password, AppType, SearchKey   string
+	BookID, Account, Password, SearchKey            string
 	MaxThread                                       int
 	Token, Login, ShowInfo, Update, Epub, BookShelf bool
 }
@@ -42,13 +39,14 @@ const (
 )
 
 func init() {
+
 	setupConfig()
+	apps = app.NewApp()
 	setupCLI()
 	setupTokens()
 }
 
 func setupConfig() {
-	//if !config.Exist("./config.json") {
 	if _, err := os.Stat("./config.json"); os.IsNotExist(err) {
 		fmt.Println("config.json does not exist, creating a new one!")
 	} else {
@@ -72,7 +70,7 @@ func setupCLI() {
 
 func defineFlags() []cli.Flag {
 	return []cli.Flag{
-		cli.StringFlag{Name: fmt.Sprintf("a, %s", FlagAppType), Value: "sfacg", Usage: "change app type", Destination: &cmd.AppType},
+		cli.StringFlag{Name: fmt.Sprintf("a, %s", FlagAppType), Value: app.BoluobaoLibAPP, Usage: "change app type", Destination: &apps.CurrentApp},
 		cli.StringFlag{Name: fmt.Sprintf("d, %s", FlagDownload), Usage: "book id", Destination: &cmd.BookID},
 		cli.BoolFlag{Name: fmt.Sprintf("t, %s", FlagToken), Usage: "input hbooker token", Destination: &cmd.Token},
 		cli.IntFlag{Name: fmt.Sprintf("m, %s", FlagMaxThread), Value: 16, Usage: "change max thread number", Destination: &cmd.MaxThread},
@@ -87,8 +85,8 @@ func defineFlags() []cli.Flag {
 }
 
 func validateAppType(c *cli.Context) {
-	if !isValidAppType(cmd.AppType) {
-		log.Fatalf("%s app type error", cmd.AppType)
+	if !isValidAppType(apps.CurrentApp) {
+		log.Fatalf("%s app type error", apps.CurrentApp)
 	}
 }
 
@@ -143,6 +141,7 @@ func handleAppSwitch(inputs []string) {
 func handleDownload(inputs []string) {
 	if len(inputs) == 2 {
 		fmt.Println("download book by book id:", inputs)
+		fmt.Println(len(inputs))
 		apps.DownloadBookByBookId(inputs[1])
 	} else {
 		fmt.Println("input book id or url, like: download <bookid/url>")
