@@ -28,12 +28,10 @@ func hbookerContentFunction(chapter *hbookermodel.ChapterInfo) {
 
 func shouldContinue(app, chapID string, condition bool) bool {
 	savePath := path.Join("cache", app, fmt.Sprintf("%v.txt", chapID))
-	if _, err := os.Stat(savePath); err == nil {
+	if _, err := os.Stat(savePath); err == nil || (os.IsNotExist(err) && !condition) {
 		return false
-	} else if os.IsNotExist(err) && condition {
-		return true
 	}
-	return false
+	return true
 }
 
 func writeContentToFile(app, chapID, title, content string) {
@@ -44,5 +42,6 @@ func writeContentToFile(app, chapID, title, content string) {
 		return
 	}
 	defer file.Close()
-	file.WriteString("\n\n" + title + "\n" + content)
+
+	file.WriteString(fmt.Sprintf("\n\n%s\n%s", title, content))
 }

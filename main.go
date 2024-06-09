@@ -14,9 +14,8 @@ import (
 )
 
 var (
-	apps   *app.APP
-	newCli *cli.App
-	cmd    = &commandLines{
+	apps *app.APP
+	cmd  = &commandLines{
 		AppType:   "sfacg",
 		MaxThread: 32,
 	}
@@ -43,14 +42,22 @@ const (
 )
 
 func init() {
+	setupConfig()
+	setupCLI()
+	setupTokens()
+}
+
+func setupConfig() {
 	if !config.Exist("./config.json") {
 		fmt.Println("config.json does not exist, creating a new one!")
 	} else {
 		config.LoadJson()
 	}
 	config.UpdateConfig()
+}
 
-	newCli = cli.NewApp()
+func setupCLI() {
+	newCli := cli.NewApp()
 	newCli.Name = "pineapple-backups"
 	newCli.Version = "V.2.2.1"
 	newCli.Usage = "https://github.com/AlexiaVeronica/pineapple-backups"
@@ -60,8 +67,6 @@ func init() {
 	if err := newCli.Run(os.Args); err != nil {
 		log.Fatal(err)
 	}
-
-	setupTokens()
 }
 
 func defineFlags() []cli.Flag {
@@ -81,9 +86,13 @@ func defineFlags() []cli.Flag {
 }
 
 func validateAppType(c *cli.Context) {
-	if !strings.Contains(cmd.AppType, "cat") && !strings.Contains(cmd.AppType, "sfacg") {
+	if !isValidAppType(cmd.AppType) {
 		log.Fatalf("%s app type error", cmd.AppType)
 	}
+}
+
+func isValidAppType(appType string) bool {
+	return strings.Contains(appType, app.CiweimaoLibAPP) || strings.Contains(appType, app.BoluobaoLibAPP)
 }
 
 func setupTokens() {
@@ -92,22 +101,18 @@ func setupTokens() {
 }
 
 func shellSwitch(inputs []string) {
+	if len(inputs) == 0 {
+		fmt.Println("No command provided.")
+		return
+	}
+
 	switch inputs[0] {
 	case "up", "update":
 		// Update function placeholder
 	case "a", "app":
-		if tools.TestList([]string{app.BoluobaoLibAPP, app.CiweimaoLibAPP}, inputs[1]) {
-			apps.CurrentApp = inputs[1]
-		} else {
-			fmt.Println("app type error, please input again.")
-		}
+		handleAppSwitch(inputs)
 	case "d", "download":
-		if len(inputs) == 2 {
-			fmt.Println("download book by book id:", inputs)
-			apps.DownloadBookByBookId(inputs[1])
-		} else {
-			fmt.Println("input book id or url, like: download <bookid/url>")
-		}
+		handleDownload(inputs)
 	case "bs", "bookshelf":
 		apps.Bookshelf()
 	case "s", "search":
@@ -118,6 +123,28 @@ func shellSwitch(inputs []string) {
 		apps.Ciweimao.SetToken(inputs[1], inputs[2])
 	default:
 		fmt.Println("command not found, please input help to see the command list:", inputs[0])
+	}
+}
+
+func handleAppSwitch(inputs []string) {
+	if len(inputs) < 2 {
+		fmt.Println("app type required. Example: app <type>")
+		return
+	}
+
+	if tools.TestList([]string{app.BoluobaoLibAPP, app.CiweimaoLibAPP}, inputs[1]) {
+		apps.CurrentApp = inputs[1]
+	} else {
+		fmt.Println("app type error, please input again.")
+	}
+}
+
+func handleDownload(inputs []string) {
+	if len(inputs) == 2 {
+		fmt.Println("download book by book id:", inputs)
+		apps.DownloadBookByBookId(inputs[1])
+	} else {
+		fmt.Println("input book id or url, like: download <bookid/url>")
 	}
 }
 
@@ -144,7 +171,8 @@ func shell(messageOpen bool) {
 		}
 	}
 	for {
-		if inputRes := input.StringInput(">"); len(inputRes) > 0 {
+		inputRes := input.StringInput(">")
+		if len(inputRes) > 0 {
 			shellSwitch(strings.Split(inputRes, " "))
 		}
 	}
