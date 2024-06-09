@@ -48,10 +48,11 @@ func init() {
 }
 
 func setupConfig() {
-	if !config.Exist("./config.json") {
+	//if !config.Exist("./config.json") {
+	if _, err := os.Stat("./config.json"); os.IsNotExist(err) {
 		fmt.Println("config.json does not exist, creating a new one!")
 	} else {
-		config.LoadJson()
+		config.LoadConfig()
 	}
 	config.UpdateConfig()
 }

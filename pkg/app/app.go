@@ -148,7 +148,7 @@ func (a *APP) writeChaptersToFile(bookName string, chapterList interface{}) {
 
 	chapters := extractChapters(chapterList)
 	for _, chapterPath := range chapters {
-		if _, err := os.Stat(chapterPath); err == nil {
+		if _, err = os.Stat(chapterPath); err == nil {
 			content, err := os.ReadFile(chapterPath)
 			if err == nil {
 				file.Write(content)
