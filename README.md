@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-Download books from <a href="https://book.sfacg.com/">sfacg</a> and
+Download books from 
 <a href="https://app.hbooker.com/">hbooker</a> to read them.
 </p>
 
@@ -14,11 +14,11 @@ Download books from <a href="https://book.sfacg.com/">sfacg</a> and
 
 ## **Features**
 
-- The script implements download functions for SFACG [`Android`/`WeChat`] API and hbooker Android API.
+- The script implements download functions for  hbooker Android API.
 - You can log in to your account and save your cookies in a `config.json` file.
 - Input the book ID or URL to download the book to a local directory.
 - Input the URL to download the book text from the URL.
-- Supports downloading EPUB files from SFACG and hbooker.
+- Supports downloading EPUB files from  hbooker.
 - Search for books by keyword and download the search results.
 - [ Warning ] The new version of book cache is incompatible with older versions of book cache.
 
@@ -59,7 +59,7 @@ COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   -a value, --appType value    cheng app type (default: "sfacg")
+   -a value, --appType value    cheng app type
    -d value, --download value   book id
    -t, --token                  input hbooker token
    -m value, --maxThread value  change max thread number (default: 16)
